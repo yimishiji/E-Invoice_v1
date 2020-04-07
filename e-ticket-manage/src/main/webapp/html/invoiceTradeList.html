@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+        <title>来伊份电子发票</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        
+        <link rel="stylesheet" href="../resource/css/style.css">
+
+        <!--[if lte IE 9]>
+        <style>
+          .locale_en .browserupgrade-en,
+          .locale_cn .browserupgrade-zh,
+          .locale_zh .browserupgrade-zh {
+            display: block;
+          }
+          .locale_en .browserupgrade-zh,
+          .locale_cn .browserupgrade-en,
+          .locale_zh .browserupgrade-en {
+            display: none;
+          }
+          .browserupgrade {
+            text-align: center;
+            position: absolute;
+            top: 30%;
+            width: 100%;
+          }
+          .browserupgrade img {
+            width: auto;
+          }
+          .browserupgrade p {
+            color: #838383;
+            font-size: 20px;
+            max-width: 500px;
+            margin: 20px auto;
+          }
+          #app {
+            display: none !important;
+          }
+        </style>
+        <![endif]-->
+
+        <!-- All the Favicons -->
+        <link rel="apple-touch-icon-precomposed" sizes="57x57" href="../resource/images/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../resource/images/apple-touch-icon-114x114.png?fcc67d" />
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../resource/images/apple-touch-icon-72x72.png?25e001" />
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../resource/images/apple-touch-icon-144x144.png?d69755" />
+        <link rel="apple-touch-icon-precomposed" sizes="60x60" href="../resource/images/apple-touch-icon-60x60.png?4d1787" />
+        <link rel="apple-touch-icon-precomposed" sizes="120x120" href="../resource/images/apple-touch-icon-120x120.png?055eb5" />
+        <link rel="apple-touch-icon-precomposed" sizes="76x76" href="../resource/images/apple-touch-icon-76x76.png?003533" />
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../resource/images/apple-touch-icon-152x152.png?67a81b" />
+        <link rel="icon" type="image/png" href="../resource/images/favicon-196x196.png?106c70" sizes="196x196" />
+        <link rel="icon" type="image/png" href="../resource/images/favicon-96x96.png?95d6bb" sizes="96x96" />
+        <link rel="icon" type="image/png" href="../resource/images/favicon-32x32.png?59fe7d" sizes="32x32" />
+        <link rel="icon" type="image/png" href="../resource/images/favicon-16x16.png?049cd6" sizes="16x16" />
+        <link rel="icon" type="image/png" href="../resource/images/favicon-128.png?dbe0a1" sizes="128x128" />
+        <meta name="application-name" content="&nbsp;"/>
+        <meta name="msapplication-TileColor" content="#FFFFFF" />
+        <meta name="msapplication-TileImage" content="../resource/images/mstile-144x144.png" />
+        <meta name="msapplication-square70x70logo" content="../resource/images/mstile-70x70.png" />
+        <meta name="msapplication-square150x150logo" content="../resource/images/mstile-150x150.png" />
+        <meta name="msapplication-wide310x150logo" content="../resource/images/mstile-310x150.png" />
+        <meta name="msapplication-square310x310logo" content="../resource/images/mstile-310x310.png" />
+        <script type="text/javascript" src="../resource/js/jquery-1.11.2.min.js"></script>
+        <script type="text/javascript" src="../resource/js/layer/layer.js"></script>
+        <link rel="stylesheet" href="../resource/css/mon.css">
+        <link rel="stylesheet" href="../resource/css/invoice.css">
+    </head>
+    <body class="lang_cn">
+    	<!--[if lte IE 9]>
+    	<div class="browserupgrade">
+    	  <img src="../resource/images/logo-gray.png" alt="starbucks_logo" />
+    	  <p class="browserupgrade-en">This site was built for IE10 and above, please upgrade your browser for a better experience.</p>
+    	  <p class="browserupgrade-zh">本网站仅支持IE10(及以上)浏览器浏览，请更新您的浏览器以获得更好的浏览体验。</p>
+    	</div>
+    	<script type="text/javascript">
+    	  var paths = (window.location.pathname === '/') ? (window.location.hash).split('/') : (window.location.pathname).split('/');
+    	  var locale = (paths.length > 1) ? paths[1] : 'en';
+    	  document.body.className = 'locale_' + locale;
+    	</script>
+    	<![endif]-->
+	    <div id="app">
+	    	<div class="" >
+				<header id="header">
+					<div class="header-container">
+						<a href="https://www.baidu.com" class="logo">
+							<img src="../resource/images/logo.png">
+						</a>
+					</div>
+					<div class="notification-list label notification-list-empty"></div>
+					<!-- 公告 -->
+	                <div class="noticeIcon"><i class="triangle"></i></div>
+	                <div class="noticeCon">
+	                    <header class="noticeConHd">关于变更电子发票的公告</header>
+	                    <div class="noticeMain">
+	                        <p class="conHd">尊敬的顾客：</p>
+	                        <p class="paragraph">根据《关于推行通过增值税电子发票系统开具的增值税电子普通发票有关问题的公告》（国家税务总局公告2015年第84号），我司已逐步在部分星巴克门店推行增值税电子普通发票。如顾客需要纸质发票，可以自行打印增值税电子普通发票的版式文件，其法律效力、基本用途、基本使用规定等与税务机关监制的增值税普通发票相同。</p>
+	                        <p class="paragraph">您可通过扫描收银条下方的二维码或输入电子发票提取码的方式开具增值税电子普通发票。如您对电子发票的开具有任何疑问，请致电收银条上的电子发票服务热线垂询。</p>
+	                        <p class="conFt">2016年12月12日</p>
+	                    </div>
+	                </div>
+				</header>
+	    	    <!-- 主要区域 -->
+	    	    <section id="main" class="main invoice invoiceIndex">
+	    	    	<div>
+	    	    		<h1 >选择交易信息</h1>
+	    	    		<div class="block" >
+	    	    			<!-- <p class="intro container">输入您的星享卡信息</p> -->
+	    	    			<div class="box container">
+	    	    				<form class="form" >
+	    	    					<div class="item trade selected" >
+	    	    						<div class="logo">
+	    	    							<img src="../resource/images/choose_01.png">
+	    	    						</div>
+	    	    						<div class="title updown">
+	    	    							<div class="top">交易金额</div>
+	    	    							<div class="bottom">交易时间</div>
+	    	    						</div>
+	    	    						<div class="info updown">
+	    	    							<div class="top">$1234.50</div>
+	    	    							<div class="bottom">2017年4月28日 10:41</div>
+	    	    						</div>
+	    	    					</div>
+	    	    					<div class="item trade" >
+	    	    						<div class="logo">
+	    	    							<img src="../resource/images/logo.png">
+	    	    						</div>
+	    	    						<div class="title updown">
+	    	    							<div class="top">交易金额</div>
+	    	    							<div class="bottom">交易时间</div>
+	    	    						</div>
+	    	    						<div class="info updown">
+	    	    							<div class="top">$1234.50</div>
+	    	    							<div class="bottom">2017年4月28日 10:41</div>
+	    	    						</div>
+	    	    					</div>
+	    	    					<div class="item trade unable" >
+	    	    						<div class="logo">
+	    	    							<img src="../resource/images/choose_02.png">
+	    	    						</div>
+	    	    						<div class="title updown">
+	    	    							<div class="top">交易金额</div>
+	    	    							<div class="bottom">交易时间</div>
+	    	    						</div>
+	    	    						<div class="info updown">
+	    	    							<div class="top">$1234.50</div>
+	    	    							<div class="bottom">2017年4月28日 10:41</div>
+	    	    						</div>
+	    	    						<div class="error">
+	    	    							<div class="errorInfo">该交易已经开票</div>
+	    	    						</div>
+	    	    					</div>
+    	    						
+    	    						<div class="action tradeAction">
+    	    							<div class="button1">添加交易</div>
+    	    							<div class="blank">&nbsp;</div>
+    	    							<div class="button2">下一步</div>
+    	    						</div>
+	    	    				</form>
+	    	    			</div>
+	    	    		</div>
+	    	    	</div>
+	    	    </section>
+	    	    
+	    	    
+	    	    <div class="down"></div>
+	    	    
+	    	    <div class="invoice_down tc">
+	    	    	<i class="close"></i>
+	    	    	<p class="first_p">提示</p>
+	    	    	<br/>
+	    	    	<br/>
+	    	    	<br/>
+	    	    	<p class="last_p">最多可选择10条交易记录</p>
+	    	    	<br/>
+	    	    	<br/>
+	    	    	<br/>
+	    	    </div>
+	    	    
+	    	</div>
+	    </div>
+    </body>
+    <script type="text/javascript">
+    $(".tradeAction .button2").click(function(event) {
+		window.location.href = "/efapiao.manage/html/invoiceWrite.html";
+	});
+    $(".tradeAction .button1").click(function(event) {
+		window.location.href = "/efapiao.manage/html/invoiceIndex.html";
+	});
+    $(".box .trade").click(function() {
+		if(!$(this).hasClass("unable")){
+			if($(this).hasClass("selected")){
+				$(this).removeClass("selected")
+			}else{
+				$(this).addClass("selected")
+			}
+		}
+	});
+  //公告
+    var flge=1;
+    $(".noticeIcon").click(function(event) {
+        if (flge==1) {
+            $(".noticeCon").slideDown("300");
+            $(".triangle").show('100');
+            flge=0;
+        } else{
+            $(".noticeCon").slideUp("300");
+            $(".triangle").hide('100');
+            flge=1;
+        };
+    });
+    </script>
+</html>

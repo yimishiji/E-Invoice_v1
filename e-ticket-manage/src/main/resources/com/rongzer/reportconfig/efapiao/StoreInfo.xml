@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaL0ocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<!--纳税实体列表qrl -->
+	<page id="storeInfo" title="门店信息"  js="/webresources/script/validate.js" >
+		<header>
+        	<![CDATA[
+        		<script>
+        			//提交
+        			function toSubmit(RcDataPk,auditStatus){
+               	 		wx_confirm("确定提交？","系统提示",200,100
+						      ,function okHandler(){
+						         $.ajax({
+									type: "POST",
+									url : "TaxpayerController/submitRcData.htm",  
+									async: false,
+									data:{RcDataPk:RcDataPk,auditStatus:auditStatus},
+									dataType: "json",
+									success: function(data){
+										wx_success(data);
+                   						refreshParentForm();
+									}
+								});
+						     }
+						    ,null
+						  );
+                   	 }
+        		</script>
+            ]]>
+		</header>
+		<report id="report1" title="request{titleInfo}" extends="baseListPage.baseReport" pagesize="20" rowselect="multiple-checkbox" 
+		dataexport="plainexcel" type="editablelist">
+			<dataexports filename="门店信息"/>
+			<display>
+				<col column="STORE_ID" label="门店主键" displaytype="hidden"/>
+				<col column="PROVINCE_NAME" label="省份" align="center"/>
+				<col column="CITY_NAME" label="城市" align="center"/>
+				<col column="STORE_NO" label="门店编号" align="center"/>
+				<col column="STORE_NAME_CN" label="门店名称(CN)" align="left"/>
+				<col column="CORPORATION_NAME_CN" label="法人名称" align="left"/>
+				<col column="TAXPAYER_IDENTIFY_NO" label="纳税人识别号" align="center"/>
+				<col column="TAXPAYER_NAME_CN" label="纳税人名称" align="left"/>
+				<col column="STORE_EMAIL" label="门店邮箱" align="left"/>
+				<col column="STORE_MANAGER" label="门店经理" align="left"/>
+				<col column="ALLOWED_INVOICE" label="是否允许开票" align="left"/>
+			</display>
+			<sql preparedstatement="false">
+				<select>
+					<value>
+						<![CDATA[
+							SELECT
+								ER.STORE_ID,
+								ER.STORE_NO,
+								EC.CORPORATION_NAME_CN,
+								ET.TAXPAYER_IDENTIFY_NO,
+								ET.TAXPAYER_NAME_CN,
+								X.PROVINCE_NAME,
+								Y.CITY_NAME,
+								ER.STORE_NAME_CN,
+								ER.STORE_EMAIL,
+								ER.STORE_MANAGER,
+								ER.STORE_TYPE,
+								ER.ALLOWED_INVOICE
+							FROM
+								T_STORE_INFO ER
+							LEFT JOIN R_BASE_PROVINCE X ON ER.PROVINCE = X.PROVINCE_CODE
+							LEFT JOIN R_BASE_CITY Y ON ER.CITY = Y.CITY_CODE
+							LEFT JOIN T_CORPORATION_INFO EC ON ER.CORPORATION_ID = EC.CORPORATION_ID
+							LEFT JOIN T_TAXPAYER_INFO ET ON ER.TAXPAYER_ID = ET.TAXPAYER_ID
+							WHERE {#condition#}
+							ORDER BY
+								ER.STORE_NO
+						 ]]>
+					</value>
+					<condition name="RC_PK" hidden="true">
+						<value><![CDATA[(ER.STORE_ID = '#data#')]]></value>
+					</condition>
+					<condition name="RC_NO" label="门店编号">
+						<value><![CDATA[(ER.STORE_NO = '#data#')]]></value>
+					</condition>
+					<condition name="RC_NAME_CN" label="门店名称(CN)">
+						<value><![CDATA[(ER.STORE_NAME_CN like '%#data#%')]]></value>
+					</condition>
+					<condition name="CORPORATION_ID" label="法人">
+						<value><![CDATA[(ER.CORPORATION_ID = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option value="biz004" label="label" dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" ></option>
+						</inputbox>
+					</condition>
+					<condition name="STORE_TYPE" hidden="true">
+						<value><![CDATA[(ER.STORE_TYPE = '#data#')]]></value>
+					</condition>
+				</select>
+				<insert pageurl="report{storeInfoEdit.report1}" urlparams="STORE_TYPE=rrequest{STORE_TYPE}" popupparams="{title:'新增门店',width:750,height:500}"></insert>
+				<update pageurl="report{storeInfoEdit.report1}" urlparams="STORE_ID=@{STORE_ID}" popupparams="{title:'编辑门店',width:750,height:500}"></update>
+			</sql>
+			<buttons>
+				<button name="button1" position="title" label="导出门店信息" extends="${plainexcel.button.default}"/>
+				<button name="btn_add" position="" label="新增" extends="${add.button.default}"/>
+			</buttons>
+			<format>
+				<value>
+					<![CDATA[
+						if(null != ALLOWED_INVOICE && !"".equals(ALLOWED_INVOICE)){
+							if("E01101".equals(ALLOWED_INVOICE)){
+								 ALLOWED_INVOICE = "是";
+							}else{
+								 ALLOWED_INVOICE = "否";
+							}
+						}
+				    ]]>
+				</value>
+			</format>
+		</report>
+	</page>
+	<page id="storeInfoEdit" title="编辑门店信息"  js="/webresources/script/validate.js" >
+		<report id="report1" extends="baseEditPage.baseReport">
+			<header>
+				<![CDATA[
+					<script>
+						function refresh(){		
+							setTimeout(
+								function(){
+									//刷新报表
+									parent.refreshComponentDisplay("storeInfo","report1",false);
+									art.dialog.close();
+								},1*1000);
+								
+							 }
+					</script>
+				]]>
+			</header>
+			<display>
+				<col column="STORE_ID" label="门店主键" displaytype="hidden" colspan="3"/>
+				<col column="PROVINCE"  label="省份" align="center">
+				    <inputbox type="selectbox" displayon="insert|update" jsvalidate="isNotEmpty(${invalid.isnotempty})">
+						<option value="biz001" label="label" dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}">
+						</option>
+					</inputbox>
+				</col>
+				<col column="CITY" label="城市" align="center">
+				    <inputbox type="selectbox"  depends="PROVINCE" jsvalidate="isNotEmpty(${invalid.isnotempty})">
+						<option value="biz002" label="label" dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}">
+						</option>
+					</inputbox>
+				</col>
+				<col column="CORPORATION_ID" label="法人" align="left">
+					 <inputbox type="selectbox" jsvalidate="isNotEmpty(${invalid.isnotempty});">
+			             <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="biz004" label="label"></option>
+					</inputbox>
+				</col>
+				<col column="TAXPAYER_ID" label="纳税人名称" align="left">
+					 <inputbox type="selectbox" displayon="insert|update"  jsvalidate="isNotEmpty(${invalid.isnotempty});">
+			            <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="biz005" label="label"></option>
+					</inputbox>
+				</col>
+				<col column="TAXPAYER_IDENTIFY_NO" label="纳税人识别号" align="left">
+					<inputbox type="selectbox" displayon="insert|update"  styleproperty="disabled=disabled" depends="TAXPAYER_ID">
+						<option value="TAXPAYER_IDENTIFY_NO" label="TAXPAYER_IDENTIFY_NO"
+							dataset="@{SELECT TAXPAYER_IDENTIFY_NO,TAXPAYER_BANK FROM T_TAXPAYER_INFO WHERE TAXPAYER_ID='#TAXPAYER_ID#'}"></option>
+					</inputbox>
+				</col>
+				<col column="TAXPAYER_BANK" label="纳税人开户行" align="left">
+					<inputbox type="selectbox" displayon="insert|update" styleproperty="disabled=disabled" depends="TAXPAYER_ID">
+						<option value="TAXPAYER_BANK" label="TAXPAYER_BANK"
+							dataset="@{SELECT TAXPAYER_IDENTIFY_NO,TAXPAYER_BANK FROM T_TAXPAYER_INFO WHERE TAXPAYER_ID='#TAXPAYER_ID#'}"></option>
+					</inputbox>
+				</col>
+				<col column="STORE_NO" label="门店编号" align="left">
+					 <inputbox  
+			            servervalidate="isUnique(门店编号#data#已经存在,T_STORE_INFO,STORE_NO,IS_DELETE = '0' AND STORE_ID != '{STORE_ID}' )" 
+			            servervalidatetype="both"
+			            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength10(${invalid.isStrLen10})" 
+			            jsvalidatetype="both"></inputbox>
+				</col>
+				<col column="STORE_MANAGER" label="门店经理" align="left">
+					 <inputbox  
+			            jsvalidate="textareaLength255(${invalid.isStrLen255})" 
+			            jsvalidatetype="both"></inputbox>
+				</col>
+				<col column="STORE_EMAIL" label="门店邮箱" align="left" colspan="3">
+					<inputbox jsvalidate="isEmail(${invalid.isEmail});textareaLength256(${invalid.isStrLen256})" jsvalidatetype="both">
+					</inputbox>
+				</col>
+				<col column="STORE_NAME_CN" label="门店名称(CN)" align="left" colspan="3">
+					 <inputbox  
+			            servervalidate="isUnique(门店名称#data#已经存在,T_STORE_INFO,STORE_NAME_CN,IS_DELETE = '0' AND STORE_ID != '{STORE_ID}' )" 
+			            servervalidatetype="both"
+			            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength256(${invalid.isStrLen256})" 
+			            jsvalidatetype="both"></inputbox>
+				</col>
+				<col column="ALLOWED_INVOICE"  label="是否允许开票" align="center">
+					<inputbox type="selectbox" displayon="insert|update" jsvalidate="isNotEmpty(${invalid.isnotempty})" valuestyleproperty="DICT">
+						<option value="E011" label="label" dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}">
+						</option>
+					</inputbox>
+				</col>
+			</display> 
+			<sql aftersave="refresh" preparedstatement="false">
+				<select>
+					<value>
+						<![CDATA[
+							SELECT
+								ER.STORE_ID,
+								ER.STORE_NO,
+								ER.CORPORATION_ID,
+								ER.TAXPAYER_ID,
+								ET.TAXPAYER_IDENTIFY_NO,
+								ET.TAXPAYER_BANK,
+								ER.PROVINCE,
+								ER.CITY,
+								ER.STORE_NAME_CN,
+								ER.STORE_NAME_EN,
+								ER.STORE_EMAIL,
+								ER.STORE_MANAGER,
+								ER.STORE_TYPE,
+								ER.ADD_USER,
+								ER.ADD_TIME,
+								ER.UPDATE_USER,
+								ER.UPDATE_TIME,
+								ER.IS_DELETE,
+								ER.ALLOWED_INVOICE
+							FROM
+								T_STORE_INFO ER
+							LEFT JOIN T_TAXPAYER_INFO ET ON ER.TAXPAYER_ID = ET.TAXPAYER_ID
+							WHERE {#condition#}
+						 ]]>
+					</value>
+					<condition name="STORE_ID" hidden="true">
+						<value><![CDATA[(ER.STORE_ID = '#data#')]]></value>
+					</condition>
+				</select>
+				<insert>
+					<params>
+						<param name="STORE_ID" value="uuid{}" />
+        				<param name="userId" value="session{LoginUser.loginUserId}" />
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+						<param name="STORE_TYPE" value="url{STORE_TYPE}"></param>
+        			</params>
+        			<value>
+						INSERT INTO T_STORE_INFO(
+							STORE_ID,
+							PROVINCE,
+							CITY,
+							CORPORATION_ID,
+							TAXPAYER_ID,
+							STORE_NO,
+							STORE_NAME_CN,
+							STORE_MANAGER,
+							STORE_EMAIL,
+							STORE_TYPE,
+							IS_DELETE,
+							ADD_USER,
+							ADD_TIME,
+							UPDATE_USER,
+							UPDATE_TIME,
+						    ALLOWED_INVOICE
+						)VALUES(
+							#{STORE_ID},
+							@{PROVINCE},
+							@{CITY},
+							@{CORPORATION_ID},
+							@{TAXPAYER_ID},
+							@{STORE_NO},
+							@{STORE_NAME_CN},
+							@{STORE_MANAGER},
+							@{STORE_EMAIL},
+							#{STORE_TYPE},
+							'0',
+							#{userId},
+							#{NOWTIME},
+							#{userId},
+							#{NOWTIME},
+						    @{ALLOWED_INVOICE}
+						)
+					</value>
+				</insert>
+				<update>
+					<params>
+        				<param name="userId" value="session{LoginUser.loginUserId}" />
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+        			</params>
+        			<value>
+						UPDATE T_STORE_INFO
+						SET PROVINCE=@{PROVINCE},
+							CITY=@{CITY},
+							CORPORATION_ID=@{CORPORATION_ID},
+							TAXPAYER_ID=@{TAXPAYER_ID},
+							STORE_NO=@{STORE_NO},
+							STORE_NAME_CN=@{STORE_NAME_CN},
+							STORE_MANAGER=@{STORE_MANAGER},
+							STORE_EMAIL=@{STORE_EMAIL},
+							UPDATE_USER = #{userId},
+	        				UPDATE_TIME = #{NOWTIME},
+						ALLOWED_INVOICE = @{ALLOWED_INVOICE}
+	        			WHERE STORE_ID = @{STORE_ID__old}
+					</value>
+				</update>
+			</sql>
+		</report>
+	</page>
+</applications>

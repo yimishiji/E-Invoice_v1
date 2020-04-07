@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+    <!--货品列表 -->
+    <page id="goodsGroupList" title="商品分类" js="/webresources/script/validate.js">
+        <header>
+        </header>
+        <report id="report1" interceptor="com.rongzer.efapiao.service.GoodsConditionInterceptor"  extends="baseListPage.baseReport" pagesize="20" rowselect="multiple-checkbox"
+                dataexport="plainexcel" type="editablelist">
+            <dataexports filename="商品分类"/>
+            <display>
+                <col column="GROUP_ID" label="分类主键" displaytype="hidden"/>
+                <col column="PARENT_GROUP_ID" label="上级分类" displaytype="hidden"/>
+                <col column="CONTENT_NAME_CN" label="上级分类" displaytype="hidden"/>
+                <col column="GROUP_CODE" label="分类编码" align="center"   rowordervalue="true">
+                	 <inputbox  
+			            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength32(${invalid.isStrLen32})" 
+			            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="GROUP_NAME_CN" label="分类名称" align="center">
+                	<inputbox  
+			            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength256(${invalid.isStrLen256})" 
+			            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="CONTENT_ID" label="开票内容" align="left">
+                	<inputbox type="selectbox">
+                		<autocomplete columns="CONTENT_CODE" colvaluecondition="CONTENT_ID = '#CONTENT_ID#'" 
+							dataset="SELECT CONTENT_CODE FROM T_INVOICE_CONTENT WHERE IS_DELETE='0' AND {#condition#}"/>
+                		<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="biz006" label="label"></option>
+                	</inputbox>
+                </col>
+                <col column="CONTENT_CODE" label="商品编码" align="left" >
+					<inputbox displayon="insert|update" styleproperty=" disabled='disabled' ">
+					</inputbox>
+				</col>
+                <col column="IS_USED" label="是否使用" align="center" valuestyleproperty="DICT">
+                	<inputbox type="selectbox">
+                         <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="D000"></option>
+                     </inputbox>
+                </col>
+            </display>
+            <sql preparedstatement="false">
+                <select>
+                    <value>
+                        <![CDATA[
+							SELECT
+								TG.GROUP_ID,
+								TG.PARENT_GROUP_ID,
+								TG.GROUP_CODE,
+								TG.GROUP_NAME_CN,
+								TG.CONTENT_ID,
+								TC.CONTENT_NAME_CN,
+								TC.CONTENT_CODE,
+								TG.IS_USED,
+								TG.ADD_USER,
+								TG.ADD_TIME,
+								TG.UPDATE_USER,
+								TG.UPDATE_TIME,
+								TG.IS_DELETE
+							FROM
+								T_GOODS_GROUP_INFO TG
+							LEFT JOIN T_INVOICE_CONTENT TC ON TG.CONTENT_ID = TC.CONTENT_ID
+							WHERE TG.IS_DELETE = 0
+							AND {#condition#}
+							order by GROUP_CODE asc
+						 ]]>
+                    </value>
+                    <condition name="GROUP_ID" hidden="true">
+						<value><![CDATA[(TG.PARENT_GROUP_ID = '#data#' OR TG.GROUP_ID = '#data#')]]></value>
+					</condition>
+					<condition name="GROUP_ID_TEMP" hidden="true">
+					</condition>
+					<condition name="GROUP_CODE" label="分类编码">
+						<value><![CDATA[(TG.GROUP_CODE like '%#data#%')]]></value>
+					</condition>
+					<condition name="GROUP_NAME_CN" label="分类名称">
+						<value><![CDATA[(TG.GROUP_NAME_CN like '%#data#%')]]></value>
+					</condition>
+					<condition name="CONTENT_ID" label="开票内容">
+						<value><![CDATA[(TG.CONTENT_ID = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="biz006" label="label"></option>
+						</inputbox>
+					</condition>
+					<condition name="IS_USED" label="是否使用">
+						<value><![CDATA[(TG.IS_USED = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="D000"></option>
+						</inputbox>
+					</condition>
+                </select>
+				<update pageurl="report{goodsGroupListEdit.report1}" urlparams="GROUP_ID=@{GROUP_ID}" popupparams="{title:'分类编辑',width:750,height:300}"></update>
+				<delete>
+					<params>
+        				<param name="userId" value="session{LoginUser.loginUserId}" />
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+        			</params>
+        			<value>
+        				UPDATE T_GOODS_GROUP_INFO
+        				SET IS_DELETE = '1',
+        					UPDATE_USER = #{userId},
+							UPDATE_TIME = #{NOWTIME}
+						WHERE GROUP_ID = @{GROUP_ID__old}
+        			</value>
+				</delete>
+            </sql>
+			<buttons>
+				<button name="btn_add" position="" label="新增" extends="${add.button.default}"/>
+			</buttons>
+            <format>
+				<value>
+					<![CDATA[ 
+						CONTENT_ID=CONTENT_NAME_CN;
+						if(IS_USED!=null&&IS_USED!=""){
+							if("D00002".equals(IS_USED)){
+								IS_USED = "是";
+							}else if("D00001".equals(IS_USED)){
+								IS_USED = "否";
+							}
+						}
+					]]>
+				</value>
+			</format>
+        </report>
+    </page>
+
+	<page id="goodsGroupListEdit" title="货品编辑"  js="/webresources/script/validate.js" >
+		<report id="report1" extends="baseEditPage.baseReport">
+			<header>
+				<![CDATA[
+					<script>
+						function refresh(){
+							setTimeout(
+								function(){
+									//刷新报表
+									parent.refreshComponentDisplay("goodsGroupList","report1",false);
+									art.dialog.close();
+								},1*1000);
+
+							 }
+					</script>
+				]]>
+			</header>
+			<display>
+				<col column="GROUP_ID" label="分类主键" displaytype="hidden" colspan="3"/>
+				<col column="GROUP_CODE" label="分类编码" align="center"/>
+				<col column="GROUP_NAME_CN"  label="分类名称" align="center"/>
+				<col column="CONTENT_ID" label="开票内容" align="center">
+					<inputbox type="selectbox" displayon="insert|update">
+						<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="biz006" label="label"></option>
+					</inputbox>
+				</col>
+				<col column="CONTENT_CODE" label="商品编码" align="center">
+					<inputbox type="selectbox" displayon="insert|update"  depends="CONTENT_ID" styleproperty="disabled=disabled">
+						<option value="CONTENT_CODE" label="CONTENT_CODE"
+								dataset="@{SELECT CONTENT_CODE FROM T_INVOICE_CONTENT WHERE CONTENT_ID='#CONTENT_ID#'}"></option>
+					</inputbox>
+				</col>
+				<col column="IS_USED" label="是否使用" align="center">
+					<inputbox type="selectbox" defaultvalue="D00002">
+						<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="D000_hasempty"></option>
+					</inputbox>
+				</col>
+			</display>
+			<sql aftersave="refresh" preparedstatement="false">
+				<select>
+					<value>
+						<![CDATA[
+							SELECT
+								TG.GROUP_ID,
+								TG.PARENT_GROUP_ID,
+								TG.GROUP_CODE,
+								TG.GROUP_NAME_CN,
+								TG.CONTENT_ID,
+								TC.CONTENT_NAME_CN,
+								TC.CONTENT_CODE,
+								TG.IS_USED,
+								TG.ADD_USER,
+								TG.ADD_TIME,
+								TG.UPDATE_USER,
+								TG.UPDATE_TIME,
+								TG.IS_DELETE
+							FROM
+								T_GOODS_GROUP_INFO TG
+							LEFT JOIN T_INVOICE_CONTENT TC ON TG.CONTENT_ID = TC.CONTENT_ID
+							WHERE TG.IS_DELETE = 0
+							AND {#condition#}
+						 ]]>
+					</value>
+					<condition name="GROUP_ID" hidden="true">
+						<value><![CDATA[(TG.GROUP_ID = '#data#')]]></value>
+					</condition>
+				</select>
+				<update>
+					<params>
+						<param name="userId" value="session{LoginUser.loginUserId}" />
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+						UPDATE T_GOODS_GROUP_INFO
+						SET GROUP_CODE = @{GROUP_CODE},
+						GROUP_NAME_CN = @{GROUP_NAME_CN},
+						CONTENT_ID = @{CONTENT_ID},
+						IS_USED = @{IS_USED},
+						UPDATE_USER = #{userId},
+						UPDATE_TIME = #{NOWTIME}
+						WHERE GROUP_ID = @{GROUP_ID__old}
+					</value>
+				</update>
+			</sql>
+		</report>
+	</page>
+</applications>

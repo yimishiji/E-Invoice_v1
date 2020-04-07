@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="ManualMarketInvoiceInfoEdit" js="/webresources/script/validate.js">
+		<header>
+		<![CDATA[
+			<script>
+				function saveManualMarketInvoiceInfoEdit(){
+					doAddDataForSaving('ManualMarketInvoiceInfoEdit_guid_report1','true');
+					//先保存明细信息
+					var dataObjArr=getEditableReportColValues('ManualMarketInvoiceInfoEdit','sreport2',{COMMODITY_CODE:true,ITEM_TITTLE:true,ITEM_NUMBER:true,ITEM_UNIT_PRICE:true,TAX_RATE:true});
+					if(dataObjArr!=null&&dataObjArr.length>0){
+						saveEditableReportData({pageid:'ManualMarketInvoiceInfoEdit',savingReportIds:[{reportid:'report1',updatetype:'save'},{reportid:'sreport2',updatetype:'save'}]});
+						//关闭编辑页面，刷新主页面
+						//aoRefresh();
+					}else{
+						wx_error("请添加开票内容！");
+					}
+				}
+
+				function aoRefresh(){
+						setTimeout(
+							function(){
+								//刷新报表
+								artDialog.open.origin.refreshParentEditableListReport("invoiceIssue","report1",false);
+								art.dialog.close();
+							},1*1000);
+					}
+			</script>
+		]]>
+		</header>
+		<report id="report1" savedatatype="all" extends="baseEditPage.baseReport"
+			type="form" checkdirtydata="false">
+			<display>
+				<col column="ORDER_ID" label="订单ID" displaytype="hidden"
+					colspan="5" />
+				<col column="INVOICE_ID" label="订单ID" displaytype="hidden"
+					colspan="5" />
+				<col column="PURCHASER_NAME" label="客户名称" align="left">
+					<inputbox jsvalidate="isNotEmpty(${invalid.isnotempty});"
+						jsvalidatetype="both" servervalidatetype="both"></inputbox>
+				</col>
+				<col column="PURCHASER_EMAIL" label="客户邮箱" align="left">
+					<inputbox
+						jsvalidate="isNotEmpty(${invalid.isnotempty});isEmail(#label#必须为有效的邮箱);textareaLength128(#label#最大长度为128个字符);"
+						jsvalidatetype="both" servervalidatetype="both"></inputbox>
+				</col>
+				<col column="PURCHASER_ID" label="客户税号" align="left">
+					<inputbox></inputbox>
+				</col>
+				<col column="PURCHASER_ADDRESS" label="客户地址" align="left">
+					<inputbox></inputbox>
+				</col>
+				<col column="PURCHASER_MOBILE" label="客户电话" align="left">
+					<inputbox></inputbox>
+				</col>
+				<col column="PURCHASER_BANK_ACCOUNT" label="客户银行" align="left">
+					<inputbox></inputbox>
+				</col>
+				<col column="TAXPAYER_NAME_CN" label="销方名称" align="left">
+					<inputbox displayon="insert|update" jsvalidate="isNotEmpty(${invalid.isnotempty});"
+						jsvalidatetype="both">
+						<typeprompt count="15" casesensitive="false" width="400">
+							<promptcol label="TAXPAYER_NAME" value="TAXPAYER_PK"
+								matchmode="anywhere"></promptcol>
+							<datasource>
+								<option
+									dataset="@{select a.* from(SELECT TAXPAYER_NAME_CN TAXPAYER_NAME,TAXPAYER_ID TAXPAYER_PK FROM T_TAXPAYER_INFO WHERE IS_DELETE='0' AND IS_USED='D00002') a where  {#matchcondition#}}"></option>
+							</datasource>
+						</typeprompt>
+						<autocomplete
+							columns="TAXPAYER_NAME_CN;TAXPAYER_IDENTIFY_NO;TAXPAYER_ADDRESS;TAXPAYER_PHONE;TAXPAYER_BANK;TAXPAYER_ACCOUNT"
+							colvaluecondition="TAXPAYER_ID ='#TAXPAYER_NAME_CN#'"
+							dataset="SELECT TAXPAYER_ID,TAXPAYER_NAME_CN,TAXPAYER_IDENTIFY_NO,TAXPAYER_ADDRESS,TAXPAYER_PHONE,TAXPAYER_BANK,TAXPAYER_ACCOUNT FROM T_TAXPAYER_INFO WHERE IS_DELETE='0' AND IS_USED='D00002' AND {#condition#}">
+						</autocomplete>
+					</inputbox>
+				</col>
+				<col column="TAXPAYER_IDENTIFY_NO" label="销方识别号" align="left">
+					<inputbox jsvalidate="isNotEmpty(${invalid.isnotempty});"
+						jsvalidatetype="both" servervalidatetype="both"></inputbox>
+				</col>
+				<col column="TAXPAYER_ADDRESS" label="销方地址" align="left">
+					<inputbox></inputbox>
+				</col>
+				<col column="TAXPAYER_PHONE" label="销方电话" align="left">
+					<inputbox></inputbox>
+				</col>
+				<col column="TAXPAYER_BANK" label="销方银行" align="left">
+					<inputbox></inputbox>
+				</col>
+				<col column="TAXPAYER_ACCOUNT" label="销方银行帐号" align="left">
+					<inputbox></inputbox>
+				</col>
+				<col column="ISSUER" label="开票人" align="left">
+					<inputbox
+						jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength32(#label#最大长度为32个字符)"
+						jsvalidatetype="both" servervalidatetype="both"></inputbox>
+				</col>
+				<col column="PAYEE" label="收款人" align="left">
+					<inputbox></inputbox>
+				</col>
+				<col column="REVIEW_CLERK" label="复核人" align="left">
+					<inputbox></inputbox>
+				</col>
+				<col column="REMARK" label="备注" align="left" colspan="3">
+					<inputbox type="textareabox"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						SELECT
+						A.ORDER_ID,
+						A.STATUS,
+						A.INVOICE_STATUS,
+						A.IS_DELETE,
+						A.ADD_USER,
+						A.ADD_TIME,
+						A.UPDATE_USER,
+						A.UPDATE_TIME,
+						A.PURCHASER_NAME,
+						A.PURCHASER_ID,
+						A.PURCHASER_EMAIL,
+						A.PURCHASER_ADDRESS,
+						A.PURCHASER_MOBILE,
+						A.PURCHASER_BANK_ACCOUNT,
+						B.ISSUER,
+						B.REVIEW_CLERK,
+						B.PAYEE,
+						C.TAXPAYER_NAME_CN,
+						C.TAXPAYER_IDENTIFY_NO,
+						C.TAXPAYER_ADDRESS,
+						C.TAXPAYER_PHONE,
+						C.TAXPAYER_BANK,
+						C.TAXPAYER_ACCOUNT,
+						B.INVOICE_ID,
+						A.REMARK
+						FROM
+						T_INVOICE_ORDER A
+						LEFT JOIN T_INVOICE_INFO_HANDLER B ON A.ORDER_ID
+						= B.ORDER_ID
+						INNER JOIN T_TAXPAYER_INFO C ON A.TAXPAYER_ID =
+						C.TAXPAYER_IDENTIFY_NO
+						WHERE
+						A.IS_DELETE = '0'
+						AND {#condition#}
+					</value>
+					<condition name="ORDER_ID" hidden="true">
+						<value><![CDATA[(A.ORDER_ID = '#data#')]]></value>
+					</condition>
+				</select>
+				<insert>
+					<params>
+						<param name="ORDER_ID" value="uuid{ORDER_ID}" />
+						<param name="INVOICE_ID" value="uuid{INVOICE_ID}"></param>
+						<param name="userId" value="session{LoginUser.loginUserId}" />
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+						INSERT INTO T_INVOICE_ORDER(
+						ORDER_ID,
+						INVOICE_STATUS,
+						INVOICE_TYPE,
+						IS_MANUAL,
+						PURCHASER_NAME,
+						PURCHASER_EMAIL,
+						PURCHASER_ID,
+						PURCHASER_MOBILE,
+						PURCHASER_ADDRESS,
+						PURCHASER_BANK_ACCOUNT,
+						ADD_USER,
+						ADD_TIME,
+						UPDATE_USER,
+						UPDATE_TIME,
+						IS_DELETE,
+						TAXPAYER_ID,
+						INVOICE_DETAIL_TYPE,
+						STATUS,
+						REMARK
+						)VALUES(
+						#{ORDER_ID},
+						'E00501',
+						'E00601',
+						'E00102',
+						@{PURCHASER_NAME},
+						@{PURCHASER_EMAIL},
+						@{PURCHASER_ID},
+						@{PURCHASER_MOBILE},
+						@{PURCHASER_ADDRESS},
+						@{PURCHASER_BANK_ACCOUNT},
+						#{userId},
+						#{NOWTIME},
+						#{userId},
+						#{NOWTIME},
+						'0',
+						@{TAXPAYER_IDENTIFY_NO},
+						'E00903',
+						'DV0101',
+						@{REMARK}
+						)
+					</value>
+					<value>
+						INSERT INTO T_INVOICE_INFO_HANDLER(
+						INVOICE_ID,
+						ORDER_ID,
+						ISSUER,
+						PAYEE,
+						REVIEW_CLERK,
+						IS_DELETE,
+						ADD_USER,
+						ADD_TIME,
+						UPDATE_USER,
+						UPDATE_TIME
+						)VALUES(
+						#{INVOICE_ID},
+						#{ORDER_ID},
+						@{ISSUER},
+						@{PAYEE},
+						@{REVIEW_CLERK},
+						'0',
+						#{userId},
+						#{NOWTIME},
+						#{userId},
+						#{NOWTIME}
+						)
+					</value>
+				</insert>
+			</sql>
+			<buttons>
+				<button name="bt1" extends="${wabacus.button2.default}"
+					position="title" label="保存">
+		        <![CDATA[
+                  saveManualMarketInvoiceInfoEdit();
+		        ]]>
+				</button>
+				<button name="bt2" position="" extends="${add.button.default}"></button>
+				<button name="bt3" position="" extends="${save.button.default}"></button>
+			</buttons>
+		</report>
+		<report id="sreport2" extends="baseListPage.baseReport" type="editablelist2"
+			pagesize="-1" rowselect="multiple-checkbox|true" depends="report1"
+			dependsparams="txtreport2_ORDER_ID=@{ORDER_ID};" checkdirtydata="false">
+			<display>
+				<col column="INVOICE_ID" label="订单ID" displaytype="hidden" />
+				<col column="INVOICE_DETAIL_ID" label="订单ID" displaytype="hidden" />
+				<col column="ITEM_TITLE" align="right" label="开票内容">
+					<inputbox jsvalidate="isNotEmpty(${invalid.isnotempty});"
+						jsvalidatetype="both">
+						<typeprompt count="1000" casesensitive="false" width="400">
+							<promptcol label="ITEM_TITLE" value="ITEM_TITLE"
+								matchmode="anywhere"></promptcol>
+							<datasource>
+								<option
+									dataset="@{SELECT CONTENT_CODE COMMODITY_CODE,CONTENT_NAME_CN ITEM_TITLE FROM t_invoice_content
+											  UNION
+											  SELECT CONTENT_CODE COMMODITY_CODE,GOODS_NAME_CN ITEM_TITLE
+											  FROM T_GOODS_INFO A
+											  INNER JOIN T_GOODS_GROUP_INFO B ON A.GROUP_ID = B.GROUP_ID
+											  INNER JOIN T_INVOICE_CONTENT C ON IFNULL(A.CONTENT_ID,B.CONTENT_ID)= C.CONTENT_ID}"></option>
+							</datasource>
+						</typeprompt>
+						<autocomplete columns="COMMODITY_CODE;"
+							colvaluecondition="ITEM_TITLE = '#ITEM_TITLE#'"
+							dataset="SELECT U.* FROM(SELECT CONTENT_CODE COMMODITY_CODE,CONTENT_NAME_CN ITEM_TITLE FROM T_INVOICE_CONTENT
+											   UNION
+											   SELECT CONTENT_CODE COMMODITY_CODE,GOODS_NAME_CN ITEM_TITLE
+									  FROM T_GOODS_INFO A
+									  INNER JOIN T_GOODS_GROUP_INFO B ON A.GROUP_ID = B.GROUP_ID
+									  INNER JOIN T_INVOICE_CONTENT C ON IFNULL(A.CONTENT_ID,B.CONTENT_ID)= C.CONTENT_ID)U  WHERE  {#condition#}">
+						</autocomplete>
+					</inputbox>
+				</col>
+				<col column="COMMODITY_CODE" align="center" label="商品编码" />
+				<col column="ITEM_AMOUNT" align="right" label="金额">
+					<inputbox jsvalidate="isNotEmpty(${invalid.isnotempty});isMoney(请输入合法金额)"
+						jsvalidatetype="both" servervalidatetype="both"></inputbox>
+				</col>
+				<col column="DISCOUNT_AMOUNT" align="right" label="折扣金额">
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[
+							SELECT
+							  	A.INVOICE_DETAIL_ID,
+								A.INVOICE_ID,
+								A.ITEM_TITLE,
+								A.ITEM_AMOUNT,
+								A.DISCOUNT_AMOUNT,
+								A.COMMODITY_CODE
+	                        FROM
+	                            T_INVOICE_DETAIL_HANDLER A
+	                        LEFT JOIN T_INVOICE_INFO_HANDLER B ON A.INVOICE_ID = B.INVOICE_ID
+	                        WHERE
+	                            A.IS_DELETE = '0'
+	                            AND {#condition#}
+						]]>
+					</value>
+					<condition name="txtreport2_ORDER_ID" hidden="true">
+						<value><![CDATA[(B.ORDER_ID = '#data#')]]></value>
+					</condition>
+				</select>
+				<insert>
+					<params>
+						<param name="INVOICE_ID" value="uuid{INVOICE_ID}"></param>
+						<param name="INVOICE_DETAIL_ID" value="uuid{}"></param>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+						INSERT INTO T_INVOICE_DETAIL_HANDLER(
+						INVOICE_DETAIL_ID,
+						INVOICE_ID,
+						ITEM_TITLE,
+						ITEM_AMOUNT,
+						DISCOUNT_AMOUNT,
+						COMMODITY_CODE,
+						ADD_USER,
+						ADD_TIME,
+						UPDATE_USER,
+						UPDATE_TIME,
+						IS_DELETE
+						)VALUES(
+						#{INVOICE_DETAIL_ID},
+						#{INVOICE_ID},
+						@{ITEM_TITLE},
+						@{ITEM_AMOUNT},
+						@{DISCOUNT_AMOUNT},
+						@{COMMODITY_CODE},
+						#{userId},
+						#{NOWTIME},
+						#{userId},
+						#{NOWTIME},
+						'0'
+						)
+					</value>
+				</insert>
+				<update>
+					<params>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+						UPDATE T_INVOICE_DETAIL_HANDLER
+						SET ITEM_TITLE=@{ITEM_TITLE},
+						COMMODITY_CODE = @{COMMODITY_CODE},
+						ITEM_AMOUNT=@{ITEM_AMOUNT},
+						DISCOUNT_AMOUNT=@{DISCOUNT_AMOUNT},
+						UPDATE_USER = #{userId},
+						UPDATE_TIME = #{NOWTIME}
+						WHERE INVOICE_DETAIL_ID=@{INVOICE_DETAIL_ID__old}
+					</value>
+				</update>
+				<delete>
+					<value>
+						DELETE FROM T_INVOICE_DETAIL_HANDLER
+						WHERE INVOICE_DETAIL_ID=@{INVOICE_DETAIL_ID__old}
+					</value>
+				</delete>
+			</sql>
+			<buttons>
+				<button name="button1" position="" extends="${save.button.default}"></button>
+			</buttons>
+		</report>
+	</page>
+</applications>

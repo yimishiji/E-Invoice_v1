@@ -1,0 +1,309 @@
+/* /*
+* @Author: Administrator
+* @Date:   2016-11-01 16:00:21
+* @Last Modified by:   Administrator
+* @Last Modified time: 2016-11-29 17:06:55
+*/
+/*鍏敤绫� */
+.clear, .clearfix:after {
+	clear: both
+}
+.clearfix:after{
+	content: "";
+	display: block;
+	visibility: hidden;
+	height: 0;
+	clear: both;
+}
+.hot{ color: #FD4F01!important;font-size: initial; }
+.tc{ text-align: center; }
+.fl{float: left;}
+.fr{}
+.color_83{ color: #333333!important; margin-left:120px;}
+.color_84{ color: #333333!important; margin-left:30px;}
+.down{ height: 100%; width: 100%; background: rgba(0,0,0,.5); position: absolute;top: 0; left: 0; z-index: 5; display: none;}
+.down_rgb{ height: 100%; width: 100%; background: rgba(0,0,0,0); position: absolute;top: 0; left: 0; z-index: 5; display: none;}
+
+.invoice .blockopenid{ width:100%;float:left;margin-top: 0px;margin-bottom: 70px; }
+
+
+ #hot1{width: 100%;
+    float: left;
+    font-size: 1em;
+    display: none;}
+#hot2{width: 100%;
+    float: left;
+    font-size: 1em;
+    display: none;}
+.invoice.invoiceIndex .block{ margin-bottom: 0; }
+.button{ cursor: pointer; }
+.homepagebtn{
+	background-color: #FD4F01;
+	width:25%;
+	height:25%;
+	margin-bottom: 5px;
+	padding: 0px;
+}
+.homepagebtn:hover {
+	color: #6a6a6a;
+	background: #FD4F01
+}
+.required{margin-bottom: 4%;}
+one
+#main h1{ margin-bottom: 50px; }
+
+/* .invoiceIndex input:not([type=submit]){ 
+	border-bottom: 1px solid #CCCCCC;  
+    border-top:0px;  
+	border-left:0px;  
+	border-right:0px;} */
+.invoiceIndex .form{}
+鐒︾偣
+.invoiceIndex .form .item:first-child input:focus{ border-bottom: 1px solid #E14E2E;  
+    border-top:0px;  
+	border-left:0px;  
+	border-right:0px; }
+.invoice .form  input:focus{ 
+	border-bottom: 1px solid #E14E2E;  
+    border-top:0px;  
+	border-left:0px;  
+	border-right:0px; }
+
+btn
+
+
+.invoiceIndex .form .item .code_refresh{ opacity: 0.7;height: 22px; width: 22px;  border-radius: 50%; display: inline-block; position: absolute; top: 50%; right: -10px; margin-top: -12px; }
+.invoiceIndex .form .item .code_refresh:before{ content: ''; position: absolute; height: 14px; width: 14px;  background-size: cover; top: 50%; left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	-o-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+}
+寮瑰嚭灞�
+.noticeIcon{ position: absolute; height: 24px; width: 24px; background: url(../images/in_icon01.png) center center no-repeat; background-size: contain; 
+	top: 50%; right: 2%; 
+	-webkit-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	-o-transform: translateY(-50%);
+	transform: translateY(-50%);
+}
+.noticeCon{ display: none; position: absolute; width: 600px; right: 2%; top: 99px; background-color: #FD4F01
+; color: #fff; font-size: 16px; padding:10px 0;}
+.noticeCon:after{ position: absolute; content: ""; width:15px; height: 10px; background: url(../images/in_icon02.png) 0 0 no-repeat; background-size: contain; top: -9px; right: 10px;}
+.noticeMain{ padding:0 5%; }
+.noticeCon p{ line-height: 45px; margin:0;}
+.conHd.p{ padding:0;  }
+.noticeCon .noticeConHd{ text-align: center; line-height: 50px; font-size: 18px;}
+.noticeCon .paragraph{ text-indent: 2em; }
+.noticeCon .conFt{ text-align: right; }
+鍒ゆ柇楂樺害
+@media (max-device-height:600px){
+	.invoice_down{ width: 506px; background: #fff; position: fixed; top: 5%; left: 50%; z-index: 10;
+		-webkit-transform: translateX(-50%);
+		-ms-transform: translateX(-50%);
+		-o-transform: translateX(-50%);
+		transform: translateX(-50%); 
+		transition:all 1s linear ;
+		display: none;
+	}
+}
+
+@media (min-device-height:601px){
+
+}
+
+@media (min-device-height:724px){
+	
+}
+
+.close{ transition:all 1s linear ; position: absolute; top: 16px; right: 16px; height: 18px; width: 18px;  background-size: cover;}
+.invoice_img{ height: 160px; width: auto; margin:30px auto 10px;}
+.invoice_down p{ padding:0; margin:0; }
+.invoice_down p.first_p{line-height: 25px; font-size: 17px;margin-top: 10px; text-align:center;}
+.invoice_down p.four_p{line-height: 25px; font-size: 17px;margin-top: 30px; text-align:center;}
+.invoice_down p.last_p{  font-size: 1.2em;color:#999999;margin-top: 20px;}
+
+.invoice_down .formContainer{ width: 100%; margin-top: 30px; margin-bottom: 20px;}
+.invoice_down .formContainer input{ margin-bottom: 10px; width: 100%; border: 1px solid #ddd; border-radius: 5px 5px 5px 5px; background-color: #FFFFFF;}
+.invoice_down .formContainer input:focus{ border: 1px solid #ddd!important;}
+.invoice_down .formContainer .button{ border-radius: 5px; color: #fff; background-color: #b89f7a; }
+.invoice_down .formContainer .button_confirm{ margin-top: 10px;}
+.invoice_down .formContainer .title{ margin-top:30px;}
+.invoice_down .formContainer .email_info{ color: #C9B69A; margin-bottom: 30px;}
+
+.loadingContainer{ width: 100%; height: 100%; background: rgba(0,0,0,.5); position: absolute; top: 0; left: 0; z-index: 5; display: none;}
+.loadingContainer .loadingImg{ text-align: center; position: fixed; top: 52%; left: 51%; width: 57px; height: 57px; margin-left: -50px;}
+.loadingContainer .loadingText{ text-align: center; position: fixed; top: 50%; color:#FFFFFF; width: 100%; margin-top: 100px;}
+
+two
+.invoiceWrite p{ margin-bottom:0; }
+.invoiceWrite .button_confirm{ margin-top: 30px; }
+
+
+.invoiceWrite input:focus{ border-top: none!important; }
+.invoiceWrite .form .item.first input{ border: 1px solid #ddd; border-radius: 5px 5px 0 0;}
+.invoiceWrite .form .item.first input:focus{ border-top: 1px solid #ddd!important;}
+.invoice label{ line-height: 36px; font-size: 16px; }
+.invoiceWrite .form_required{ position: relative; }
+.invoiceWrite .form_required:before{ content: '*'; position: absolute; top: 12px; left: 2px; font-size: 14px; color:#007043;  }
+.invoice .form .last_item input{ border-radius: 0 0 5px 5px; }
+.add_form{ cursor: pointer; width: 50%; margin:0 auto; text-align: center; line-height: 42px; border: 1px solid #007043; border-top: none; border-radius:0 0 5px 5px;  }
+.add_form_icon{ height: 16px; width: 16px; display: inline-block; background: url(../images/invoice_03.jpg) 0 0 no-repeat; background-size: contain; vertical-align: middle; 
+	transition: all .2s linear; 
+	-webkit-transition: all .2s linear; 
+	-ms-transition: all .2s linear; 
+	-o-transition: all .2s linear; 
+} 
+.add_form_icon.turn{ 
+	-webkit-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	transform: rotate(180deg); }
+.form_add{ display: none; }
+	寮瑰嚭
+.invoice_down h3{ padding:35px 0 10px 0; margin-bottom: 0; }
+.invoice_down{ padding:0 30px; }
+.invoice_down ul li{ line-height: 24px;padding:10px;width: 100%;}
+
+.all_btn div{ margin-bottom: 30px; padding-left: 0; padding-right: 0; }
+.all_btn .button.btn_return:hover{ background-color: #fff; }
+.confirm_two{ z-index: 50; }
+.all_btn_en div{ margin-bottom: 30px; padding-left: 0; padding-right: 0; }
+
+.invoice_de1{color:#27CB96;font-size:12px;text-align:center;padding-top:6px;}
+
+.invoiceSuccess{background-color: #fff; padding-top: 100px;  }
+.invoiceFail{ background-color: #fff;  padding-top: 100px; }
+ 
+.invoiceSuccess_in.out{ border: 1px solid #ddd; border-radius: 10px 10px 10px 10px; margin-bottom: 15px;}
+.invoiceSuccess_in header{ padding:10px 0 0;  }
+.invoiceSuccess ul{ border-top: 1px dashed lightgray;}
+.invoiceSuccess ul.nodash{ border-top: none;}
+.invoiceSuccess ul li{  line-height: 40px;}
+.invoiceSuccess p{ padding:0; margin-bottom:0; font-size: 10px;}
+.lead{ margin-top: 180px;  margin-left: -45px;}
+.lead1{margin-top: 20px;color:#333333;font-size:14px;}
+.Score{width:300px;height:40px;border-radius: 100px;background:#E14E2E;color:#fff;text-align:center;line-height: 38px;}
+.lead2{margin-left: 90px;margin-top: 100px;}
+
+
+/* .btn{ 
+	box-sizing: border-box;   
+    color: #fff;
+    font-size: 14px;
+    font-size: 1.4rem;
+    height: 50px;
+    line-height: 38px;
+    margin: 0 auto;
+    outline: none;
+    text-transform: uppercase;
+    -webkit-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+    padding: 5px 0;
+ }
+ */
+
+
+
+ .tipsContainer{ padding-top: 15px; padding-bottom: 15px;}
+
+ .invoiceFail .box{ background-color: #fff; }
+ .invoiceFail .box p .tel{ color: #b89f7a; cursor: pointer; }
+@media (max-width:640px) {
+	one
+	.invoice .box .container{ background: #CCCCCC ; }
+	.invoice .box .container1{ background: #ffffff ; }
+	.box .container .con_end{margin-left:-45px;margin-right:-20px;}
+	#main h1{ margin-bottom: 0; }
+	.loadingContainer{ top: -40px; }
+	.invoice_down{ width:250px;border-radius:5px;}
+	.confirm{ width: 100%;
+    bottom: 0;
+    margin-left: 0px;
+    border-radius: 0; }
+	.invoice_img{ height: 100px; width: auto; margin:20px auto 5px;}
+	.invoice_down p{ margin:0; font-size: 16px; }
+	.invoiceIndex .invoice_down p:last-child{ margin-bottom: 20px; }
+	.invoiceIndex .invoice label{ line-height: 24px; font-size: 14px; }
+	.listimg{background: url(../images/icon_weixuanze.svg) 0 0 no-repeat;}
+	two
+	.invoiceWrite .box,.invoiceSuccess .box{ padding-bottom: 60px;}
+	.add_form{width: 66%;}
+	.invoiceWrite .button_confirm{ 
+	margin-top: 15px; 
+	background: #DDDDDD;
+	border-radius: 100px;
+	width:300px;
+	height:40px;
+	color:#fff;}
+
+
+	寮瑰嚭
+	.confirm{ bottom:0;top:30%; width:100%;height:500px;border-radius:0;margin-left: -1px;}
+	.confirm1{ bottom:0;top:30%; width:100%;height:500px;border-radius:0;margin-left: -1px;}
+	.invoice_down h3{ padding:15px 0 5px 0; margin-bottom: 0; }
+	.invoice_down{ padding:0 15px; }
+	.all_btn div .btn_return{}
+	.all_btn div .btn_confirm{margin-top:20px;}
+	.leadp1{width: 175px;
+    margin-top: -235px;
+    margin-left: 84px;
+    font-size: 22px;
+    color: #FFFFFF;}
+    .leadp2{width: 100px;
+    height: 50px;
+    margin-top: 115px;
+    margin-left: 235px;}
+	 .Suc_btn .btn{ width: 48%; }
+	.invoiceSuccess_in .fl{ font-size: 1em; color:#999999;}
+	.invoiceSuccess_in .fl1{ font-size: 1em; color:#333333;}
+	.invoiceSuccess_in .fr{ font-size: 1em; color:#333333;margin-left:100px;line-height: 15px;}
+	ul li{line-height: 15px;}
+	.invoiceSuccess_in ul{ padding:5px 0; }
+	.end_btn{width:100%;float:left;}
+	.Suc_btn .btn{ height: 50px; line-height: 25px;width:150px;  border-radius: 100px;}
+    .Suc_btn .sendEmail{width:35%;height: 40px; line-height: 38px;margin-left:10%;border: 2px solid #E6E6E6;color:#333333;margin-top:30px;}
+    .Suc_btn .download{width:35%;height: 40px; line-height: 38px;float:right;margin-right: 10%;border: 2px solid #E6E6E6;color:#333333;margin-top:30px;}
+    .Suc_btn img{margin-top:5px;float: left;margin-left: 10px;}
+    .Suc_btn .se{margin-right: 10px;height: 35px;line-height: 30px;}
+    .weixin{color: #E14E2E;
+    font-size: 1em;
+    width: 100%;
+    text-align: center;
+    height: 50px;
+    background: #ffffff;
+    line-height: 48px;}
+   .Suc_btn .btn:nth-child(1){  border-color:#E6E6E6;color:#333333;  }
+	.invoiceFail{ padding-top: 40px; }
+	.invoiceFail .box{padding:60px 0 0;}
+	.invoiceIndex .box{ padding-bottom: 0; }
+
+	
+	.noticeCon{ position: absolute; width: 96%; right: 2%; top: 59px; font-size: 14px; padding:10px 0;}
+	.noticeCon:after{ position: absolute; content: ""; width:15px; height: 10px; background: url(../images/in_icon02.png) 0 0 no-repeat; background-size: contain; top: -8px; right: 5px;}
+	.noticeMain{ padding:0 5%; }
+	.noticeCon p{ line-height: 30px; margin:0;}
+	.noticeCon .noticeConHd{ text-align: center; line-height: 35px; font-size: 16px;}
+	
+	.blockScore{display:none;}
+}
+
+@media (max-width:374px) {
+	.invoiceWrite p,.invoice input,.add_form{ font-size: 12px!important; }
+	.invoice_down p{ font-size: 12px; }
+	.invoiceSuccess_in p{ font-size: 12px;     font-weight: bold;}
+	.invoiceSuccess_in header{ padding:15px 0 20px;  }
+	.invoiceSuccess_in ul li{ height: 34px; line-height: 40px;}
+	.Suc_btn{ padding-bottom: 15px; padding-top: 8px; }
+	
+	.noticeCon{ position: absolute; width: 96%; right: 2%; top: 59px; border-radius: 5px; color: #fff; font-size: 12px; padding:10px 0;}
+	.noticeCon:after{ position: absolute; content: ""; width:15px; height: 10px; background: url(../images/in_icon02.png) 0 0 no-repeat; background-size: contain; top: -9px; right: 10px;}
+	.noticeMain{ padding:0 5%; }
+	.noticeCon p{ line-height: 25px; margin:0;}
+	.noticeCon .noticeConHd{ text-align: center; line-height: 30px; font-size: 14px;}
+	
+}
+
+
+
+ */

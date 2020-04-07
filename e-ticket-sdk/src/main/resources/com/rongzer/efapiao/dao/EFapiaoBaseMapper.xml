@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rongzer.efapiao.dao.EFapiaoBaseMapper">
+    <!-- 获取开票内容 -->
+    <select id="getInvoiceContentList" resultType="map">
+		SELECT CONTENT_ID,
+			CONTENT_CODE,
+			CONTENT_NAME_CN,
+			CASE WHEN TAXRATE = 'E00499'
+			THEN
+				-1
+			ELSE
+				B.ITEM_NAME / 100.0
+			END TAXRATE,
+			CASE WHEN SMALL_TAXRATE = 'E00499'
+			THEN
+				-1
+			ELSE
+				C.ITEM_NAME / 100.0
+				END SMALL_TAXRATE
+			FROM
+				T_INVOICE_CONTENT A
+			INNER JOIN
+				R_BASE_DICT_ITEM B
+			ON
+				B.ITEM_CODE=A.TAXRATE
+			INNER JOIN
+				R_BASE_DICT_ITEM C
+			ON
+				C.ITEM_CODE=A.SMALL_TAXRATE
+	</select>
+
+    <!-- 获取货品信息 -->
+    <select id="getGoodsInfoList" resultType="map">
+		SELECT
+			A.GOODS_ID,
+			A.GOODS_CODE,
+			A.GOODS_NAME_CN,
+			A.GOODS_NAME_EN,
+			A.GROUP_ID,
+			A.CONTENT_ID
+		FROM
+			T_GOODS_INFO A
+		INNER JOIN
+			T_GOODS_GROUP_INFO B
+		ON
+			A.GROUP_ID = B.GROUP_ID
+		WHERE
+			A.IS_DELETE = 0
+		AND
+			B.IS_DELETE = 0
+	</select>
+
+
+    <select id="getPaymentList" resultType="map">
+		SELECT *
+		FROM T_PAYMENT_INFO
+		WHERE IS_DELETE = '0'
+		AND IS_USED = 'D00002'
+		AND CAN_INVOICE='E00102'
+	</select>
+
+	<select id="getStroeInfoList" resultType="map">
+		SELECT
+			A.STORE_ID,
+			A.STORE_NO,
+			A.STORE_NAME_CN,
+			A.STORE_EMAIL,
+			A.STORE_TYPE,
+			B.TAXPAYER_ID,
+			B.TAXPAYER_IDENTIFY_NO,
+			B.TAXPAYER_NAME_CN,
+			B.TAXPAYER_ADDRESS,
+			B.TAXPAYER_PHONE,
+			B.TAXPAYER_BANK,
+			B.TAXPAYER_ACCOUNT,
+			B.INVOICE_LIMIT_AMOUNT,
+			B.TAXPAYER_TYPE,
+			B.PLATFORM_TYPE,
+			B.PLATFORM_CODE,
+			B.REGISTRATION_CODE,
+			B.AUTHORIZATION_CODE,
+			B.ISSUE,
+			B.SKY,
+			B.FHR
+		FROM
+			T_STORE_INFO A
+		INNER JOIN T_TAXPAYER_INFO B ON B.TAXPAYER_ID = A.TAXPAYER_ID
+		WHERE
+			A.IS_DELETE = 0
+		AND
+			B.IS_DELETE = 0
+		AND B.IS_EFAPIAO = 'E00102'
+	</select>
+
+	<select id="getGroupInfoList" resultType="map">
+		SELECT
+			GROUP_ID,
+			PARENT_GROUP_ID,
+			GROUP_CODE,
+			GROUP_NAME_CN,
+			GROUP_NAME_EN,
+			CONTENT_ID
+		FROM
+			T_GOODS_GROUP_INFO
+		WHERE
+			IS_DELETE = 0
+	</select>
+
+	<select id="getTaxpayerInfoList" resultType="map">
+		SELECT
+			TAXPAYER_ID,
+			TAXPAYER_PROVINCE,
+			TAXPAYER_CITY,
+			TAXPAYER_IDENTIFY_NO,
+			TAXPAYER_NAME_CN,
+			TAXPAYER_NAME_EN,
+			TAXPAYER_ADDRESS,
+			TAXPAYER_PHONE,
+			TAXPAYER_BANK,
+			TAXPAYER_ACCOUNT,
+			TAXPAYER_TYPE,
+			INVOICE_LIMIT_AMOUNT,
+			IS_EFAPIAO,
+			PLATFORM_CODE,
+			REGISTRATION_CODE,
+			AUTHORIZATION_CODE,
+			PLATFORM_TYPE
+		FROM T_TAXPAYER_INFO
+		WHERE IS_DELETE = '0'
+	</select>
+</mapper>

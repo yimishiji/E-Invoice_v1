@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rongzer.efapiao.dao.InvoiceMapper">
+	<parameterMap type="com.rongzer.efapiao.model.InvoiceOrder" id="InvoiceOrder">
+		<parameter property="ORDER_ID" />
+		<parameter property="INVOICE_STATUS" />
+		<parameter property="INVOICE_TYPE" />
+		<parameter property="PARENT_ORDER_ID" />
+		<parameter property="IS_MANUAL" />
+		<parameter property="PURCHASER_NAME" />
+		<parameter property="PURCHASER_EMAIL" />
+		<parameter property="PURCHASER_ID" />
+		<parameter property="PURCHASER_MOBILE" />
+		<parameter property="PURCHASER_ADDRESS" />
+		<parameter property="PURCHASER_TEL" />
+		<parameter property="PURCHASER_BANK_ACCOUNT" />
+		<parameter property="ADD_USER" />
+		<parameter property="ADD_TIME" />
+		<parameter property="UPDATE_USER" />
+		<parameter property="UPDATE_TIME" />
+		<parameter property="IS_DELETE" />
+		<parameter property="TAXPAYER_ID" />
+		<parameter property="INVOICE_DETAIL_TYPE" />
+		<parameter property="INVOICE_WRITE_TYPE" />
+		<parameter property="INVOICE_TRADE_TYPE" />
+		<parameter property="TOTAL_AMOUNT" />
+	</parameterMap>
+	<parameterMap type="com.rongzer.efapiao.model.TransactionRelation" id="TransactionRelation">
+		<parameter property="ID" />
+		<parameter property="ORDER_ID" />
+		<parameter property="TRANSACTION_NUMBER" />
+		<parameter property="ADD_USER" />
+		<parameter property="ADD_TIME" />
+		<parameter property="UPDATE_USER" />
+		<parameter property="UPDATE_TIME" />
+		<parameter property="IS_DELETE" />
+	</parameterMap>
+	<parameterMap type="sajt.shdzfp.sl.model.FPKJXX_FPTXXContent" id="InvoiceContet">
+		<parameter property="FPQQLSH" />
+		<parameter property="DSPTBM" />
+		<parameter property="NSRSBH" />
+		<parameter property="NSRMC" />
+		<parameter property="SWJG_DM" />
+		<parameter property="DKBZ" />
+		<parameter property="PYDM" />
+		<parameter property="KPXM" />
+		<parameter property="BMB_BBH" />
+		<parameter property="XHF_NSRSBH" />
+		<parameter property="XHFMC" />
+		<parameter property="XHF_DZ" />
+		<parameter property="XHF_DH" />
+		<parameter property="XHF_YHZH" />
+		<parameter property="GHFMC" />
+		<parameter property="GHF_NSRSBH" />
+		<parameter property="GHF_SF" />
+		<parameter property="GHF_DZ" />
+		<parameter property="GHF_DH" />
+		<parameter property="GHF_GDDH" />
+		<parameter property="GHF_SJ" />
+		<parameter property="GHF_EMAIL" />
+		<parameter property="GHFQYLX" />
+		<parameter property="GHF_YHZH" />
+		<parameter property="HY_DM" />
+		<parameter property="HY_MC" />
+		<parameter property="KPY" />
+		<parameter property="SKY" />
+		<parameter property="FHR" />
+		<parameter property="KPRQ" />
+		<parameter property="KPLX" />
+		<parameter property="YFP_DM" />
+		<parameter property="YFP_HM" />
+		<parameter property="CZDM" />
+		<parameter property="QD_BZ" />
+		<parameter property="QDXMMC" />
+		<parameter property="CHYY" />
+		<parameter property="TSCHBZ" />
+		<parameter property="KPHJJE" />
+		<parameter property="HJBHSJE" />
+		<parameter property="HJSE" />
+		<parameter property="BZ" />
+		<parameter property="INVOICE_LIMIT_AMOUNT" />
+		<parameter property="REGISTRATION_CODE" />
+		<parameter property="ORDER_ID" />
+		<parameter property="AUTHORIZATION_CODE" />
+		<parameter property="INVOICE_ID" />
+		<parameter property="NOWTIME" />
+		<parameter property="INVOICE_TIME" />
+		<parameter property="BILLING_DATE" />
+		<parameter property="INVOICE_NUMBER" />
+		<parameter property="INVOICE_CODE" />
+		<parameter property="INVOICE_URL" />
+	</parameterMap>
+	<parameterMap type="sajt.shdzfp.sl.model.FPKJXX_XMXXContent" id="InvoiceDetail">
+		<parameter property="XMMC" />
+		<parameter property="XMDW" />
+		<parameter property="GGXH" />
+		<parameter property="XMSL" />
+		<parameter property="HSBZ" />
+		<parameter property="XMDJ" />
+		<parameter property="FPHXZ" />
+		<parameter property="SPBM" />
+		<parameter property="ZXBM" />
+		<parameter property="YHZCBS" />
+		<parameter property="LSLBS" />
+		<parameter property="ZZSTSGL" />
+		<parameter property="KCE" />
+		<parameter property="XMJE" />
+		<parameter property="SL" />
+		<parameter property="SE" />
+		<parameter property="INVOICE_DETAIL_ID" />
+		<parameter property="INVOICE_ID" />
+		<parameter property="NOWTIME" />
+	</parameterMap>
+	
+    <insert id="saveOrder" parameterMap="InvoiceOrder">
+		INSERT INTO T_INVOICE_ORDER(
+			ORDER_ID,
+			INVOICE_STATUS,
+			INVOICE_TYPE,
+			PARENT_ORDER_ID,
+			IS_MANUAL,
+			IS_DELETE,
+			ADD_USER,
+			ADD_TIME,
+			UPDATE_USER,
+			INVOICE_TRADE_TYPE,
+			INVOICE_DETAIL_TYPE,
+			INVOICE_WRITE_TYPE,
+			UPDATE_TIME
+		)VALUES(
+			#{ORDER_ID},
+			#{INVOICE_STATUS},
+			#{INVOICE_TYPE},
+			#{PARENT_ORDER_ID},
+			#{IS_MANUAL},
+			#{IS_DELETE},
+			#{ADD_USER},
+			#{ADD_TIME},
+			#{UPDATE_USER},
+			#{INVOICE_TRADE_TYPE},
+			#{INVOICE_DETAIL_TYPE},
+			#{INVOICE_WRITE_TYPE},
+			#{UPDATE_TIME}
+		)
+	</insert>
+
+    <update id="updateOrder" parameterType="map">
+		UPDATE T_INVOICE_ORDER
+		SET
+			INVOICE_STATUS = #{INVOICE_STATUS},
+			INVOICE_TYPE = #{INVOICE_TYPE},
+			PARENT_ORDER_ID = #{PARENT_ORDER_ID},
+			IS_DELETE = #{IS_DELETE},
+			PURCHASER_NAME = #{PURCHASER_NAME},
+			PURCHASER_EMAIL = #{PURCHASER_EMAIL},
+			PURCHASER_MOBILE = #{PURCHASER_MOBILE},
+			PURCHASER_ID = #{PURCHASER_ID},
+			PURCHASER_ADDRESS = #{PURCHASER_ADDRESS},
+			PURCHASER_TEL = #{PURCHASER_TEL},
+			PURCHASER_BANK_ACCOUNT = #{PURCHASER_BANK_ACCOUNT},
+			TAXPAYER_ID = #{TAXPAYER_ID}
+		WHERE ORDER_ID= #{ORDER_ID}
+	</update>
+
+    <select id="getOrder" resultType="map">
+		SELECT * FROM T_INVOICE_ORDER WHERE ORDER_ID = #{ORDER_ID} AND IS_DELETE = 0
+	</select>
+
+    <insert id="saveRelation" parameterMap="TransactionRelation">
+		INSERT INTO T_INVOICE_TRANACTION_RELATION(
+			ID,
+			ORDER_ID,
+			TRANSACTION_NUMBER,
+			IS_DELETE,
+			ADD_USER,
+			ADD_TIME,
+			UPDATE_USER,
+			UPDATE_TIME
+		)VALUES(
+			#{ID},
+			#{ORDER_ID},
+			#{TRANSACTION_NUMBER},
+			#{IS_DELETE},
+			#{ADD_USER},
+			#{ADD_TIME},
+			#{UPDATE_USER},
+			#{UPDATE_TIME}
+		)
+	</insert>
+	<select id="getTransRelation" parameterType="string" resultType="map">
+		SELECT
+			ORDER_ID,
+			TRANSACTION_NUMBER
+		FROM T_INVOICE_TRANACTION_RELATION
+		where ORDER_ID = #{ORDER_ID}
+	</select>
+    <select id="getRelation" resultType="map">
+		SELECT * FROM T_INVOICE_TRANACTION_RELATION WHERE TRANSACTION_NUMBER = #{TRANSACTION_NUMBER} AND IS_DELETE = 0
+	</select>
+
+
+    <insert id="saveInvoice" parameterMap="InvoiceContet">
+        INSERT INTO T_INVOICE_INFO (
+	        INVOICE_ID,
+	        ORDER_ID,
+	        INVOICE_REQUEST_SERIALNUMBER,
+	        INVOICE_CODE,
+	        INVOICE_NUMBER,
+	        ORIGINAL_INVOICE_CODE,
+	        ORIGINAL_INVOICE_NUMBER,
+	        ISSUER,
+	        PAYEE,
+	        REVIEW_CLERK,
+	        INVOICE_TIME,
+	        INVOICE_URL,
+	        TOTAL_AMOUNT,
+	        TOTAL_TAX_AMOUNT,
+	        TOTAL_AMOUNT_WITHOUT_TAX,
+	        IS_DELETE,
+	        ADD_USER,
+	        ADD_TIME,
+	        UPDATE_USER,
+	        UPDATE_TIME
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+	            #{item.INVOICE_ID},
+	            #{item.ORDER_ID},
+	            #{item.FPQQLSH},
+	            #{item.INVOICE_CODE},
+	            #{item.INVOICE_NUMBER},
+	            #{item.YFP_DM},
+	            #{item.YFP_HM},
+	            #{item.KPY},
+	            #{item.SKY},
+	            #{item.FHR},
+	            #{item.INVOICE_TIME},
+	            #{item.INVOICE_URL},
+	            #{item.KPHJJE},
+	            #{item.HJSE},
+	            #{item.HJBHSJE},
+	            '0',
+	            '',
+	            #{item.NOWTIME},
+	            '',
+	            #{item.NOWTIME}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateInvoice" parameterMap="InvoiceContet">
+        UPDATE T_INVOICE_INFO
+        SET INVOICE_CODE = #{INVOICE_CODE},
+            INVOICE_NUMBER = #{INVOICE_NUMBER},
+            ORIGINAL_INVOICE_CODE = #{YFP_DM},
+            ORIGINAL_INVOICE_NUMBER = #{YFP_HM},
+            INVOICE_URL = #{INVOICE_URL},
+            TOTAL_TAX_AMOUNT = #{HJSE},
+            TOTAL_AMOUNT_WITHOUT_TAX = #{HJBHSJE},
+            BILLING_DATE = #{KPRQ}
+        WHERE INVOICE_ID = #{INVOICE_ID}
+    </update>
+
+    <insert id="saveInvoiceDetail" parameterMap="InvoiceDetail">
+        INSERT INTO T_INVOICE_DETAIL (
+        INVOICE_DETAIL_ID,
+        INVOICE_ID,
+        ITEM_TITLE,
+        INVOICE_LINE_NATURE,
+        ITEM_NUMBER,
+        ITEM_UNIT_PRICE,
+        ITEM_AMOUNT,
+        COMMODITY_CODE,
+        TAX_RATE,
+        AMOUNT_WITHOUT_TAX,
+        TAX_AMOUNT,
+        IS_DELETE,
+        ADD_USER,
+        ADD_TIME,
+        UPDATE_USER,
+        UPDATE_TIME
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.INVOICE_DETAIL_ID},
+            #{item.INVOICE_ID},
+            #{item.XMMC},
+            #{item.FPHXZ},
+            #{item.XMSL},
+            #{item.XMDJ},
+            #{item.XMJE},
+            #{item.SPBM},
+            #{item.SL},
+            #{item.XMJE},
+            #{item.SE},
+            '0',
+            '',
+            #{item.NOWTIME},
+            '',
+            #{item.NOWTIME}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateInvoiceDetail" parameterType="list">
+	    <foreach collection="list" item="item" separator=";">
+	        UPDATE T_INVOICE_DETAIL
+	        SET ITEM_UNIT_PRICE = #{item.XMDJ},
+	        	AMOUNT_WITHOUT_TAX = #{item.XMJE},
+	            TAX_AMOUNT = #{item.SE}
+	        WHERE INVOICE_ID = #{item.INVOICE_ID}
+	        AND COMMODITY_CODE = #{item.SPBM}
+	        AND CONVERT(ITEM_AMOUNT, DECIMAL(18, 2)) = CONVERT(#{item.XMJE}, DECIMAL(18, 2))+ CONVERT(#{item.SE}, DECIMAL(18, 2))
+	    </foreach>
+    </update>
+	
+	
+	<!-- 根据交易流水号查询订单数量-->
+	<select id="getTrans" parameterType="list" resultType="string">
+		SELECT
+		    TRANSACTION_NUMBER
+		FROM
+			T_TRANSACTION_INFO
+	    WHERE  TRANSACTION_NUMBER in
+	    <foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+		group by TRANSACTION_NUMBER
+	</select>
+
+	<select id="getTaxpayerStore" parameterType="list" resultType="map">
+		select
+		A.TAXPAYER_ID,
+		(SELECT TAXPAYER_NAME_CN FROM T_TAXPAYER_INFO B WHERE A.TAXPAYER_ID = B.TAXPAYER_ID ) TAXPAYER_NAME_CN,
+		GROUP_CONCAT(STORE_NO) STORES  from T_STORE_INFO A where A.STORE_NO in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+		group by A.TAXPAYER_ID
+	</select>
+
+	<select id="listTransOrders" parameterType="list" resultType="string">
+		SELECT
+		TRANSACTION_NUMBER
+		FROM
+		T_INVOICE_TRANACTION_RELATION
+		WHERE  TRANSACTION_NUMBER in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+		group by TRANSACTION_NUMBER
+	</select>
+
+	<insert id="insertInvoiceOrder" parameterType="map">
+		INSERT INTO T_INVOICE_ORDER(ORDER_ID,INVOICE_STATUS,INVOICE_TYPE,
+		PARENT_ORDER_ID,IS_MANUAL,PURCHASER_NAME,
+		PURCHASER_EMAIL,PURCHASER_ID,
+		PURCHASER_MOBILE,PURCHASER_ADDRESS,PURCHASER_TEL,
+		PURCHASER_BANK_ACCOUNT,
+		ADD_USER,ADD_TIME,IS_DELETE)
+		values (#{ORDER_ID,jdbcType=VARCHAR},#{INVOICE_STATUS,jdbcType=VARCHAR},#{INVOICE_TYPE,jdbcType=VARCHAR},
+		#{PARENT_ORDER_ID,jdbcType=VARCHAR},#{IS_MANUAL,jdbcType=VARCHAR},#{PURCHASER_NAME,jdbcType=VARCHAR},
+		#{PURCHASER_EMAIL,jdbcType=VARCHAR},#{PURCHASER_ID,jdbcType=VARCHAR},
+		#{PURCHASER_MOBILE,jdbcType=VARCHAR},#{PURCHASER_ADDRESS,jdbcType=VARCHAR},#{PURCHASER_TEL,jdbcType=VARCHAR},
+		#{PURCHASER_BANK_ACCOUNT,jdbcType=VARCHAR},
+		#{ADD_USER,jdbcType=VARCHAR},#{ADD_TIME,jdbcType=VARCHAR},#{IS_DELETE,jdbcType=VARCHAR})
+	</insert>
+
+	<insert id="insertInvoiceOrderTrans" parameterType="list">
+		INSERT INTO T_INVOICE_TRANACTION_RELATION
+			(ID, ORDER_ID, TRANSACTION_NUMBER, ADD_USER,ADD_TIME,IS_DELETE)
+			VALUES
+		<foreach collection ="list" item="item" index= "index" separator =",">
+			(
+			#{item.ID,jdbcType=VARCHAR}, #{item.ORDER_ID,jdbcType=VARCHAR},
+		    #{item.TRANSACTION_NUMBER,jdbcType=VARCHAR},
+		    #{item.ADD_USER,jdbcType=VARCHAR},
+		    #{item.ADD_TIME,jdbcType=VARCHAR}, #{item.IS_DELETE,jdbcType=VARCHAR}
+		   )
+        </foreach >
+	</insert>
+	<!-- 查询需要下载的发票信息 -->
+	<select id="getFileBack" resultType="map">
+		SELECT * FROM T_INVOICE_INFO WHERE IS_BACKUP IS NULL AND LENGTH(INVOICE_CODE)>0
+	</select>
+	<!-- 更新发票数据状态 -->
+	<update id="updateInvoiceStatus" parameterType="map">
+		UPDATE T_INVOICE_INFO
+		SET IS_BACKUP = 'D00002',
+			UPDATE_TIME = #{UPDATE_TIME}
+		WHERE INVOICE_ID = #{INVOICE_ID}
+	</update>
+	<!-- 保存文件关联信息 -->
+	<insert id="addFileInfo" parameterType="map">
+		INSERT INTO R_COM_FILE_INFO(
+			FILE_ID,
+			RELATIVE_PATH,
+			REAL_FILE_NAME,
+			FILE_NAME,
+			FILE_TYPE,
+			DESCRIPTION,
+			UPLOAD_TIME,
+			OPER_ID,
+			BIZ_ID
+		)VALUES(
+			#{FILE_ID},
+			#{RELATIVE_PATH},
+			#{REAL_FILE_NAME},
+			#{FILE_NAME},
+			#{FILE_TYPE},
+			#{DESCRIPTION},
+			#{UPLOAD_TIME},
+			#{OPER_ID},
+			#{BIZ_ID}
+		)
+	</insert>
+	<!-- 查询需要反补的发票数据 -->
+	<select id="getInvoiceApply" resultType="map">
+		SELECT A.*,
+			   B.INVOICE_REQUEST_SERIALNUMBER,
+			   B.INVOICE_ID,
+			   B.ORIGINAL_INVOICE_CODE,
+			   B.ORIGINAL_INVOICE_NUMBER,
+			   C.TAXPAYER_IDENTIFY_NO,
+			   C.REGISTRATION_CODE,
+			   C.AUTHORIZATION_CODE,
+			   C.PLATFORM_CODE
+		FROM T_INVOICE_ORDER A
+		INNER JOIN T_INVOICE_INFO B ON A.ORDER_ID = B.ORDER_ID
+		INNER JOIN T_TAXPAYER_INFO C ON A.TAXPAYER_ID = C.TAXPAYER_IDENTIFY_NO 
+		WHERE
+		   (INVOICE_STATUS = 'E00502'
+		OR INVOICE_STATUS = 'E00503'
+		OR INVOICE_STATUS = 'E00504')
+		AND A.ADD_TIME>=#{downLoadDate}
+	</select>
+	<select id="selectInvoiceInfoByOrderId" parameterType="String" resultType="map">
+		SELECT
+			C.INVOICE_STATUS,
+			C.ORDER_ID,
+			C.INVOICE_TYPE,
+			C.PURCHASER_NAME,
+			C.PURCHASER_EMAIL,
+			C.PURCHASER_ID,
+			C.PURCHASER_MOBILE,
+			C.PURCHASER_ADDRESS,
+			C.PURCHASER_TEL,
+			C.PURCHASER_BANK_ACCOUNT,
+			F.TAXPAYER_ID,
+			F.TAXPAYER_IDENTIFY_NO,
+			F.TAXPAYER_NAME_CN,
+			F.TAXPAYER_ADDRESS,
+			F.TAXPAYER_PHONE,
+			F.TAXPAYER_BANK,
+			F.TAXPAYER_ACCOUNT,
+			E.INVOICE_ID,
+			E.INVOICE_CODE,
+			E.INVOICE_NUMBER,
+			E.TOTAL_AMOUNT,
+			E.TOTAL_AMOUNT_WITHOUT_TAX,
+			E.TOTAL_TAX_AMOUNT,
+			E.INVOICE_URL,
+			E.BILLING_DATE,
+			E.INVOICE_TIME,
+			g.TRANSACTION_NUMBER,
+			g.TRANSACTION_DATETIME
+		FROM
+			T_INVOICE_ORDER C
+		INNER JOIN T_TAXPAYER_INFO F ON C.TAXPAYER_ID = F.TAXPAYER_IDENTIFY_NO
+		INNER JOIN T_INVOICE_INFO E ON C.ORDER_ID = E.ORDER_ID
+		INNER JOIN (
+			SELECT
+				c1.TRANSACTION_ID,
+				c1.TRANSACTION_NUMBER,
+				c1.TRANSACTION_DATETIME,
+				d1.ORDER_ID
+			FROM
+				t_transaction_info c1,
+				t_invoice_tranaction_relation d1
+			WHERE
+				c1.transaction_NUMber = d1.TRANSACTION_NUMBER
+		) g ON g.ORDER_ID = C.ORDER_ID
+		LEFT JOIN T_INVOICE_ORDER D ON D.PARENT_ORDER_ID = C.ORDER_ID
+		WHERE
+			C.INVOICE_TYPE = 'E00601'
+		AND C.ORDER_ID = #{PARAM}
+		ORDER BY E.INVOICE_NUMBER DESC
+	</select>
+	<update id="updateOrderById" parameterType="map">
+		UPDATE T_INVOICE_ORDER SET INVOICE_STATUS  = #{INVOICE_STATUS} WHERE ORDER_ID=#{ORDER_ID}
+	</update>
+
+	<select id="getRelationOrder" parameterType="map" resultType="map">
+		SELECT count(case invoice_type when 'E00601' then 1 end) BLUE_COUNT,
+		 count(case invoice_type when 'E00602' then 1 end) RED_COUNT
+		 FROM T_INVOICE_TRANACTION_RELATION A,T_INVOICE_ORDER B WHERE
+		 (A.ORDER_ID = B.ORDER_ID or A.ORDER_ID = B.PARENT_ORDER_ID)
+		 AND A.TRANSACTION_NUMBER = #{PICKUPCODE}
+	</select>
+
+	<select id="getForbiddenPickCode" parameterType="map" resultType="map">
+		SELECT EXTRACTED_CODE FROM t_extracted_forbidden WHERE EXTRACTED_CODE = #{extractedCode} and is_delete='0'
+	</select>
+
+	<select id="getTransDate" parameterType="map" resultType="map">
+		SELECT A.TRANSACTION_DATETIME FROM T_TRANSACTION_INFO A,t_invoice_tranaction_relation B
+		 WHERE A.TRANSACTION_NUMBER = B.TRANSACTION_NUMBERTRANSACTION_NUMBER AND A.B.ORDER_ID = #{orderId}
+	</select>
+
+	<select id="getOrderByRequestNum" parameterType="map" resultType="map">
+		select ORDER_ID from t_invoice_info where INVOICE_REQUEST_SERIALNUMBER = #{requestNum}
+	</select>
+	<update id="updateOrderResponseContext" parameterType="map">
+		update t_invoice_order set RESPONSE_CONTENT = #{responseContext} where order_id = #{ORDER_ID}
+	</update>
+
+	<select id="getStoreInfoByStoreNo" parameterType="string" resultType="map">
+		select ALLOWED_INVOICE,TAXPAYER_ID from t_store_info where STORE_NO = #{store_no}
+	</select>
+
+	<select id="getInvoiceDetailByInvoiceId" parameterType="string" resultType="map">
+        select ITEM_UNIT_PRICE price,ITEM_NUMBER num,item_title name from t_invoice_detail where invoice_id=#{invoiceId}
+	</select>
+
+	<select id="getInvoiceInfoByInvoiceId" parameterType="string" resultType="map">
+		SELECT
+			A.INVOICE_REQUEST_SERIALNUMBER FPQQLSH,
+			A.INVOICE_ID DDH,
+			A.INVOICE_CODE FP_DM,
+			A.INVOICE_NUMBER FP_HM,
+			C.TAXPAYER_IDENTIFY_NO NSRSBH,
+			C.AUTHORIZATION_CODE AUTHORIZATION_CODE,
+			C.PLATFORM_CODE DSPTBM,
+			C.REGISTRATION_CODE REGISTRATION_CODE
+		FROM
+			T_INVOICE_INFO A
+		LEFT JOIN T_INVOICE_ORDER B ON A.ORDER_ID = B.ORDER_ID
+		LEFT JOIN T_TAXPAYER_INFO C ON B.TAXPAYER_ID = C.TAXPAYER_IDENTIFY_NO
+		WHERE
+			A.INVOICE_ID = #{invoiceId}
+	</select>
+
+	<select id="getCardIdByTaxpayer" parameterType="string" resultType="map">
+		select CARD_ID from t_card_template where PAYEE = #{taxpayer}
+	</select>
+	
+	<select id="getPdfByInvoiceId" parameterType="string" resultType="map">
+          select CONCAT(RELATIVE_PATH,REAL_FILE_NAME)  PDFURL from r_com_file_info  where BIZ_ID = #{invoiceId}
+	</select>
+
+	<update id="updateInvoiceWeChatStatus" parameterType="map">
+		UPDATE t_invoice_info set WECHAT_STATUS=#{wechatStatus} where invoice_id = #{invoiceId}
+	</update>
+
+	<update id="updateOrdersAuthStatus" parameterType="map">
+		update T_ORDER_INFO
+		set AUTH_STATUS = #{authStatus},AUTH_ORDER_ID = #{authOrderId}
+		WHERE ORDER_ID = #{order_id}
+	</update>
+
+	<update id="updateInvoiceWechatCode" parameterType="map">
+		update T_INVOICE_INFO
+		set CODE = #{code}
+		WHERE INVOICE_ID = #{invoicePk}
+	</update>
+
+	<select id="getCardTemplate" parameterType="string" resultType="map">
+		SELECT APPID,CARD_ID FROM T_CARD_TEMPLATE
+		WHERE IS_DELETE = '0'
+	</select>
+
+	<select id="getInvoiceInfoByOrderId" parameterType="String" resultType="map">
+		SELECT
+		INVOICE_TYPE invoice_type,
+		INVOICE_ID invoice_id,
+	    INVOICE_CODE invoice_code,
+		INVOICE_NUMBER invoice_num,
+		BILLING_DATE billing_date,
+		TOTAL_AMOUNT_WITHOUT_TAX amount_notax,
+		TOTAL_TAX_AMOUNT amount_tax,
+		INVOICE_URL pdf_url
+		FROM T_INVOICE_INFO A,T_INVOICE_ORDER B
+		WHERE A.ORDER_ID = B.ORDER_ID AND A.ORDER_ID =#{ORDER_ID}
+	</select>
+	<select id="getInvoiceDetail" parameterType="String" resultType="map">
+		SELECT
+		COMMODITY_CODE,
+		ITEM_TITLE,
+		ITEM_NUMBER,
+		ITEM_AMOUNT,
+		TAX_RATE,
+		TAX_AMOUNT,
+		ITEM_UNIT_PRICE
+		FROM  T_INVOICE_DETAIL
+		WHERE INVOICE_ID =#{INVOICE_ID}
+	</select>
+
+	<insert id="insertRecord" parameterType="map">
+		insert into t_invoice_callback_record (
+            transaction_num,
+            request_time,
+            request_param,
+            request_status,
+            response
+		)VALUES (
+		#{transaction_num},
+		#{request_time},
+		#{request_param},
+		#{request_status},
+		#{response}
+		)
+	</insert>
+
+	<insert id="insertTask" parameterType="map">
+		insert into t_invoice_callback_task (
+		transaction_num,
+		request_param,
+		success
+		)VALUES (
+		#{transaction_num},
+		#{request_param},
+		#{success}
+		)
+	</insert>
+
+	<update id="updateTask" parameterType="map">
+		update t_invoice_callback_task set success = #{success} where transaction_num = #{transaction_num}
+	</update>
+
+	<select id="getInvoiceCallBackTask" resultType="map">
+		select transaction_num,request_param from t_invoice_callback_task where success = '0'
+	</select>
+	
+</mapper>

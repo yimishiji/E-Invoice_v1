@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+    <!--货品列表 -->
+    <page id="invoiceContent" title="开票内容" js="/webresources/script/validate.js">
+		<jsp id="jsp1">/jsp/rdp/parent.jsp</jsp>
+        <report id="report1" extends="baseListPage.baseReport" pagesize="20" rowselect="multiple-checkbox" dataexport="plainexcel" type="editablelist2">
+			<header>
+				<![CDATA[
+                    <script>
+						function upload(){
+							wx_winpage(ctx+"/jsp/rdp/invoice/invoice-content-import.jsp",{width:'900px',height:'500px'});
+						}
+
+                         function downloadfile(path){
+                            path = encodeURI(path);
+                            window.location.href=path;
+                         }
+	     			</script>
+                ]]>
+			</header>
+            <dataexports filename="开票内容"/>
+            <display>
+                <col column="CONTENT_ID" label="主键" displaytype="hidden"/>
+                <col column="CONTENT_NAME_CN" label="开票内容" align="center">
+                	<inputbox  
+			            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength256(${invalid.isStrLen256})" 
+			            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="CONTENT_CODE" label="商品编码" align="center">
+                	 <inputbox  
+			            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength32(${invalid.isStrLen32})" 
+			            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="TAXRATE" label="普通纳税人税率" align="right" valuestyleproperty="DICT">
+                	<inputbox type="selectbox" jsvalidate="isNotEmpty(${invalid.isnotempty});">
+                        <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}"
+                                value="E004_hasempty"></option>
+                    </inputbox>
+                </col>
+                <col column="SMALL_TAXRATE" label="小额纳税人税率" align="right" styleproperty="disabled=true" valuestyleproperty="DICT">
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(${invalid.isnotempty});">
+                        <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}"
+                                value="E004_hasempty"></option>
+                    </inputbox>
+				</col>
+				<col column="IS_USED" label="是否使用" align="center" valuestyleproperty="DICT">
+                	<inputbox type="selectbox">
+                         <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="D000"></option>
+                     </inputbox>
+                </col>
+            </display>
+            <sql preparedstatement="false">
+                <select>
+                    <value>
+                        <![CDATA[
+							SELECT
+								TC.CONTENT_ID,
+								TC.CONTENT_CODE,
+								TC.CONTENT_NAME_CN,
+								TC.CONTENT_NAME_EN,
+								TC.TAXRATE,
+								TC.SMALL_TAXRATE,
+								TC.IS_USED,
+								TC.ADD_USER,
+								TC.ADD_TIME,
+								TC.UPDATE_USER,
+								TC.UPDATE_TIME,
+								TC.IS_DELETE
+							FROM T_INVOICE_CONTENT TC
+							WHERE TC.IS_DELETE = 0
+							AND {#condition#} 
+						 ]]>
+                    </value>
+                    <condition name="CONTENT_ID" hidden="true">
+						<value><![CDATA[TC.CONTENT_ID = '#data#']]></value>
+					</condition>
+					<condition name="CONTENT_CODE" label="商品编码">
+                        <value><![CDATA[(TC.CONTENT_CODE like '%#data#%')]]></value>
+                    </condition>
+                    <condition name="CONTENT_NAME_CN" label="开票内容">
+                        <value><![CDATA[(TC.CONTENT_NAME_CN like '%#data#%')]]></value>
+                    </condition>
+                </select>
+                <insert>
+                	<params>
+						<param name="CONTENT_ID" value="uuid{}" />
+        				<param name="userId" value="session{LoginUser.loginUserId}" />
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+        			</params>
+        			<value>
+        				INSERT INTO T_INVOICE_CONTENT 
+        				(
+							CONTENT_ID,
+							CONTENT_CODE,
+							CONTENT_NAME_CN,
+							TAXRATE,
+							SMALL_TAXRATE,
+							IS_USED,
+							ADD_USER,
+							ADD_TIME,
+							UPDATE_USER,
+							UPDATE_TIME,
+							IS_DELETE
+						)values(
+							#{CONTENT_ID},
+							@{CONTENT_CODE},
+							@{CONTENT_NAME_CN},
+							@{TAXRATE},
+							@{SMALL_TAXRATE},
+							@{IS_USED},
+							#{userId},
+							#{NOWTIME},
+							#{userId},
+							#{NOWTIME},
+							'0'
+						)
+					</value>
+				</insert>
+				<update>
+        			<params>
+        				<param name="userId" value="session{LoginUser.loginUserId}" />
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+        			</params>
+        			<value>
+        				UPDATE T_INVOICE_CONTENT
+        				SET CONTENT_CODE = @{CONTENT_CODE},
+        					CONTENT_NAME_CN = @{CONTENT_NAME_CN},
+        					IS_USED = @{IS_USED},
+        					TAXRATE = @{TAXRATE},
+        					SMALL_TAXRATE = @{SMALL_TAXRATE},
+        					UPDATE_USER = #{userId},
+							UPDATE_TIME = #{NOWTIME}
+						WHERE CONTENT_ID = @{CONTENT_ID__old}
+        			</value>
+				</update>
+				<delete>
+					<params>
+        				<param name="userId" value="session{LoginUser.loginUserId}" />
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+        			</params>
+        			<value>
+        				UPDATE T_INVOICE_CONTENT
+        				SET IS_DELETE = '1',
+        					UPDATE_USER = #{userId},
+							UPDATE_TIME = #{NOWTIME}
+						WHERE CONTENT_ID = @{CONTENT_ID__old}
+        			</value>
+				</delete>
+            </sql>
+			<buttons>
+				<button name="button4" position="title" label="导入开票内容" styleproperty="class='cls-button'">
+					upload();
+				</button>
+				<button name="btn_add" position="title" label="新增" extends="${add.button.default}"/>
+				<button name="button6" position="title" label="导入模板下载" extends="${wabacus.button.default}" >
+					<imports>
+						<import>com.wabacus.*</import>
+						<import>com.wabacus.config.Config</import>
+					</imports>
+					<dynevent>
+						<![CDATA[
+			        	 String path="ShowReport.wx?ACTIONTYPE=download&serverfilepath=${invoice.dataimportemplatepath}&serverfilename=t_invoice_content.xlsx&newfilename=t_invoice_content.xlsx";
+			        	 return "downloadfile('"+path+"')";
+			        	 ]]>
+					</dynevent>
+				</button>
+			</buttons>
+        </report>
+    </page>
+</applications>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+    <!--货品列表 -->
+    <page id="goodsItems" title="货品列表" js="/webresources/script/validate.js">
+        <report id="report1" interceptor="com.rongzer.efapiao.service.GoodsConditionInterceptor" extends="baseListPage.baseReport" pagesize="20" rowselect="multiple-checkbox" dataexport="plainexcel" type="editablelist">
+			<dataexports filename="货品列表"/>
+            <display>
+                <col column="GOODS_ID" label="货品主键" displaytype="hidden"/>
+                <col column="GOODS_CODE" label="货品编码" align="center">
+                	<inputbox
+			            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength32(${invalid.isStrLen32})"
+			            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="GOODS_NAME_CN" label="货品中文名" align="center">
+                	<inputbox
+			            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength256(${invalid.isStrLen256})"
+			            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="CONTENT_NAME_CN" label="开票内容" align="center">
+				</col>
+                <col column="CONTENT_CODE" label="商品编码" align="center">
+				</col>
+                <col column="IS_USED" label="是否使用" align="center">
+                </col>
+				<col column="CONTENT_ID" label="商品编码" displaytype="hidden"/>
+            </display>
+            <sql preparedstatement="false">
+                <select>
+                    <value>
+                        <![CDATA[
+							SELECT
+								TG.GOODS_ID,
+								TG.GOODS_CODE,
+								TG.GOODS_NAME_EN,
+								TG.GOODS_NAME_CN,
+								TG.GROUP_ID,
+								TIC.CONTENT_ID,
+								TG.IS_USED,
+								TG.ADD_USER,
+								TG.ADD_TIME,
+								TG.UPDATE_USER,
+								TG.UPDATE_TIME,
+								TG.IS_DELETE,
+								TIC.CONTENT_NAME_CN,
+								TIC.CONTENT_CODE
+							FROM
+								T_GOODS_INFO TG
+							LEFT JOIN T_GOODS_GROUP_INFO TGG ON TG.GROUP_ID = TGG.GROUP_ID
+							LEFT JOIN T_INVOICE_CONTENT TIC ON
+							CASE WHEN ISNULL(TG.CONTENT_ID) THEN (TGG.CONTENT_ID = TIC.CONTENT_ID) ELSE (TG.CONTENT_ID = TIC.CONTENT_ID)END
+							WHERE
+								TG.IS_DELETE = '0'
+							AND {#condition#}
+							order by GOODS_CODE asc
+						 ]]>
+                    </value>
+                    <condition name="GROUP_ID" hidden="true">
+						<value><![CDATA[(TG.GROUP_ID = '#data#')]]></value>
+					</condition>
+					<condition name="GROUP_ID_TEMP" hidden="true">
+					</condition>
+					<condition name="GOODS_CODE" label="货品编码">
+						<value><![CDATA[(TG.GOODS_CODE like '%#data#%')]]></value>
+					</condition>
+					<condition name="GOODS_NAME_CN" label="货品中文名">
+						<value><![CDATA[(TG.GOODS_NAME_CN like '%#data#%')]]></value>
+					</condition>
+					<condition name="CONTENT_ID" label="开票内容">
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="biz006" label="label"></option>
+						</inputbox>
+						<value><![CDATA[(TIC.CONTENT_ID = '#data#')]]></value>
+					</condition>
+					<condition name="IS_USED" label="是否使用">
+						<value><![CDATA[(TG.IS_USED = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="D000"></option>
+						</inputbox>
+					</condition>
+                </select>
+				<update pageurl="report{goodsItemEdit.report1}" urlparams="GOODS_ID=@{GOODS_ID}" popupparams="{title:'货品编辑',width:750,height:300}"></update>
+				<delete>
+					<params>
+        				<param name="userId" value="session{LoginUser.loginUserId}" />
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+        			</params>
+        			<value>
+        				UPDATE T_GOODS_INFO
+        				SET IS_DELETE = '1',
+        					UPDATE_USER = #{userId},
+							UPDATE_TIME = #{NOWTIME}
+						WHERE GOODS_ID = @{GOODS_ID__old}
+        			</value>
+				</delete>
+            </sql>
+			<format>
+				<value>
+					<![CDATA[
+						if(null != IS_USED && !"".equals(IS_USED)){
+							if("D00002".equals(IS_USED)){
+								 IS_USED = "是";
+							}else{
+								 IS_USED = "否";
+							}
+						}
+				    ]]>
+				</value>
+			</format>
+
+        </report>
+    </page>
+
+	<page id="goodsItemEdit" title="货品编辑"  js="/webresources/script/validate.js" >
+		<report id="report1" extends="baseEditPage.baseReport">
+			<header>
+				<![CDATA[
+					<script>
+						function refresh(){
+							setTimeout(
+								function(){
+									//刷新报表
+									parent.refreshComponentDisplay("goodsItems","report1",false);
+									art.dialog.close();
+								},1*1000);
+
+							 }
+					</script>
+				]]>
+			</header>
+			<display>
+				<col column="GOODS_ID" label="货品主键" displaytype="hidden" colspan="3"/>
+				<col column="GOODS_CODE" label="货品编码" align="center"/>
+				<col column="GOODS_NAME_CN"  label="货品中文名" align="center"/>
+				<col column="CONTENT_ID" label="开票内容" align="center">
+					<inputbox type="selectbox" displayon="insert|update">
+						<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="biz006" label="label"></option>
+					</inputbox>
+				</col>
+				<col column="CONTENT_CODE" label="商品编码" align="center">
+					<inputbox type="selectbox" displayon="insert|update"  depends="CONTENT_ID" styleproperty="disabled=disabled">
+						<option value="CONTENT_CODE" label="CONTENT_CODE"
+								dataset="@{SELECT CONTENT_CODE FROM T_INVOICE_CONTENT WHERE CONTENT_ID='#CONTENT_ID#'}"></option>
+					</inputbox>
+				</col>
+				<col column="IS_USED" label="是否使用" align="center">
+					<inputbox type="selectbox" defaultvalue="D00002">
+						<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="D000_hasempty"></option>
+					</inputbox>
+				</col>
+			</display>
+			<sql aftersave="refresh" preparedstatement="false">
+				<select>
+					<value>
+						<![CDATA[
+							SELECT
+								TG.GOODS_ID,
+								TG.GOODS_CODE,
+								TG.GOODS_NAME_EN,
+								TG.GOODS_NAME_CN,
+								TG.GROUP_ID,
+								TIC.CONTENT_ID,
+								TG.IS_USED,
+								TG.ADD_USER,
+								TG.ADD_TIME,
+								TG.UPDATE_USER,
+								TG.UPDATE_TIME,
+								TG.IS_DELETE,
+								TIC.CONTENT_NAME_CN,
+								TIC.CONTENT_CODE
+							FROM
+								T_GOODS_INFO TG
+							LEFT JOIN T_GOODS_GROUP_INFO TGG ON TG.GROUP_ID = TGG.GROUP_ID
+							LEFT JOIN T_INVOICE_CONTENT TIC ON
+							CASE WHEN ISNULL(TG.CONTENT_ID) THEN (TGG.CONTENT_ID = TIC.CONTENT_ID) ELSE (TG.CONTENT_ID = TIC.CONTENT_ID)END
+							WHERE
+								TG.IS_DELETE = '0'
+							AND {#condition#}
+						 ]]>
+					</value>
+					<condition name="GOODS_ID" hidden="true">
+						<value><![CDATA[(TG.GOODS_ID = '#data#')]]></value>
+					</condition>
+				</select>
+				<update>
+					<params>
+						<param name="userId" value="session{LoginUser.loginUserId}" />
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+						UPDATE T_GOODS_INFO
+						SET
+						IS_USED = @{IS_USED},
+						CONTENT_ID=@{CONTENT_ID},
+						UPDATE_USER = #{userId},
+						UPDATE_TIME = #{NOWTIME}
+						WHERE GOODS_ID = @{GOODS_ID__old}
+					</value>
+				</update>
+			</sql>
+		</report>
+	</page>
+
+</applications>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaL0ocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+    <!--已开发票-->
+    <page id="fapiaoReport" title="已开发票信息统计" js="/webresources/script/validate.js">
+    	<report id="report1" extends="baseListPage.baseReport" pagesize="20" rowselect="multiple-checkbox" dataexport="plainexcel" type="editablelist2">
+    		<dataexports filename="发票统计"/>
+    		<display>
+    			<col column="PAYMENT_ID" label="主键" displaytype="hidden"/>
+                <col column="PAYMENT_CODE" label="编码" align="center">
+                	<inputbox  
+			            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength32(${invalid.isStrLen32})" 
+			            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="PAYMENT_NAME_CN" label="名称" align="center">
+                	<inputbox  
+			            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength256(${invalid.isStrLen256})" 
+			            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="CAN_INVOICE" label="是否开票" align="center" valuestyleproperty="DICT">
+                	<inputbox type="selectbox" defaultvalue="E00102">
+                         <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E001_hasempty"></option>
+                    </inputbox>
+                </col>
+                <col column="IS_USED" label="是否使用" align="center" valuestyleproperty="DICT">
+                	<inputbox type="selectbox" defaultvalue="D00002">
+                         <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="D000_hasempty"></option>
+                    </inputbox>
+                </col>
+    		</display>
+    	</report>
+    </page>
+</applications>

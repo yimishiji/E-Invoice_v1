@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<!--已开发票查询 -->
+	<page id="invoiceInfo" title="已开发票查询" js="/webresources/script/validate.js">
+		<header>
+			<![CDATA[
+        		<script>
+        			function submitTheApp(orderId,redStatus){
+	        			wx_confirm("确定申请红冲？","系统提示",200,100
+						      ,function okHandler(){
+						         $.ajax({
+									type: "POST",
+									url : "manualInvoice/submitInvoiceApproval.htm",  
+									async: false,
+									data:{ORDER_ID:orderId,RED_STATUS:redStatus},
+									dataType: "json",
+									success: function(data){
+										if(data.suc){
+											wx_success("操作成功");
+	                   						refreshComponentDisplay('invoiceInfo','report1',null);
+										}
+									}
+								});
+						     }
+						    ,null
+						  );
+        			}
+
+        			function watchInvoice(invoiceurl){
+						    window.open(invoiceurl);
+						}
+        		</script>
+        	]]>
+		</header>
+		<report id="report1"  pagesize="10"  dataexport="plainexcel" type="editablelist">
+			<dataexports filename="已开发票查询"/>
+			<display>
+				<col column="ORDER_ID" label="订单号" displaytype="hidden"/>
+				<col column="EXTRACTED_CODE" label="提取码" align="center"/>
+				<col column="TRANSACTION_NUMBER" label="订单号" align="center"/>
+				<col column="TAXPAYER_IDENTIFY_NO" label="公司代码" align="center"/>
+				<col column="TAXPAYER_NAME_CN" label="公司名称" align="center"/>
+				<col column="STORE_NUMBER" label="门店号" align="center"/>
+				<col column="PURCHASER_NAME" label="购方名称" align="center"/>
+				<col column="PURCHASER_EMAIL" label="购方邮箱" align="center"/>
+				<col column="INVOICE_CODE" label="发票代码" align="center"/>
+				<col column="INVOICE_NUMBER"  label="发票号码" align="center" />
+				<col column="INVOICE_TIME" label="开票时间" align="center"/>
+				<col column="TOTAL_AMOUNT" label="税前发票总额" align="right" clickorderby="true"/>
+				<col column="TOTAL_TAX_AMOUNT" label="发票税额" align="right" clickorderby="true"/>
+				<col column="TOTAL_AMOUNT_WITHOUT_TAX" label="税后发票总额" align="right" clickorderby="true"/>
+				<col column="INVOICE_TYPE" label="发票类型" displaytype="hidden"/>
+				<col column="INVOICE_TYPE_NAME" label="发票类型" align="center" clickorderby="true"/>
+				<col column="IS_MANUAL" label="手工开票标志" align="center" clickorderby="true"/>
+				<col column="RED_STATUS_NAME" label="红冲状态" displaytype="hidden"/>
+				<col column="RED_STATUS" label="红冲状态" align="center" clickorderby="true"/>
+				<col column="ISSUER" label="开票人"/>
+				<col column="PAYEE" label="收款人"/>
+				<col column="REVIEW_CLERK" label="复核人"/>
+				<col property="operator" label="操作" width="220px" column="{non-fromdb}" align="center"/>
+				<col column="INVOICE_URL" label="发票url"  displaytype="hidden"/>
+			</display>
+			<sql>
+				<select>
+					<value provider="class{com.rongzer.efapiao.service.InvoiceInfoDataSet}"></value>
+					<condition name="TAXPAYER_QX" keepkeywords="true" hidden="true"></condition>
+					<condition name="TRANSACTION_NUMBER" label="提取码"></condition>
+					<condition name="TRANSACTION_CODE" label="订单号"></condition>
+					<condition name="INVOICE_CODE" label="发票代码"></condition>
+					<condition name="INVOICE_NUMBER" label="发票号码"></condition>
+					<condition name="STORE_NO" label="门店号"></condition>
+					<condition name="TAXPAYER_IDENTIFY_NO" label="公司代码"></condition>
+					<condition name="TAXPAYER_NAME_CN" label="公司名称"></condition>
+					<condition name="INVOICE_TYPE" label="发票类型">
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E006"></option>
+						</inputbox>
+					</condition>
+					<condition name="IS_MANUAL" label="是否手工开票">
+						<inputbox type="selectbox">
+							<option label="--请选择是否手工开票--" value=""></option>
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E001_hasempty"></option>
+						</inputbox>
+					</condition>
+					<condition name="INVOICE_START_TIME" label="开票起始时间">
+						<inputbox type="datepicker" dateformat="yyyy-MM-dd"></inputbox>
+					</condition>
+					<condition name="INVOICE_END_TIME" label="开票截止时间">
+						<inputbox type="datepicker"  dateformat="yyyy-MM-dd"></inputbox>
+					</condition>
+					<condition name="TOTAL_AMOUNT_START" label="含税总金额起">
+					</condition>
+					<condition name="TOTAL_AMOUNT_END" label="含税金额止">
+					</condition>
+				</select>
+			</sql>
+			<format>
+				<value>
+					<![CDATA[
+					    String invoiceHref = "<a href=\"javascript:void(0);\" style='"+rrequest.getAttribute("report1_detail")
+			   					+ "' onclick=\"wx_winpage('ShowReport.wx?PAGEID=invoiceDetail&ORDER_ID="+ORDER_ID+"',{title:'发票明细',width:800,height:500})\">发票清单</a>";
+				   		operator = invoiceHref;
+				   		if("E00601".equals(INVOICE_TYPE)&&("".equals(RED_STATUS)||RED_STATUS==null)){
+					   		RED_STATUS = "未红冲";
+				   			operator +=  "|<a href=\"javascript:void(0);\" style='"+rrequest.getAttribute("report1_submit")
+			   					+ "' onclick=\"submitTheApp('"+ORDER_ID+"','DV0101')\">申请红冲</a>";
+				   		
+				   		}else if("DV0101".equals(RED_STATUS)){
+				   			RED_STATUS = RED_STATUS_NAME;
+				   			operator +=  "|<a href=\"javascript:void(0);\" style='"+rrequest.getAttribute("report1_audit")
+			   					+ "' onclick=\"wx_winpage('ShowReport.wx?PAGEID=UsedInvoiceApproval&report1_ACCESSMODE=update&ORDER_ID="+ORDER_ID
+			   					+ "',{title:'红冲',width:400,height:250})\">"+"红冲</a>";
+				   		}else if("DV0102".equals(RED_STATUS)){
+				   		    RED_STATUS = RED_STATUS_NAME;
+				   		}else if("DV0103".equals(RED_STATUS)){
+				   			RED_STATUS = "未红冲";
+				   		}
+
+		   				operator +=  "|<a href='javascript:void(0)' style='"+rrequest.getAttribute("report1_view")
+			   				+ "' onclick=\"watchInvoice('"+INVOICE_URL+"')\">查看发票</a>";
+			   			operator +=  "|<a href='javascript:void(0)' style='"+rrequest.getAttribute("report1_resend")
+			   				+ "' onclick=\"wx_winpage('ShowReport.wx?PAGEID=MailPage&report1_ACCESSMODE=update&ORDER_ID="+ORDER_ID
+			   				+"&PURCHASER_EMAIL="+PURCHASER_EMAIL
+		   					+ "',{title:'发送邮箱',width:400,height:200})\">重新发送邮箱</a>";
+				    ]]>
+				</value>
+			</format>
+		</report>
+	</page>
+
+
+	<page id="MailPage" title="发送邮箱" js="/webresources/script/validate.js">
+		<jsp id="jsp1">/jsp/rdp/parent.jsp</jsp>
+		<header>
+			<![CDATA[
+			     <script>
+			         function sendMail(){
+			            var dataObj = getEditableReportColValues('MailPage','report1',{PURCHASER_EMAIL:true,ORDER_ID:true});
+			            var purchaseMail = dataObj["PURCHASER_EMAIL"].value;
+			            var orderId = dataObj["ORDER_ID"].value;
+			            if(purchaseMail == null || purchaseMail == ""){
+							wx_alert("邮箱不能为空");
+							return;
+					    }
+						var mailFilter  = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+						if (!mailFilter.test(purchaseMail)){
+							wx_alert("邮箱格式不正确！");
+							return;
+						}
+			             var jsonStr = {};
+							var jsonParam = '{"method":"reSendEmail2","ORDER_ID":"'+orderId+'","PURCHASER_EMAIL":"'+purchaseMail+'"}';
+							jsonStr.serviceNo = "billingService";
+							jsonStr.inputParam = jsonParam;
+								$.ajax({
+								url:ctx+"/rdp/business/testService.htm?NOSESSION_PASS=1",
+								type: "POST",
+								data: jsonStr,
+								dataType:'JSON',
+								success: function(data){
+										if(data.SUC){
+											wx_alert("您的电子发票已经发送到");
+										}else{
+											wx_alert(data.MSG);
+										}
+										artDialog.open.origin.searchReportData("invoiceInfo","report1");
+										art.dialog.close();
+								}
+							});
+			         }
+			     </script>
+            ]]>
+		</header>
+		<report id="report1" type="form">
+			<display>
+				<col column="PURCHASER_EMAIL" label="邮箱" valuestyleproperty="style='width:200px'"/>
+				<col column="ORDER_ID" label="订单编号" displaytype="hidden"/>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[
+							SELECT ORDER_ID,PURCHASER_EMAIL
+							FROM  T_INVOICE_ORDER
+							WHERE {#condition#}
+						 ]]>
+					</value>
+					<condition name="ORDER_ID" hidden="true" label="true">
+						<value><![CDATA[(ORDER_ID = '#data#')]]></value>
+					</condition>
+				</select>
+				<update>
+					update T_INVOICE_ORDER set  PURCHASER_EMAIL = @{PURCHASER_EMAIL} where ORDER_ID = @{ORDER_ID}
+				</update>
+			</sql>
+			<buttons>
+				<button name="senfmail_btn" label="发送" position="title" extends="${wabacus.button.default}">
+                      sendMail();
+				</button>
+				<button name="add_btn" position="" extends="${save.button.default}"/>
+			</buttons>
+		</report>
+	</page>
+
+
+	<!--发票清单明细 -->
+	<page id="invoiceDetail" title="发票清单" js="/webresources/script/validate.js">
+		<header>
+		</header>
+		<report id="report1"  pagesize="5"  dataexport="plainexcel" type="editablelist">
+			<dataexports filename="发票清单"/>
+			<display>
+				<col column="INVOICE_DETAIL_ID" label="主键" displaytype="hidden"/>
+				<col column="COMMODITY_CODE" label="商品代码" align="center"/>
+				<col column="ITEM_TITLE" label="商品名称" align="center"/>
+				<col column="ITEM_NUMBER"  label="商品数量" align="right" />
+				<col column="ITEM_UNIT_PRICE" label="商品单价" align="right"/>
+				<col column="ITEM_AMOUNT" label="金额" align="right" clickorderby="true"/>
+				<col column="TAX_RATE" label="税率" align="right" clickorderby="true"/>
+				<col column="TAX_AMOUNT" label="税额" align="right" clickorderby="true"/>
+				<col column="AMOUNT_WITHOUT_TAX" label="税后金额" align="right" clickorderby="true"/>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[
+							SELECT DETAIL.INVOICE_DETAIL_ID,
+							DETAIL.COMMODITY_CODE,
+							DETAIL.ITEM_TITLE,
+							DETAIL.ITEM_NUMBER,
+							DETAIL.ITEM_UNIT_PRICE,
+							DETAIL.ITEM_AMOUNT,
+							DETAIL.TAX_RATE,
+							DETAIL.TAX_AMOUNT,
+							DETAIL.AMOUNT_WITHOUT_TAX
+							FROM  T_INVOICE_INFO INFO LEFT JOIN
+							T_INVOICE_DETAIL DETAIL ON INFO.INVOICE_ID = DETAIL.INVOICE_ID
+							WHERE DETAIL.IS_DELETE  = '0'
+							AND {#condition#}
+						 ]]>
+					</value>
+					<condition name="ORDER_ID" hidden="true" label="true">
+						<value><![CDATA[(INFO.ORDER_ID = '#data#')]]></value>
+					</condition>
+				</select>
+			</sql>
+		</report>
+	</page>
+
+
+	<!--发票对应的订单信息-->
+	<page id="orderInfo" title="订单信息" js="/webresources/script/validate.js">
+		<header>
+		</header>
+		<report id="report1"  pagesize="5"  dataexport="plainexcel" type="editablelist">
+			<dataexports filename="订单信息"/>
+
+			<interceptor>
+				<preaction>
+					<![CDATA[
+					    String ORDER_ID=rrequest.getStringAttribute("ORDER_ID","");
+                    ]]>
+				</preaction>
+			</interceptor>
+
+			<display>
+				<col column="ORDER_ID" label="订单编号" align="center"/>
+				<col column="TAXPAYER_ID" label="公司代码" align="center"/>
+				<col column="TAXPAYER_NAME_CN" label="公司名称" align="center"/>
+				<col column="PURCHASER_NAME" label="购方名称" align="center"/>
+				<col column="PURCHASER_EMAIL" label="购方邮箱" align="center"/>
+				<col column="PURCHASER_MOBILE"  label="购方电话" align="center" />
+				<col column="PURCHASER_ADDRESS" label="购方地址" align="center"/>
+				<col column="PURCHASER_BANK_ACCOUNT" label="购方银行账户" align="center"/>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[
+							SELECT INVOICE_ORDER.ORDER_ID,
+							INVOICE_ORDER.PURCHASER_NAME,
+							INVOICE_ORDER.PURCHASER_EMAIL,
+							INVOICE_ORDER.PURCHASER_MOBILE,
+							INVOICE_ORDER.PURCHASER_ADDRESS,
+							INVOICE_ORDER.PURCHASER_BANK_ACCOUNT,
+							INVOICE_ORDER.TAXPAYER_ID,
+							(SELECT TAXPAYER_NAME_CN FROM T_TAXPAYER_INFO WHERE TAXPAYER_IDENTIFY_NO = INVOICE_ORDER.TAXPAYER_ID) TAXPAYER_NAME_CN
+							FROM T_INVOICE_ORDER INVOICE_ORDER
+							WHERE INVOICE_ORDER.IS_DELETE = '0'
+							AND {#condition#}
+						 ]]>
+					</value>
+					<condition name="ORDER_ID" hidden="true" label="true">
+						<value><![CDATA[(INVOICE_ORDER.ORDER_ID= '#data#')]]></value>
+					</condition>
+				</select>
+			</sql>
+		</report>
+	</page>
+	
+	<page id="UsedInvoiceApproval" js="/webresources/script/validate.js" title="发票红冲审批">
+		<report id="report1" extends="baseListPage.baseReport" title="红冲" type="form" pagesize="-1">
+			<header>
+				<![CDATA[
+					<script>
+						function getTrValue(trValue,valueKey)
+							{
+							    var value = "";
+							    if (trValue[valueKey] != null)
+							    {
+								    value = trValue[valueKey].value;
+								    if (value == null)
+								    {
+								        value = trValue[valueKey].oldvalue;
+								    }
+								}
+							    return value;
+							}
+					
+						function submitApproval(){
+		        			wx_confirm("确定红冲？","系统提示",200,100
+							      ,function okHandler(){
+							      var approval = getEditableReportColValues("UsedInvoiceApproval","report1",null,null);
+							      var redStatus = getTrValue(approval, 'RED_STATUS');
+							 	  var orderId = getTrValue(approval, 'ORDER_ID');
+							         $.ajax({
+										type: "POST",
+										url : "manualInvoice/submitInvoiceApproval.htm",  
+										async: false,
+										data:{ORDER_ID:orderId,RED_STATUS:redStatus},
+										dataType: "json",
+										success: function(data){
+											wx_success("红冲成功");
+	                   						artDialog.open.origin.searchReportData("invoiceInfo","report1");
+											art.dialog.close();
+										}
+									});
+							     }
+							    ,null
+							  );
+	        			}
+					</script>
+				  ]]>
+			</header>
+			<display>
+				<col displaytype="hidden" column="ORDER_ID" label="订单id" />
+				<col column="RED_STATUS" label="红冲审核" >
+					<inputbox type="radiobox" defaultvalue="DV0102">
+						<option value="DV0102" label="红冲"/> 
+			            <option value="DV0103" label="不红冲"/>
+					</inputbox>
+				</col>
+			</display>
+			<sql aftersave="aoRefresh">
+				<select>
+					<value>
+						<![CDATA[
+							SELECT
+								A.ORDER_ID,
+								A.RED_STATUS
+							FROM
+								T_INVOICE_ORDER A
+							WHERE {#condition#}
+						]]>
+					</value>
+					<condition name="ORDER_ID" hidden="true">
+						<value><![CDATA[(ORDER_ID =  '#data#')]]></value>
+					</condition>
+					<condition name="INVOICE_PARAM2" hidden="true">
+					</condition>
+				</select>
+				<update>
+			         <params>
+			           <param name="userId" value="session{LoginUser.loginUserId}"></param>
+			           <param name="NOWTIME" value="request{NOWTIME}"></param>
+			         </params>
+			         <value>
+			          	UPDATE T_INVOICE_ORDER
+						SET RED_STATUS=@{RED_STATUS}
+	        			WHERE ORDER_ID = @{ORDER_ID__old}
+					</value>
+	       		</update>
+			</sql>
+			<buttons>
+				<button name="save" position="" extends="${save.button.default}"/>
+				<button name="cancel" position="" extends="${cancel.button.default}"/>
+				<button name="submit" position="title" label="提交" extends="${wabacus.button.default}">
+					submitApproval();
+				</button>
+			</buttons>
+		</report>
+	</page>
+</applications>

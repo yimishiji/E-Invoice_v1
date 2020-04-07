@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.rongzer.efapiao.dao.ManualInvoiceInfoMapper">
+	<insert id="saveOrder" parameterType="map">
+		INSERT INTO T_INVOICE_ORDER(
+			ORDER_ID,
+			PARENT_ORDER_ID,
+			STATUS,
+			INVOICE_STATUS,
+			INVOICE_TYPE,
+			IS_DELETE,
+			IS_MANUAL,
+			ADD_USER,
+			ADD_TIME,
+			UPDATE_USER,
+			UPDATE_TIME,
+			PURCHASER_NAME,
+			PURCHASER_EMAIL,
+			PURCHASER_ID,
+			PURCHASER_MOBILE,
+			PURCHASER_ADDRESS,
+			PURCHASER_BANK_ACCOUNT,
+			TAXPAYER_ID,
+			INVOICE_DETAIL_TYPE,
+			REMARK
+		)VALUES(
+			#{ORDER_ID,jdbcType=VARCHAR},
+			#{PARENT_ORDER_ID,jdbcType=VARCHAR},
+			#{STATUS,jdbcType=VARCHAR},
+			#{INVOICE_STATUS,jdbcType=VARCHAR},
+			#{INVOICE_TYPE,jdbcType=VARCHAR},
+			#{IS_DELETE,jdbcType=VARCHAR},
+			#{IS_MANUAL,jdbcType=VARCHAR},
+			#{ADD_USER,jdbcType=VARCHAR},
+			#{ADD_TIME,jdbcType=VARCHAR},
+			#{UPDATE_USER,jdbcType=VARCHAR},
+			#{UPDATE_TIME,jdbcType=VARCHAR},
+			#{PURCHASER_NAME,jdbcType=VARCHAR},
+			#{PURCHASER_EMAIL,jdbcType=VARCHAR},
+			#{PURCHASER_ID,jdbcType=VARCHAR},
+	        #{PURCHASER_MOBILE,jdbcType=VARCHAR},
+			#{PURCHASER_ADDRESS,jdbcType=VARCHAR},
+			#{PURCHASER_BANK_ACCOUNT,jdbcType=VARCHAR},
+			#{TAXPAYER_ID,jdbcType=VARCHAR},
+			#{INVOICE_DETAIL_TYPE,jdbcType=VARCHAR},
+			#{REMARK,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<insert id="saveRelation" parameterType="list">
+		INSERT INTO T_INVOICE_TRANACTION_RELATION
+		(
+			ID, 
+			ORDER_ID, 
+			TRANSACTION_NUMBER, 
+			ADD_USER,
+			ADD_TIME,
+			UPDATE_USER,
+			UPDATE_TIME,
+			IS_DELETE
+		)
+		VALUES
+		<foreach collection ="list" item="item" index= "index" separator =",">
+			(
+				#{item.ID,jdbcType=VARCHAR}, #{item.ORDER_ID,jdbcType=VARCHAR},
+				#{item.TRANSACTION_NUMBER,jdbcType=VARCHAR},
+				#{item.ADD_USER,jdbcType=VARCHAR},
+				#{item.ADD_TIME,jdbcType=VARCHAR},
+				#{item.UPDATE_USER,jdbcType=VARCHAR},
+				#{item.UPDATE_TIME,jdbcType=VARCHAR},
+				#{item.IS_DELETE,jdbcType=VARCHAR}
+			)
+		</foreach >
+	</insert>
+
+	<update id="updateOrderStatus" parameterType="map">
+		UPDATE T_INVOICE_ORDER SET 
+		<if test = "RED_STATUS != null and RED_STATUS !=''">
+			RED_STATUS = #{RED_STATUS},
+		</if>
+		<if test = "STATUS != null and STATUS !=''">
+			STATUS = #{STATUS},
+		</if>
+		<if test = "INVOICE_STATUS != null and INVOICE_STATUS !=''">
+			INVOICE_STATUS = #{INVOICE_STATUS},
+		</if>
+			UPDATE_TIME = #{NOWTIME}
+		WHERE ORDER_ID = #{ORDER_ID}
+	</update>
+	
+	<select id="getOrderById" parameterType="string" resultType="map">
+		SELECT
+			TR.ORDER_ID,
+			TR.INVOICE_STATUS,
+			TR.INVOICE_TYPE,
+			TR.PARENT_ORDER_ID,
+			TR.IS_MANUAL,
+			TR.PURCHASER_NAME,
+			TR.PURCHASER_EMAIL,
+			TR.PURCHASER_ID,
+			TR.PURCHASER_MOBILE,
+			TR.PURCHASER_ADDRESS,
+			TR.PURCHASER_TEL,
+			TR.PURCHASER_BANK_ACCOUNT,
+			TR.INVOICE_DETAIL_TYPE,
+			TR.INVOICE_WRITE_TYPE,
+			TR.INVOICE_TRADE_TYPE,
+			TR.REMARK,
+			TI.TAXPAYER_IDENTIFY_NO,
+			TI.TAXPAYER_NAME_CN,
+			TI.TAXPAYER_ADDRESS,
+			TI.TAXPAYER_PHONE,
+			TI.TAXPAYER_BANK,
+			TI.TAXPAYER_ACCOUNT,
+			TI.TAXPAYER_TYPE,
+			TI.INVOICE_LIMIT_AMOUNT,
+			TI.IS_EFAPIAO,
+			TI.PLATFORM_CODE,
+			TI.REGISTRATION_CODE,
+			TI.AUTHORIZATION_CODE,
+			TI.PLATFORM_TYPE,
+			TI.ISSUE ISSUER,
+			TI.SKY,
+			TI.FHR
+		FROM T_INVOICE_ORDER TR 
+		INNER JOIN T_TAXPAYER_INFO TI ON TR.TAXPAYER_ID = TI.TAXPAYER_IDENTIFY_NO
+		WHERE TR.ORDER_ID = #{ORDER_ID}
+	</select>
+
+	<select id="getInvoiceInfoById" parameterType="string" resultType="map">
+		SELECT
+			ISSUER,
+			PAYEE,
+			REVIEW_CLERK
+		FROM
+			T_INVOICE_INFO_HANDLER
+		WHERE
+			ORDER_ID = #{ORDER_ID}
+	</select>
+
+	<select id="getInvoiceDetailById" parameterType="string" resultType="map">
+		SELECT
+			ITEM_TITLE,
+			COMMODITY_CODE,
+			TAX_RATE,
+			SUM(CAST(AMOUNT_WITHOUT_TAX AS DECIMAL(10,2))) AS AMOUNT_WITHOUT_TAX,
+			SUM(CAST(TAX_AMOUNT AS DECIMAL(10,2))) AS TAX_AMOUNT
+		FROM
+			T_INVOICE_DETAIL
+		WHERE
+			INVOICE_ID = #{INVOICE_ID}
+		GROUP BY ITEM_TITLE,
+			COMMODITY_CODE,
+			TAX_RATE
+	</select>
+
+	<select id="getInvoiceHandlerDetailById" parameterType="string" resultType="map">
+		SELECT
+			A.ITEM_TITLE,
+			A.ITEM_AMOUNT,
+			A.DISCOUNT_AMOUNT,
+			A.COMMODITY_CODE
+		FROM
+			T_INVOICE_DETAIL_HANDLER A
+		INNER JOIN t_invoice_info_handler B ON a.INVOICE_ID = b.INVOICE_ID
+		AND b.ORDER_ID = #{ORDER_ID}
+	</select>
+
+	<select id="getInvoiceContentByCode" parameterType="string" resultType="map">
+         SELECT CONTENT_ID,
+			CONTENT_CODE,
+			CONTENT_NAME_CN,
+			CASE WHEN TAXRATE = 'E00499'
+			THEN
+				-1
+			ELSE
+				B.ITEM_NAME / 100.0
+			END TAXRATE,
+			CASE WHEN SMALL_TAXRATE = 'E00499'
+			THEN
+				-1
+			ELSE
+				C.ITEM_NAME / 100.0
+				END SMALL_TAXRATE
+			FROM
+				T_INVOICE_CONTENT A
+			INNER JOIN
+				R_BASE_DICT_ITEM B
+			ON
+				B.ITEM_CODE=A.TAXRATE
+			INNER JOIN
+				R_BASE_DICT_ITEM C
+			ON
+				C.ITEM_CODE=A.SMALL_TAXRATE
+		 where  A.content_code = #{commodityCode}
+	</select>
+	<select id="getOriginalInfolistById" parameterType="string" resultType="map">
+		SELECT
+			INVOICE_ID,
+			INVOICE_CODE,
+			INVOICE_NUMBER,
+			ISSUER,
+			PAYEE,
+			REVIEW_CLERK,
+			TOTAL_AMOUNT
+		FROM T_INVOICE_INFO
+		WHERE ORDER_ID = #{ORDER_ID}
+	</select>
+    <insert id="insertInvoiceOrder" parameterType="list">
+        INSERT INTO T_INVOICE_ORDER(
+        ORDER_ID,
+        INVOICE_STATUS,
+        INVOICE_TYPE,
+        IS_MANUAL,
+        PURCHASER_NAME,
+        PURCHASER_EMAIL,
+        PURCHASER_ID,
+        PURCHASER_MOBILE,
+        PURCHASER_ADDRESS,
+        PURCHASER_BANK_ACCOUNT,
+        ADD_USER,
+        ADD_TIME,
+        UPDATE_USER,
+        UPDATE_TIME,
+        IS_DELETE,
+        TAXPAYER_ID,
+        INVOICE_DETAIL_TYPE,
+        STATUS
+        ) VALUES
+        <foreach collection="list" item="order" separator=",">
+            (#{order.ORDER_ID,jdbcType=VARCHAR},
+            #{order.INVOICE_STATUS,jdbcType=VARCHAR},
+            #{order.INVOICE_TYPE,jdbcType=VARCHAR},
+            #{order.IS_MANUAL,jdbcType=VARCHAR},
+            #{order.PURCHASER_NAME,jdbcType=VARCHAR},
+            #{order.PURCHASER_EMAIL,jdbcType=VARCHAR},
+            #{order.PURCHASER_ID,jdbcType=VARCHAR},
+            #{order.PURCHASER_MOBILE,jdbcType=VARCHAR},
+            #{order.PURCHASER_ADDRESS,jdbcType=VARCHAR},
+            #{order.PURCHASER_BANK_ACCOUNT,jdbcType=VARCHAR},
+            #{order.ADD_USER,jdbcType=VARCHAR},
+            #{order.ADD_TIME,jdbcType=VARCHAR},
+            #{order.UPDATE_USER,jdbcType=VARCHAR},
+            #{order.UPDATE_TIME,jdbcType=VARCHAR},
+            #{order.IS_DELETE,jdbcType=VARCHAR},
+            #{order.TAXPAYER_ID,jdbcType=VARCHAR},
+            #{order.INVOICE_DETAIL_TYPE,jdbcType=VARCHAR},
+            #{order.STATUS,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <insert id="insertInvoiceInfo" parameterType="list">
+        INSERT INTO T_INVOICE_INFO_HANDLER(
+        INVOICE_ID,
+        ORDER_ID,
+        ISSUER,
+        PAYEE,
+        REVIEW_CLERK,
+        IS_DELETE,
+        ADD_USER,
+        ADD_TIME,
+        UPDATE_USER,
+        UPDATE_TIME
+        ) VALUES
+        <foreach collection="list" item="info" separator=",">
+            (#{info.INVOICE_ID,jdbcType=VARCHAR},
+            #{info.ORDER_ID,jdbcType=VARCHAR},
+            #{info.ISSUER,jdbcType=VARCHAR},
+            #{info.PAYEE,jdbcType=VARCHAR},
+            #{info.REVIEW_CLERK,jdbcType=VARCHAR},
+            #{info.IS_DELETE,jdbcType=VARCHAR},
+            #{info.ADD_USER,jdbcType=VARCHAR},
+            #{info.ADD_TIME,jdbcType=VARCHAR},
+            #{info.UPDATE_USER,jdbcType=VARCHAR},
+            #{info.UPDATE_TIME,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <insert id="insertInvoiceDetail" parameterType="list">
+        INSERT INTO T_INVOICE_DETAIL_HANDLER(
+        INVOICE_DETAIL_ID,
+        INVOICE_ID,
+        ITEM_TITLE,
+        ITEM_AMOUNT,
+        DISCOUNT_AMOUNT,
+        COMMODITY_CODE,
+        ADD_USER,
+        ADD_TIME,
+        UPDATE_USER,
+        UPDATE_TIME,
+        IS_DELETE
+        ) VALUES
+        <foreach collection="list" item="detail" separator=",">
+            (#{detail.INVOICE_DETAIL_ID,jdbcType=VARCHAR},
+            #{detail.INVOICE_ID,jdbcType=VARCHAR},
+            #{detail.ITEM_TITLE,jdbcType=VARCHAR},
+            #{detail.ITEM_AMOUNT,jdbcType=VARCHAR},
+            #{detail.DISCOUNT_AMOUNT,jdbcType=VARCHAR},
+            #{detail.COMMODITY_CODE,jdbcType=VARCHAR},
+            #{detail.ADD_USER,jdbcType=VARCHAR},
+            #{detail.ADD_TIME,jdbcType=VARCHAR},
+            #{detail.UPDATE_USER,jdbcType=VARCHAR},
+            #{detail.UPDATE_TIME,jdbcType=VARCHAR},
+            #{detail.IS_DELETE,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+	<delete id="cancelInvoice" parameterType="map">
+		DELETE FROM  T_INVOICE_ORDER WHERE ORDER_ID = #{orderId};
+        DELETE FROM T_INVOICE_INFO WHERE ORDER_ID = #{orderId};
+        DELETE FROM T_INVOICE_DETAIL WHERE INVOICE_ID IN
+        (SELECT INVOICE_ID FROM T_INVOICE_INFO WHERE  ORDER_ID = #{orderId});
+        DELETE FROM  T_INVOICE_TRANACTION_RELATION WHERE ORDER_ID = #{orderId}
+	</delete>
+
+	<select id="getTransInfoByTransNum" parameterType="string" resultType="map">
+		SELECT
+			A.TRANSACTION_NUMBER,
+			A.TRANSACTION_DATETIME,
+			A.STORE_NUMBER,
+			A.TRANSACTION_AMOUNT
+		FROM
+			T_TRANSACTION_INFO A
+		WHERE
+		A.TRANSACTION_NUMBER = #{transNum}
+	</select>
+
+	<insert id="forbiddenExtractedCode" parameterType="map">
+		INSERT INTO t_extracted_forbidden(
+				EXTRACTED_CODE,
+				ADD_USER,
+				ADD_TIME,
+				UPDATE_USER,
+				UPDATE_TIME,
+				IS_DELETE
+				)VALUES(
+				#{extractedCode},
+				#{userId},
+				#{NOWTIME},
+				#{userId},
+				#{NOWTIME},
+				'0'
+			)
+	</insert>
+
+	<select id="getForbiddenByExtractedCode" parameterType="string" resultType="map">
+		SELECT EXTRACTED_CODE FROM t_extracted_forbidden WHERE EXTRACTED_CODE = #{extractedCode}
+	</select>
+	
+	<update id="updateForbiddenByExtractedCode" parameterType="string">
+		 update T_EXTRACTED_FORBIDDEN set is_delete = '0' where EXTRACTED_CODE = #{extractedCode}
+	</update>
+</mapper>

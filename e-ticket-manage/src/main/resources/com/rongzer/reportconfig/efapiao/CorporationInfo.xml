@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaL0ocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+    <!--法人列表 -->
+    <page id="corporationInfo" title="法人信息" js="/webresources/script/validate.js">
+        <report id="report1" extends="baseListPage.baseReport" pagesize="10|20" rowselect="multiple-checkbox"
+                dataexport="plainexcel" type="editablelist">
+            <dataexports filename="法人信息"/>
+            <display>
+                <col column="CORPORATION_ID" label="法人主键" displaytype="hidden"/>
+                <col column="CORPORATION_CODE" label="法人编码" align="left"/>
+                <col column="CORPORATION_NAME_CN" label="法人中文名" align="left"/>
+                <col column="IS_USED" label="是否启用" valuestyleproperty="DICT"/>
+            </display>
+            <sql preparedstatement="false">
+                <select>
+                    <value>
+                        <![CDATA[
+							SELECT
+                                CORPORATION_ID,
+                                CORPORATION_CODE,
+                                CORPORATION_NAME_CN,
+                                IS_USED
+                            FROM
+                                T_CORPORATION_INFO
+							WHERE
+								IS_DELETE = 0
+							AND {#condition#}
+							ORDER BY
+								CORPORATION_CODE,
+								CORPORATION_NAME_CN
+						 ]]>
+                    </value>
+                    <condition name="CORPORATION_ID" hidden="true">
+                        <value><![CDATA[(CORPORATION_ID = '#data#')]]></value>
+                    </condition>
+                    <condition name="CORPORATION_CODE" label="法人编码">
+                        <value><![CDATA[(CORPORATION_CODE like '%#data#%')]]></value>
+                    </condition>
+                    <condition name="CORPORATION_NAME_CN" label="法人中文名">
+                        <value><![CDATA[(CORPORATION_NAME_CN like '%#data#%')]]></value>
+                    </condition>
+                </select>
+                <insert pageurl="report{CorporationEdit.report1}"
+                        popupparams="{title:'新增法人',width:550,height:300}"></insert>
+                <update pageurl="report{CorporationEdit.report1}" urlparams="CORPORATION_ID=@{CORPORATION_ID}"
+                        popupparams="{title:'编辑法人',width:550,height:300}"></update>
+            </sql>
+            <buttons>
+                <button name="button1" class="com.wabacus.system.buttons.ServerSQLActionButton" position="title"
+                        label="启用" confirmessage="确认启用已选中的法人？" styleproperty="class='cls-button'"
+                        successprompt="启用成功" failedprompt="启用失败">
+                    <params>
+                        <param name="userId" value="session{LoginUser.loginUserId}"></param>
+                        <param name="NOWTIME" value="request{NOWTIME}"></param>
+                    </params>
+                    <value>
+                        <![CDATA[
+			            UPDATE T_CORPORATION_INFO
+			               SET IS_USED='D00002',
+			                   UPDATE_USER=#{userId},
+			                   UPDATE_TIME=#{NOWTIME}
+			              WHERE CORPORATION_ID = @{CORPORATION_ID}
+			          ]]>
+                    </value>
+                </button>
+                <button name="button2" class="com.wabacus.system.buttons.ServerSQLActionButton" position="title"
+                        label="停用" confirmessage="确认停用已选中的法人？" styleproperty="class='cls-button'"
+                        successprompt="停用成功" failedprompt="停用失败">
+                    <params>
+                        <param name="userId" value="session{LoginUser.loginUserId}"></param>
+                        <param name="NOWTIME" value="request{NOWTIME}"></param>
+                    </params>
+                    <value>
+                        <![CDATA[
+			            UPDATE T_CORPORATION_INFO
+			               SET IS_USED='D00001',
+			                   UPDATE_USER=#{userId},
+			                   UPDATE_TIME=#{NOWTIME}
+			              WHERE CORPORATION_ID = @{CORPORATION_ID}
+			          ]]>
+                    </value>
+                </button>
+                <button name="button3" position="title" label="导出法人信息" extends="${plainexcel.button.default}"/>
+                <button name="btn_add" position="" label="新增" extends="${add.button.default}"/>
+            </buttons>
+        </report>
+    </page>
+    <!--法人编辑-->
+    <page id="CorporationEdit" title="编辑法人信息" js="/webresources/script/validate.js">
+        <report id="report1" extends="baseEditPage.baseReport">
+            <display>
+                <col column="CORPORATION_ID" label="法人主键" displaytype="hidden"/>
+                <col column="CORPORATION_CODE" label="法人编码" align="left">
+                    <inputbox
+                            servervalidate="isUnique(法人编码#data#已经存在,T_CORPORATION_INFO,CORPORATION_CODE,IS_DELETE = '0' AND CORPORATION_ID!='{CORPORATION_ID}' )"
+                            servervalidatetype="both"
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength128(${invalid.isStrLen128})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="CORPORATION_NAME_CN" label="法人中文名" align="left">
+                    <inputbox
+                            servervalidate="isUnique(法人中文名#data#已经存在,T_CORPORATION_INFO,CORPORATION_NAME_CN,IS_DELETE = '0' AND CORPORATION_ID!='{CORPORATION_ID}' )"
+                            servervalidatetype="both"
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength256(${invalid.isStrLen256})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="IS_USED" label="是否启用" align="left">
+                    <inputbox type="selectbox" jsvalidate="isNotEmpty(${invalid.isnotempty});">
+                        <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}"
+                                value="D000_hasempty"></option>
+                    </inputbox>
+                </col>
+            </display>
+            <sql preparedstatement="false">
+                <select>
+                    <value>
+                        <![CDATA[
+							SELECT
+								CORPORATION_ID,
+								CORPORATION_CODE,
+								CORPORATION_NAME_CN,
+								IS_USED
+							FROM
+								T_CORPORATION_INFO
+							WHERE
+								IS_DELETE = 0
+							AND {#condition#}
+							ORDER BY
+								CORPORATION_CODE,
+								CORPORATION_NAME_CN
+						 ]]>
+                    </value>
+                    <condition name="CORPORATION_ID" hidden="true">
+                        <value><![CDATA[(CORPORATION_ID = '#data#')]]></value>
+                    </condition>
+                </select>
+                <insert>
+                    <params>
+                        <param name="CORPORATION_ID" value="uuid{}"/>
+                        <param name="userId" value="session{LoginUser.loginUserId}"/>
+                        <param name="NOWTIME" value="request{NOWTIME}"></param>
+                    </params>
+                    <value>
+                        INSERT INTO T_CORPORATION_INFO(
+                        CORPORATION_ID,
+                        CORPORATION_CODE,
+                        CORPORATION_NAME_CN,
+                        IS_USED,
+                        IS_DELETE,
+                        ADD_USER,
+                        ADD_TIME,
+                        UPDATE_USER,
+                        UPDATE_TIME
+                        )VALUES(
+                        #{CORPORATION_ID},
+                        @{CORPORATION_CODE},
+                        @{CORPORATION_NAME_CN},
+                        @{IS_USED},
+                        '0',
+                        #{userId},
+                        #{NOWTIME},
+                        #{userId},
+                        #{NOWTIME}
+                        )
+                    </value>
+                </insert>
+                <update>
+                    <params>
+                        <param name="userId" value="session{LoginUser.loginUserId}"/>
+                        <param name="NOWTIME" value="request{NOWTIME}"></param>
+                    </params>
+                    <value>
+                        UPDATE T_CORPORATION_INFO
+                        SET CORPORATION_CODE = @{CORPORATION_CODE},
+                        CORPORATION_NAME_CN=@{CORPORATION_NAME_CN},
+                        IS_USED = @{IS_USED},
+                        UPDATE_USER = #{userId},
+                        UPDATE_TIME = #{NOWTIME}
+                        WHERE CORPORATION_ID = @{CORPORATION_ID__old}
+                    </value>
+                </update>
+            </sql>
+        </report>
+    </page>
+</applications>

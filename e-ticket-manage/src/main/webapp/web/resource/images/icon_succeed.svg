@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="345px" height="266px" viewBox="0 0 345 266" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.2 (44496) - http://www.bohemiancoding.com/sketch -->
+    <title>icon_succeed</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M43.8781652,70.3225116 C49.801873,61.7318603 56.9968994,54.0854304 65.1915113,47.654955 C82.6863873,33.9263767 104.737275,25.74 128.7,25.74 C185.562749,25.74 231.66,71.8372512 231.66,128.7 C231.66,185.562749 185.562749,231.66 128.7,231.66 C71.8372512,231.66 25.74,185.562749 25.74,128.7 M31.3181359,95.1845504 C31.6266046,94.2881011 31.9471031,93.3972492 32.2794386,92.5121875" id="path-1"></path>
+        <filter x="-22.6%" y="-17.2%" width="145.1%" height="145.1%" filterUnits="objectBoundingBox" id="filter-2">
+            <feMorphology radius="3.465" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="11" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feMorphology radius="3.465" operator="erode" in="SourceAlpha" result="shadowInner"></feMorphology>
+            <feOffset dx="0" dy="11" in="shadowInner" result="shadowInner"></feOffset>
+            <feComposite in="shadowOffsetOuter1" in2="shadowInner" operator="out" result="shadowOffsetOuter1"></feComposite>
+            <feGaussianBlur stdDeviation="12.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.882352941   0 0 0 0 0.305882353   0 0 0 0 0.180392157  0 0 0 0.144248188 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <polyline id="path-3" points="182.2392 87.516 116.3448 161.6472 75.1608 128.7"></polyline>
+        <filter x="-43.9%" y="-48.5%" width="187.7%" height="226.7%" filterUnits="objectBoundingBox" id="filter-4">
+            <feMorphology radius="3.96" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="11" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feMorphology radius="3.96" operator="erode" in="SourceAlpha" result="shadowInner"></feMorphology>
+            <feOffset dx="0" dy="11" in="shadowInner" result="shadowInner"></feOffset>
+            <feComposite in="shadowOffsetOuter1" in2="shadowInner" operator="out" result="shadowOffsetOuter1"></feComposite>
+            <feGaussianBlur stdDeviation="12.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.882352941   0 0 0 0 0.305882353   0 0 0 0 0.180392157  0 0 0 0.160411005 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="开票成功" transform="translate(-193.000000, -313.000000)">
+            <g id="icon_succeed" transform="translate(193.000000, 308.000000)">
+                <g id="Group-2" transform="translate(49.550000, 0.880000)" stroke-linecap="round" stroke-linejoin="round">
+                    <g id="Stroke-108" transform="translate(128.700000, 128.700000) rotate(17.000000) translate(-128.700000, -128.700000) ">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                        <use stroke="#E14E2E" stroke-width="6.93" xlink:href="#path-1"></use>
+                    </g>
+                    <g id="Stroke-114">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"></use>
+                        <use stroke="#E14E2E" stroke-width="7.92" xlink:href="#path-3"></use>
+                    </g>
+                </g>
+                <circle id="Oval-3" fill="#FAA28F" cx="56.48" cy="243.43" r="7.92"></circle>
+                <circle id="Oval-3-Copy-4" fill="#FAA28F" cx="63.905" cy="217.195" r="3.465"></circle>
+                <circle id="Oval-3-Copy-5" fill="#FAA28F" cx="290.615" cy="230.065" r="3.465"></circle>
+                <circle id="Oval-3-Copy-6" fill="#F5B7AA" cx="341.105" cy="162.745" r="3.465"></circle>
+                <circle id="Oval-3-Copy-3" fill="#FAA28F" cx="302.99" cy="247.39" r="4.95"></circle>
+                <circle id="Oval-3-Copy" fill="#FAA28F" cx="332.69" cy="13.75" r="7.92"></circle>
+                <circle id="Oval-3-Copy-2" fill="#FAA28F" cx="5" cy="108.79" r="4.95"></circle>
+            </g>
+        </g>
+    </g>
+</svg>

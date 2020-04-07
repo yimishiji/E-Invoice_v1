@@ -1,0 +1,262 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+        <title>欣和电子发票</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        
+        <link rel="stylesheet" href="../resource/css/style.css">
+
+        <!--[if lte IE 9]>
+        <style>
+          .locale_en .browserupgrade-en,
+          .locale_cn .browserupgrade-zh,
+          .locale_zh .browserupgrade-zh {
+            display: block;
+          }
+          .locale_en .browserupgrade-zh,
+          .locale_cn .browserupgrade-en,
+          .locale_zh .browserupgrade-en {
+            display: none;
+          }
+          .browserupgrade {
+            text-align: center;
+            position: absolute;
+            top: 30%;
+            width: 100%;
+          }
+          .browserupgrade img {
+            width: auto;
+          }
+          .browserupgrade p {
+            color: #838383;
+            font-size: 20px;
+            max-width: 500px;
+            margin: 20px auto;
+          }
+          #app {
+            display: none !important;
+          }
+        </style>
+        <![endif]-->
+
+        <!-- All the Favicons -->
+        <link rel="apple-touch-icon-precomposed" sizes="57x57" href="../resource/images/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../resource/images/apple-touch-icon-114x114.png?fcc67d" />
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../resource/images/apple-touch-icon-72x72.png?25e001" />
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../resource/images/apple-touch-icon-144x144.png?d69755" />
+        <link rel="apple-touch-icon-precomposed" sizes="60x60" href="../resource/images/apple-touch-icon-60x60.png?4d1787" />
+        <link rel="apple-touch-icon-precomposed" sizes="120x120" href="../resource/images/apple-touch-icon-120x120.png?055eb5" />
+        <link rel="apple-touch-icon-precomposed" sizes="76x76" href="../resource/images/apple-touch-icon-76x76.png?003533" />
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../resource/images/apple-touch-icon-152x152.png?67a81b" />
+        <link rel="icon" type="image/png" href="../resource/images/favicon-196x196.png?106c70" sizes="196x196" />
+        <link rel="icon" type="image/png" href="../resource/images/favicon-96x96.png?95d6bb" sizes="96x96" />
+        <link rel="icon" type="image/png" href="../resource/images/favicon-32x32.png?59fe7d" sizes="32x32" />
+        <link rel="icon" type="image/png" href="../resource/images/favicon-16x16.png?049cd6" sizes="16x16" />
+        <link rel="icon" type="image/png" href="../resource/images/favicon-128.png?dbe0a1" sizes="128x128" />
+        <meta name="application-name" content="&nbsp;"/>
+        <meta name="msapplication-TileColor" content="#FFFFFF" />
+        <meta name="msapplication-TileImage" content="../resource/images/mstile-144x144.png" />
+        <meta name="msapplication-square70x70logo" content="../resource/images/mstile-70x70.png" />
+        <meta name="msapplication-square150x150logo" content="../resource/images/mstile-150x150.png" />
+        <meta name="msapplication-wide310x150logo" content="../resource/images/mstile-310x150.png" />
+        <meta name="msapplication-square310x310logo" content="../resource/images/mstile-310x310.png" />
+        <script type="text/javascript" src="../resource/js/jquery-1.11.2.min.js"></script>
+        <link rel="stylesheet" href="../resource/css/mon.css">
+        <link rel="stylesheet" href="../resource/css/invoice.css">
+    </head>
+    <body class="lang_cn">
+    	<!--[if lte IE 9]>
+    	<div class="browserupgrade">
+    	  <img src="../resource/images/logo-gray.png?1146ef" alt="starbucks_logo" />
+    	  <p class="browserupgrade-en">This site was built for IE10 and above, please upgrade your browser for a better experience.</p>
+    	  <p class="browserupgrade-zh">本网站仅支持IE10(及以上)浏览器浏览，请更新您的浏览器以获得更好的浏览体验。</p>
+    	</div>
+    	<script type="text/javascript">
+    	  var paths = (window.location.pathname === '/') ? (window.location.hash).split('/') : (window.location.pathname).split('/');
+    	  var locale = (paths.length > 1) ? paths[1] : 'en';
+    	  document.body.className = 'locale_' + locale;
+    	</script>
+    	<![endif]-->
+	    <div id="app">
+	    	<div class="" >
+				<header id="header">
+					<div class="header-container">
+						<a href="https://www.baidu.com" class="logo">
+							<img src="../resource/images/logo.png">
+						</a>
+						<a href="javascript:void(0);" class="info">
+							<img src="../resource/images/in_icon01.png">
+						</a>
+					</div>
+				</header>
+
+	    	    <!-- 主要区域 -->
+	    	    <section id="main" class="main invoice invoiceWrite">
+	    	    	<div>
+	    	    		<h1 >填写发票信息</h1>
+	    	    		<div class="block" >
+	    	    			<div class="box container" >
+	    	    				<!-- 展示 -->
+	    	    				<ul class="invoiceInfo">
+	    	    					<li class="clearfix">
+	    	    						<p class="fl">发票金额</p>
+	    	    						<p class="fr color_83">￥70</p>
+	    	    					</li>
+	    	    				</ul>
+	    	    				<form class="form" >
+	    	    					<label class="hot">*号为必填</label>
+	    	    					<div class="item first">
+	    	    						<div class="invoiceType invoiceType1 invoiceTypeSelected">
+	    	    							<img src="../resource/images/content_icon01.png">
+	    	    							明细
+	    	    						</div>
+	    	    						<div class="invoiceType invoiceType2">
+	    	    							<img src="../resource/images/content_icon04.png">
+	    	    							产品类目汇总
+	    	    						</div>
+	    	    						<div class="invoiceType invoiceType3">
+	    	    							<img src="../resource/images/content_icon06.png">
+	    	    							食品
+	    	    						</div>
+	    	    					</div>
+	    	    					<div class="item sec_item">
+	    	    						<div class="invoiceType blank4">
+	    	    							&nbsp;
+	    	    						</div>
+	    	    						<div id="invoiceTypePerson" class="invoiceType invoiceType4 selected">
+	    	    							个人
+	    	    						</div>
+	    	    						<div class="invoiceType blank2">
+	    	    							&nbsp;
+	    	    						</div>
+	    	    						<div id="invoiceTypeCompany" class="invoiceType invoiceType4">
+	    	    							企业
+	    	    						</div>
+	    	    						<div class="invoiceType blank4">
+	    	    							&nbsp;
+	    	    						</div>
+	    	    					</div>
+	    	    					
+    	    						<div class="item sec_item  invoiceTypePerson">
+    	    							<input type="text" placeholder="请输入常用邮箱" name="" autocomplete="no" maxlength="">
+    	    						</div>
+    	    						<div class="item sec_item  invoiceTypeCompany">
+    	    							<input type="text" placeholder="请输入企业名称" name="" autocomplete="no" maxlength="">
+    	    							<input type="text" placeholder="请输入常用邮箱" name="" autocomplete="no" maxlength="">
+    	    							<div class="item">
+    	    								<input type="text" placeholder="请输入纳税人识别号" name="" autocomplete="no" maxlength="">
+    	    							</div>
+    	    							<div class="item">
+    	    								<input type="text" placeholder="请输入地址" name="" autocomplete="no" maxlength="">
+    	    							</div>
+    	    							<div class="item">
+    	    								<input type="text" placeholder="请输入电话" name="" autocomplete="no" maxlength="">
+    	    							</div>
+    	    							<div class="item">
+    	    								<input type="text" placeholder="请输入开户行" name="" autocomplete="no" maxlength="">
+    	    							</div>
+    	    							<div class="item last_item">
+    	    								<input type="text" placeholder="请输入开户行账号" name="" autocomplete="no" maxlength="">
+    	    							</div>
+    	    						</div>
+    	    						
+    	    						<div class="button tc button_confirm full-width">确认提交</div>
+	    	    				</form>
+	    	    			</div>
+	    	    		</div>
+	    	    	</div>
+	    	    </section>
+	    	    <!-- load -->
+	    	    <div class="down"></div>
+	    	    <div class="invoice_down tc confirm">
+	    	    	<h3 class="">确认发票信息</h3>
+	    	    	<ul>
+	    	    		<li class="clearfix">
+	    	    			<p class="fl">发票抬头</p>
+	    	    			<p class="fr color_83">江苏荣泽信息科技股份有限公司</p>
+	    	    		</li>
+	    	    		<li class="clearfix">
+	    	    			<p class="fl">邮箱</p>
+	    	    			<p class="fr color_83">rongzer@ui.com</p>
+	    	    		</li>
+	    	    		<li class="clearfix">
+	    	    			<p class="fl">开户行</p>
+	    	    			<p class="fr color_83">南京银行雨花支行</p>
+	    	    		</li>
+	    	    		<li class="clearfix">
+	    	    			<p class="fl">开户行账号</p>
+	    	    			<p class="fr color_83">320100093778054856</p>
+	    	    		</li>
+	    	    		<li class="clearfix">
+	    	    			<p class="fl">手机号</p>
+	    	    			<p class="fr color_83">13800</p>
+	    	    		</li>
+	    	    	</ul>
+	    	    	<div class="all_btn clearfix">
+	    	    		<div class="button btn_return fl ">返回修改</div>
+	    	    		<div class="button btn_confirm fr">确认开票</div>
+	    	    	</div>
+	    	    </div>
+
+	    	    <div class="invoice_down tc confirm_two">
+	    	    	<img class="invoice_img" src="../resource/images/invoice_02.png">
+	    	    	<i class="close"></i>
+	    	    	<p class="last_p">请稍等，税局正在处理中...</p>
+	    	    </div>
+	    	</div>
+	    </div>
+    </body>
+    <script type="text/javascript">
+
+    	$(".invoiceType1").click(function(event) {
+    		if(!$(this).hasClass("invoiceTypeSelected")){
+    			$(".invoiceType1,.invoiceType2,.invoiceType3").removeClass("invoiceTypeSelected");
+    			$(".invoiceType1 img").attr("src","../resource/images/content_icon01.png");
+    			$(".invoiceType2 img").attr("src","../resource/images/content_icon04.png");
+    			$(".invoiceType3 img").attr("src","../resource/images/content_icon06.png");
+    			$(this).addClass("invoiceTypeSelected");
+    		}
+    	});
+    	$(".invoiceType2").click(function(event) {
+    		if(!$(this).hasClass("invoiceTypeSelected")){
+    			$(".invoiceType1,.invoiceType2,.invoiceType3").removeClass("invoiceTypeSelected");
+    			$(".invoiceType1 img").attr("src","../resource/images/content_icon02.png");
+    			$(".invoiceType2 img").attr("src","../resource/images/content_icon03.png");
+    			$(".invoiceType3 img").attr("src","../resource/images/content_icon06.png");
+    			$(this).addClass("invoiceTypeSelected");
+    		}
+    	});
+    	$(".invoiceType3").click(function(event) {
+    		if(!$(this).hasClass("invoiceTypeSelected")){
+    			$(".invoiceType1,.invoiceType2,.invoiceType3").removeClass("invoiceTypeSelected");
+    			$(".invoiceType1 img").attr("src","../resource/images/content_icon02.png");
+    			$(".invoiceType2 img").attr("src","../resource/images/content_icon04.png");
+    			$(".invoiceType3 img").attr("src","../resource/images/content_icon05.png");
+    			$(this).addClass("invoiceTypeSelected");
+    		}
+    	});
+    	
+    	$("#invoiceTypePerson").click(function(event) {
+    		$("#invoiceTypePerson").addClass("selected");
+    		$("#invoiceTypeCompany").removeClass("selected");
+    		$(".invoiceTypeCompany").hide();
+    		$(".invoiceTypePerson").show();
+    	});
+    	
+    	$("#invoiceTypeCompany").click(function(event) {
+    		$("#invoiceTypePerson").removeClass("selected");
+    		$("#invoiceTypeCompany").addClass("selected");
+    		$(".invoiceTypeCompany").show();
+    		$(".invoiceTypePerson").hide();
+    	});
+
+    	$(".button_confirm").click(function(event) {
+    		$(".down").css('z-index', '49');
+    		$(".confirm_two,.down").show('300');
+    		window.location.href = "/efapiao.manage/html/invoiceEnd.html";
+    	});
+    	
+    </script>
+</html>

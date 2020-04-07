@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaL0ocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+    <!--市场列表 -->
+    <page id="marketInfo" title="市场信息维护" js="/webresources/script/validate.js">
+        <report id="report1" extends="baseListPage.baseReport" pagesize="10|20" rowselect="multiple-checkbox"
+                dataexport="plainexcel" type="editablelist">
+            <dataexports filename="市场信息"/>
+            <display>
+                <col column="MARKET_ID" label="市场主键" displaytype="hidden"/>
+                <col column="MARKET_CODE" label="市场编码" align="left"/>
+                <col column="MARKET_NAME_CN" label="市场中文名" align="left"/>
+                <col column="IS_USED" label="是否启用" align='center' valuestyleproperty="DICT"/>
+            </display>
+            <sql preparedstatement="false">
+                <select>
+                    <value>
+                        <![CDATA[
+                            SELECT
+                                MARKET_ID,
+                                MARKET_CODE,
+                                MARKET_NAME_CN,
+                                IS_USED
+                            FROM
+                                T_MARKET_INFO
+                            WHERE
+                               IS_DELETE = 0
+                            AND
+                                {#condition#}
+                            ORDER BY
+                                MARKET_CODE,
+                                MARKET_NAME_CN,
+						 ]]>
+                    </value>
+                    <condition name="MARKET_PK" hidden="true">
+                        <value><![CDATA[(A.MARKET_PK = '#data#')]]></value>
+                    </condition>
+                    <condition name="MARKET_CODE" label="市场编码">
+                        <value><![CDATA[(MARKET_CODE like '%#data#%')]]></value>
+                    </condition>
+                    <condition name="MARKET_NAME_CN" label="市场中文名">
+                        <value><![CDATA[(MARKET_NAME_CN like '%#data#%')]]></value>
+                    </condition>
+                </select>
+                <insert pageurl="report{MarketInfoEdit.report1}"
+                        popupparams="{title:'新增市场',width:550,height:300}"></insert>
+                <update pageurl="report{MarketInfoEdit.report1}" urlparams="MARKET_ID=@{MARKET_ID}"
+                        popupparams="{title:'编辑市场',width:550,height:300}"></update>
+            </sql>
+            <buttons>
+                <button name="button1" class="com.wabacus.system.buttons.ServerSQLActionButton" position="title"
+                        label="启用" confirmessage="确认启用已选中的市场？" styleproperty="class='cls-button'"
+                        successprompt="启用成功" failedprompt="启用失败">
+                    <params>
+                        <param name="userId" value="session{LoginUser.loginUserId}"></param>
+                        <param name="NOWTIME" value="request{NOWTIME}"></param>
+                    </params>
+                    <value>
+                        <![CDATA[
+			            UPDATE T_MARKET_INFO
+			               SET IS_USED='D00002',
+			                   UPDATE_USER=#{userId},
+			                   UPDATE_TIME=#{NOWTIME}
+			              WHERE MARKET_ID = @{MARKET_ID}
+			          ]]>
+                    </value>
+                </button>
+                <button name="button2" class="com.wabacus.system.buttons.ServerSQLActionButton" position="title"
+                        label="停用" confirmessage="确认停用已选中的市场？" styleproperty="class='cls-button'"
+                        successprompt="停用成功" failedprompt="停用失败">
+                    <params>
+                        <param name="userId" value="session{LoginUser.loginUserId}"></param>
+                        <param name="NOWTIME" value="request{NOWTIME}"></param>
+                    </params>
+                    <value>
+                        <![CDATA[
+			            UPDATE T_MARKET_INFO
+			               SET IS_USED='D00001',
+			                   UPDATE_USER=#{userId},
+			                   UPDATE_TIME=#{NOWTIME}
+			               WHERE MARKET_ID = @{MARKET_ID}
+			          ]]>
+                    </value>
+                </button>
+                <button name="button3" position="title" label="导出市场信息" extends="${plainexcel.button.default}"/>
+            </buttons>
+        </report>
+    </page>
+    <!--市场编辑-->
+    <page id="MarketInfoEdit" title="编辑市场信息" js="/webresources/script/validate.js">
+        <report id="report1" extends="baseEditPage.baseReport">
+            <display>
+                <col column="MARKET_ID" label="市场主键" displaytype="hidden"/>
+                <col column="MARKET_CODE" label="市场编码" align="left">
+                    <inputbox
+                            servervalidate="isUnique(市场编码#data#已经存在,T_MARKET_INFO,MARKET_CODE,IS_DELETE = '0' AND MARKET_ID!='{MARKET_ID}' )"
+                            servervalidatetype="both"
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength63(${invalid.isStrLen63})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="MARKET_NAME_CN" label="市场中文名" align="left">
+                    <inputbox
+                            servervalidate="isUnique(市场中文名#data#已经存在,T_MARKET_INFO,MARKET_NAME_CN,IS_DELETE = '0' AND MARKET_ID!='{MARKET_ID}' )"
+                            servervalidatetype="both"
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength63(${invalid.isStrLen63})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="IS_USED" label="是否启用" align="left">
+                    <inputbox type="selectbox" jsvalidate="isNotEmpty(${invalid.isnotempty});">
+                        <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}"
+                                value="D000_hasempty"></option>
+                    </inputbox>
+                </col>
+            </display>
+            <sql preparedstatement="false">
+                <select>
+                    <value>
+                        <![CDATA[
+							SELECT
+								MARKET_ID,
+								MARKET_CODE,
+								MARKET_NAME_CN,
+								IS_USED
+							FROM
+								T_MARKET_INFO
+							WHERE
+								IS_DELETE = 0
+							AND {#condition#}
+							ORDER BY
+								MARKET_CODE,
+								MARKET_NAME_CN
+						 ]]>
+                    </value>
+                    <condition name="MARKET_ID" hidden="true">
+                        <value><![CDATA[(MARKET_ID = '#data#')]]></value>
+                    </condition>
+                </select>
+                <insert>
+                    <params>
+                        <param name="MARKET_ID" value="uuid{}"/>
+                        <param name="userId" value="session{LoginUser.loginUserId}"/>
+                        <param name="NOWTIME" value="request{NOWTIME}"></param>
+                    </params>
+                    <value>
+                        INSERT INTO T_MARKET_INFO(
+                        MARKET_ID,
+                        MARKET_CODE,
+                        MARKET_NAME_CN,
+                        IS_USED,
+                        IS_DELETE,
+                        ADD_USER,
+                        ADD_TIME,
+                        UPDATE_USER,
+                        UPDATE_TIME
+                        )VALUES(
+                        #{MARKET_ID},
+                        @{MARKET_CODE},
+                        @{MARKET_NAME_CN},
+                        @{IS_USED},
+                        '0',
+                        #{userId},
+                        #{NOWTIME},
+                        #{userId},
+                        #{NOWTIME}
+                        )
+                    </value>
+                </insert>
+                <update>
+                    <params>
+                        <param name="userId" value="session{LoginUser.loginUserId}"/>
+                        <param name="NOWTIME" value="request{NOWTIME}"></param>
+                    </params>
+                    <value>
+                        UPDATE T_MARKET_INFO
+                        SET MARKET_CODE = @{MARKET_CODE},
+                        MARKET_NAME_CN = @{MARKET_NAME_CN},
+                        IS_USED = @{IS_USED},
+                        UPDATE_USER = #{userId},
+                        UPDATE_TIME = #{NOWTIME}
+                        WHERE MARKET_ID = @{MARKET_ID__old}
+                    </value>
+                </update>
+            </sql>
+        </report>
+    </page>
+</applications>

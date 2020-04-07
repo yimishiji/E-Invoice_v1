@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+    <!--纳税实体列表 -->
+    <page id="taxpayerInfoEX" title="纳税人信息" js="/webresources/script/validate.js">
+        <header>
+            <![CDATA[
+            <script>
+                function downloadfile(path){
+                     path = encodeURI(path);
+                     window.location.href=path;
+                }
+             </script>
+            ]]>
+        </header>
+        <jsp id="jsp1">/jsp/rdp/parent.jsp</jsp>
+        <report id="report1" extends="baseListPage.baseReport" pagesize="20"
+                rowselect="multiple-checkbox" dataexport="plainexcel" type="editablelist">
+            <header>
+                <![CDATA[
+                    <script>
+						function upload(){
+							wx_winpage(ctx+"/jsp/rdp/taxpayer/taxpayer-import.jsp",{width:'900px',height:'500px'});
+						}
+	     			</script>
+                ]]>
+            </header>
+            <dataexports filename="纳税人信息"/>
+            <display>
+                <col column="TAXPAYER_ID" label="纳税人主键" displaytype="hidden"/>
+                <col column="TAXPAYER_PROVINCE" label="注册省份" align="center" valuestyleproperty="DICT"/>
+                <col column="TAXPAYER_CITY" label="注册城市" align="center" valuestyleproperty="DICT"/>
+                <col column="TAXPAYER_IDENTIFY_NO" label="纳税人识别号" align="left"/>
+                <col column="TAXPAYER_NAME_CN" label="纳税人中文名" align="left"/>
+                <col column="TAXPAYER_ADDRESS" label="纳税人地址" align="left"/>
+                <col column="TAXPAYER_PHONE" label="纳税人电话" align="left"/>
+                <col column="TAXPAYER_BANK" label="纳税人开户行" align="left"/>
+                <col column="TAXPAYER_ACCOUNT" label="纳税人账号" align="left"/>
+                <col column="ISSUE" label="开票人" align="left"/>
+                <col column="SKY" label="收款人" align="left"/>
+                <col column="FHR" label="复核人" align="left"/>
+                <col column="TAXPAYER_TYPE" label="纳税人类型" align="center" valuestyleproperty="DICT"/>
+                <col column="INVOICE_LIMIT_AMOUNT" label="单张发票限额(元)" align="right"/>
+                <col column="IS_EFAPIAO" label="是否电子发票" align="center" valuestyleproperty="DICT"/>
+                <col column="IS_MERGE" label="是否可以合并开票" align="center" valuestyleproperty="DICT"/>
+                <col column="EMAIL" label="提醒邮箱" align="right"/>
+                <col column="INVOICE_INVENTORY" label="库存" align="right"/>
+                <col column="INVENTORY_THRESHOLD" label="库存阀值" align="right"/>
+                <col column="PLATFORM_TYPE" label="平台类型" align="center" valuestyleproperty="DICT"/>
+                <col column="PLATFORM_CODE" label="平台编码" align="left"/>
+                <col column="REGISTRATION_CODE" label="注册码" align="left"/>
+                <col column="AUTHORIZATION_CODE" label="平台授权码" align="left"/>
+                <col column="IS_USED" label="是否启用" align="center" valuestyleproperty="DICT"/>
+            </display>
+            <sql preparedstatement="false">
+                <select>
+                    <value>
+                        <![CDATA[
+							SELECT
+                                TAXPAYER_ID,
+                                TAXPAYER_PROVINCE,
+                                TAXPAYER_CITY,
+                                TAXPAYER_IDENTIFY_NO,
+                                TAXPAYER_NAME_CN,
+                                TAXPAYER_ADDRESS,
+                                TAXPAYER_PHONE,
+                                TAXPAYER_BANK,
+                                TAXPAYER_ACCOUNT,
+                                TAXPAYER_TYPE,
+                                INVOICE_LIMIT_AMOUNT,
+                                IS_EFAPIAO,
+                                PLATFORM_TYPE,
+                                PLATFORM_CODE,
+                                REGISTRATION_CODE,
+                                AUTHORIZATION_CODE,
+                                IS_USED,
+                                ISSUE,
+                                SKY,
+                                FHR,
+                                IS_MERGE,
+                                EMAIL,
+                                INVENTORY_THRESHOLD,
+                                INVOICE_INVENTORY
+                            FROM
+                                T_TAXPAYER_INFO
+							WHERE
+								IS_DELETE = 0
+							AND {#condition#}
+							ORDER BY
+								TAXPAYER_PROVINCE,
+								TAXPAYER_CITY,
+								TAXPAYER_NAME_CN
+						 ]]>
+                    </value>
+                    <condition name="TAXPAYER_ID" hidden="true">
+                        <value><![CDATA[(TAXPAYER_ID = '#data#')]]></value>
+                    </condition>
+                    <condition name="TAXPAYER_IDENTIFY_NO" label="纳税人识别号">
+                        <value><![CDATA[(TAXPAYER_IDENTIFY_NO like '%#data#%')]]></value>
+                    </condition>
+                    <condition name="TAXPAYER_NAME_CN" label="纳税人中文名">
+                        <value><![CDATA[(TAXPAYER_NAME_CN like '%#data#%')]]></value>
+                    </condition>
+                    <condition name="TAXPAYER_TYPE" label="纳税人类型">
+                        <value><![CDATA[(TAXPAYER_TYPE like '%#data#%')]]></value>
+                        <inputbox type="selectbox">
+                            <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}"
+                                    value="E002"></option>
+                        </inputbox>
+                    </condition>
+                </select>
+                <insert pageurl="report{TaxpayerEdit.report1}"
+                        popupparams="{title:'新增纳税人',width:750,height:500}"></insert>
+                <update pageurl="report{TaxpayerEdit.report1}" urlparams="TAXPAYER_ID=@{TAXPAYER_ID}"
+                        popupparams="{title:'编辑纳税人',width:750,height:500}"></update>
+            </sql>
+
+            <buttons>
+                <button name="button1" class="com.wabacus.system.buttons.ServerSQLActionButton" position="title"
+                        label="启用" confirmessage="确认启用已选中的纳税人？" styleproperty="class='cls-button'"
+                        successprompt="启用成功" failedprompt="启用失败">
+                    <params>
+                        <param name="userId" value="session{LoginUser.loginUserId}"></param>
+                        <param name="NOWTIME" value="request{NOWTIME}"></param>
+                    </params>
+                    <value>
+                        <![CDATA[
+			            UPDATE T_TAXPAYER_INFO
+			               SET IS_USED='D00002',
+			                   UPDATE_USER=#{userId},
+			                   UPDATE_TIME=#{NOWTIME}
+			              WHERE TAXPAYER_ID = @{TAXPAYER_ID}
+			          ]]>
+                    </value>
+                </button>
+                <button name="button2" class="com.wabacus.system.buttons.ServerSQLActionButton" position="title"
+                        label="停用" confirmessage="确认停用已选中的纳税人？" styleproperty="class='cls-button'"
+                        successprompt="停用成功" failedprompt="停用失败">
+                    <params>
+                        <param name="userId" value="session{LoginUser.loginUserId}"></param>
+                        <param name="NOWTIME" value="request{NOWTIME}"></param>
+                    </params>
+                    <value>
+                        <![CDATA[
+			            UPDATE T_TAXPAYER_INFO
+			               SET IS_USED='D00001',
+			                   UPDATE_USER=#{userId},
+			                   UPDATE_TIME=#{NOWTIME}
+			              WHERE TAXPAYER_ID = @{TAXPAYER_ID}
+			          ]]>
+                    </value>
+                </button>
+                <button name="button3" position="title" label="导出纳税人信息" extends="${plainexcel.button.default}"/>
+                <button name="button4" position="title" label="导入纳税人信息" styleproperty="class='cls-button'">
+                    upload();
+                </button>
+                <button name="btn_add" position="" label="新增" extends="${add.button.default}"/>
+                <button name="button6" position="title" label="导入模板下载" extends="${wabacus.button.default}" >
+                    <imports>
+                        <import>com.wabacus.*</import>
+                        <import>com.wabacus.config.Config</import>
+                    </imports>
+                    <dynevent>
+                        <![CDATA[
+			        	 String path="ShowReport.wx?ACTIONTYPE=download&serverfilepath=${invoice.dataimportemplatepath}&serverfilename=t_taxpayer_info.xlsx&newfilename=t_taxpayer_info.xlsx";
+			        	 return "downloadfile('"+path+"')";
+			        	 ]]>
+                    </dynevent>
+                </button>
+            </buttons>
+        </report>
+    </page>
+    <!--纳税人编辑-->
+    <page id="TaxpayerEdit" title="编辑纳税人信息" js="/webresources/script/validate.js">
+        <report id="report1"  extends="baseEditPage.baseReport">
+            <display >
+                <col column="TAXPAYER_ID" label="纳税人主键" displaytype="hidden" colspan="3"/>
+                <col column="PROVINCE_CODE" label="注册省份" align="center">
+                    <inputbox type="selectbox" displayon="insert|update" jsvalidate="isNotEmpty(${invalid.isnotempty})">
+                        <option value="biz001" label="label"
+                                dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}"></option>
+                    </inputbox>
+                </col>
+                <col column="TAXPAYER_CITY" label="注册城市" align="center">
+                    <inputbox type="selectbox" depends="PROVINCE_CODE" jsvalidate="isNotEmpty(${invalid.isnotempty})">
+                        <option label="CITY_NAME" value="CITY_CODE"
+                                dataset="@{select distinct CITY_CODE,CITY_NAME from r_base_city where PROVINCE_CODE='#PROVINCE_CODE#'}"></option>
+                    </inputbox>
+                </col>
+                <col column="TAXPAYER_IDENTIFY_NO" label="纳税人识别号" align="left">
+                    <inputbox
+                            servervalidate="isUnique(纳税人识别号#data#已经存在,T_TAXPAYER_INFO,TAXPAYER_IDENTIFY_NO,IS_DELETE = '0' AND TAXPAYER_ID!='{TAXPAYER_ID}' )"
+                            servervalidatetype="both"
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength256(${invalid.isStrLen256})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="TAXPAYER_NAME_CN" label="纳税人中文名" align="left">
+                    <inputbox
+                            servervalidate="isUnique(纳税人中文名#data#已经存在,T_TAXPAYER_INFO,TAXPAYER_NAME_CN,IS_DELETE = '0' AND TAXPAYER_ID!='{TAXPAYER_ID}' )"
+                            servervalidatetype="both"
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength256(${invalid.isStrLen256})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="TAXPAYER_ADDRESS" label="纳税人地址" align="left">
+                    <inputbox
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength1024(${invalid.isStrLen1024})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="TAXPAYER_PHONE" label="纳税人电话" align="left">
+                    <inputbox
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength16(${invalid.isStrLen20})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="TAXPAYER_BANK" label="纳税人开户行" align="left">
+                    <inputbox
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength1024(${invalid.isStrLen1024})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="TAXPAYER_ACCOUNT" label="纳税人账号" align="left">
+                    <inputbox
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength32(${invalid.isStrLen40})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="TAXPAYER_TYPE" label="纳税人类型" align="center">
+                    <inputbox type="selectbox" jsvalidate="isNotEmpty(${invalid.isnotempty});">
+                        <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}"
+                                value="E002_hasempty"></option>
+                    </inputbox>
+                </col>
+                <col column="ISSUE" label="开票人" align="left">
+                    <inputbox jsvalidate="textareaLength8(#label#最大长度为8个字符);"
+                              jsvalidatetype="both" servervalidatetype="both"></inputbox>
+                </col>
+                <col column="SKY" label="收款人" align="left">
+                    <inputbox jsvalidate="textareaLength8(#label#最大长度为8个字符);"
+                              jsvalidatetype="both" servervalidatetype="both"></inputbox>
+                </col>
+                <col column="FHR" label="复核人" align="left">
+                    <inputbox jsvalidate="textareaLength8(#label#最大长度为8个字符);"
+                              jsvalidatetype="both" servervalidatetype="both"></inputbox>
+                </col>
+                <col column="INVOICE_LIMIT_AMOUNT" label="单张发票限额(元)" align="right">
+                    <inputbox
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});isInteger(${invalid.isInteger});textareaLength10(${invalid.isStrLen10})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="IS_USED" label="是否启用" align="left">
+                    <inputbox type="selectbox" jsvalidate="isNotEmpty(${invalid.isnotempty});">
+                        <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}"
+                                value="D000_hasempty"></option>
+                    </inputbox>
+                </col>
+                <col column="IS_MERGE" label="是否可以合并开票" align="left">
+                    <inputbox type="selectbox" jsvalidate="isNotEmpty(${invalid.isnotempty});">
+                        <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}"
+                                value="E010"></option>
+                    </inputbox>
+                </col>
+                <col column="IS_EFAPIAO" label="是否电子发票" align="center">
+                    <inputbox type="selectbox" jsvalidate="isNotEmpty(${invalid.isnotempty});">
+                        <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}"
+                                value="E001_hasempty"></option>
+                    </inputbox>
+                </col>
+                <col column="EMAIL" label="提醒邮箱（多人以;隔开）" align="right">
+                    <inputbox type="textareabox"
+                              jsvalidate="isMultipleEmail(邮箱格式错误)"
+                            ></inputbox>
+                </col>
+                <col column="INVOICE_INVENTORY" label="库存" align="right">
+                    <inputbox styleproperty="disabled=disabled"/>
+                </col>
+                <col column="INVENTORY_THRESHOLD" label="库存阀值" align="right">
+                    <inputbox jsvalidate="isNumeric(${invalid.isNumeric})"
+                              jsvalidatetype="both"></inputbox>
+                </col>
+
+                <col column="PLATFORM_TYPE" label="平台类型" align="left">
+                    <inputbox type="selectbox" jsvalidate="isNotEmpty(${invalid.isnotempty});">
+                        <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}"
+                                value="E003_hasempty"></option>
+                    </inputbox>
+                </col>
+                <col column="PLATFORM_CODE" label="平台编码" align="left">
+                    <inputbox
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength16(${invalid.isStrLen20})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="REGISTRATION_CODE" label="注册码" align="left">
+                    <inputbox
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength16(${invalid.isStrLen20})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="AUTHORIZATION_CODE" label="平台授权码" align="left">
+                    <inputbox
+                            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength16(${invalid.isStrLen20})"
+                            jsvalidatetype="both"></inputbox>
+                </col>
+
+            </display>
+            <sql preparedstatement="false">
+                <select>
+                    <value>
+                        <![CDATA[
+							SELECT
+                                TAXPAYER_ID,
+                                TAXPAYER_PROVINCE AS PROVINCE_CODE,
+                                TAXPAYER_CITY,
+                                TAXPAYER_IDENTIFY_NO,
+                                TAXPAYER_NAME_CN,
+                                TAXPAYER_ADDRESS,
+                                TAXPAYER_PHONE,
+                                TAXPAYER_BANK,
+                                TAXPAYER_ACCOUNT,
+                                TAXPAYER_TYPE,
+                                INVOICE_LIMIT_AMOUNT,
+                                IS_EFAPIAO,
+                                PLATFORM_TYPE,
+                                PLATFORM_CODE,
+                                REGISTRATION_CODE,
+                                AUTHORIZATION_CODE,
+                                IS_USED,
+                                ISSUE,
+                                SKY,
+                                FHR,
+                                IS_MERGE,
+                                EMAIL,
+                                INVENTORY_THRESHOLD,
+                                INVOICE_INVENTORY
+                            FROM
+                                T_TAXPAYER_INFO
+							WHERE
+								IS_DELETE = 0
+							AND {#condition#}
+						 ]]>
+                    </value>
+                    <condition name="TAXPAYER_ID" hidden="true">
+                        <value><![CDATA[(TAXPAYER_ID = '#data#')]]></value>
+                    </condition>
+                </select>
+                <insert>
+                    <params>
+                        <param name="TAXPAYER_ID" value="uuid{}"/>
+                        <param name="userId" value="session{LoginUser.loginUserId}"/>
+                        <param name="NOWTIME" value="request{NOWTIME}"></param>
+                    </params>
+                    <value>
+                        INSERT INTO T_TAXPAYER_INFO(
+                        TAXPAYER_ID,
+                        TAXPAYER_PROVINCE,
+                        TAXPAYER_CITY,
+                        TAXPAYER_IDENTIFY_NO,
+                        TAXPAYER_NAME_CN,
+                        TAXPAYER_ADDRESS,
+                        TAXPAYER_PHONE,
+                        TAXPAYER_BANK,
+                        TAXPAYER_ACCOUNT,
+                        TAXPAYER_TYPE,
+                        INVOICE_LIMIT_AMOUNT,
+                        IS_EFAPIAO,
+                        PLATFORM_TYPE,
+                        PLATFORM_CODE,
+                        REGISTRATION_CODE,
+                        AUTHORIZATION_CODE,
+                        IS_USED,
+                        IS_DELETE,
+                        ADD_USER,
+                        ADD_TIME,
+                        UPDATE_USER,
+                        UPDATE_TIME,
+                        ISSUE,
+                        SKY,
+                        FHR,
+                        IS_MERGE,
+                        EMAIL,
+                        INVENTORY_THRESHOLD
+                        )VALUES(
+                        #{TAXPAYER_ID},
+                        @{PROVINCE_CODE},
+                        @{TAXPAYER_CITY},
+                        @{TAXPAYER_IDENTIFY_NO},
+                        @{TAXPAYER_NAME_CN},
+                        @{TAXPAYER_ADDRESS},
+                        @{TAXPAYER_PHONE},
+                        @{TAXPAYER_BANK},
+                        @{TAXPAYER_ACCOUNT},
+                        @{TAXPAYER_TYPE},
+                        @{INVOICE_LIMIT_AMOUNT},
+                        @{IS_EFAPIAO},
+                        @{PLATFORM_TYPE},
+                        @{PLATFORM_CODE},
+                        @{REGISTRATION_CODE},
+                        @{AUTHORIZATION_CODE},
+                        @{IS_USED},
+                        @{SKY},
+                        @{FHR},
+                        '0',
+                        #{userId},
+                        #{NOWTIME},
+                        #{userId},
+                        #{NOWTIME},
+                        @{ISSUE},
+                        @{IS_MERGE},
+                        @{EMAIL},
+                        @{INVENTORY_THRESHOLD},
+                        @{INVOICE_INVENTORY}
+                        )
+                    </value>
+                </insert>
+                <update>
+                    <params>
+                        <param name="userId" value="session{LoginUser.loginUserId}"/>
+                        <param name="NOWTIME" value="request{NOWTIME}"></param>
+                    </params>
+                    <value>
+                        UPDATE T_TAXPAYER_INFO
+                        SET TAXPAYER_PROVINCE=@{PROVINCE_CODE},
+                        TAXPAYER_CITY=@{TAXPAYER_CITY},
+                        TAXPAYER_IDENTIFY_NO=@{TAXPAYER_IDENTIFY_NO},
+                        TAXPAYER_NAME_CN=@{TAXPAYER_NAME_CN},
+                        TAXPAYER_ADDRESS=@{TAXPAYER_ADDRESS},
+                        TAXPAYER_PHONE=@{TAXPAYER_PHONE},
+                        TAXPAYER_BANK=@{TAXPAYER_BANK},
+                        TAXPAYER_ACCOUNT=@{TAXPAYER_ACCOUNT},
+                        TAXPAYER_TYPE=@{TAXPAYER_TYPE},
+                        INVOICE_LIMIT_AMOUNT=@{INVOICE_LIMIT_AMOUNT},
+                        IS_EFAPIAO=@{IS_EFAPIAO},
+                        PLATFORM_TYPE=@{PLATFORM_TYPE},
+                        PLATFORM_CODE=@{PLATFORM_CODE},
+                        REGISTRATION_CODE=@{REGISTRATION_CODE},
+                        AUTHORIZATION_CODE=@{AUTHORIZATION_CODE},
+                        IS_USED=@{IS_USED},
+                        UPDATE_USER = #{userId},
+                        UPDATE_TIME = #{NOWTIME},
+                        ISSUE = @{ISSUE},
+                        SKY = @{SKY},
+                        FHR = @{FHR},
+                        IS_MERGE = @{IS_MERGE},
+                        EMAIL = @{EMAIL},
+                        INVENTORY_THRESHOLD = @{INVENTORY_THRESHOLD},
+                        INVOICE_INVENTORY = @{INVOICE_INVENTORY}
+                        WHERE TAXPAYER_ID = @{TAXPAYER_ID__old}
+                    </value>
+                </update>
+            </sql>
+        </report>
+    </page>
+</applications>

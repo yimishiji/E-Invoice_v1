@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rongzer.efapiao.dao.TaskServiceMapper">
+	<!-- 查询用户信息 -->
+	<select id="getUserInfo" resultType="map">
+		SELECT
+			USER_ID,
+			ACCOUNT
+		FROM
+			R_SYS_USER_INFO
+	</select>
+	<!-- 查询组织信息 -->
+	<select id="getDepartInfo" resultType="map">
+		SELECT
+			GROUP_ID,
+			GROUP_FULL_NAME,
+			GROUP_SHORT_NAME,
+			GROUP_NO
+		FROM R_SYS_GROUP_INFO
+	</select>
+	<!-- 新增用户信息 -->
+	<insert id="insertUserInfo" parameterType="java.util.List">
+		INSERT INTO R_SYS_USER_INFO(
+			USER_ID,
+	    	NAME_CN,
+	    	EMAIL,
+	    	ACCOUNT,
+	    	PASSWORD,
+	    	GROUP_ID,
+	    	SEX,
+			ADD_USER,
+			ADD_TIME,
+			UPDATE_USER,
+			UPDATE_TIME,
+			IS_DELETE
+		)VALUES
+		<foreach collection="list" item="item" index="index"  separator=",">
+			(
+				'${item.USER_ID}',
+				'${item.NAME_CN}',
+				'${item.EMAIL}',
+				'${item.ACCOUNT}',
+				'${item.PASSWORD}',
+				'${item.GROUP_ID}',
+				'${item.SEX}',
+				'${item.USER}',
+				'${item.NOWTIME}',
+				'${item.USER}',
+				'${item.NOWTIME}',
+				'0'
+			)
+		</foreach>
+	</insert>
+	<!-- 查询门店信息 -->
+	<select id="getStoreInfo" resultType="map">
+		SELECT
+			A.STORE_ID,
+			A.STORE_NO,
+			A.MARKET_ID,
+			A.CORPORATION_ID,
+			A.TAXPAYER_ID,
+			A.STORE_NAME_CN,
+			A.STORE_NAME_EN,
+			A.STORE_EMAIL,
+			A.STORE_MANAGER,
+			A.STORE_TYPE,
+			B.TAXPAYER_IDENTIFY_NO,
+			B.TAXPAYER_NAME_CN,
+			B.TAXPAYER_ADDRESS,
+			B.TAXPAYER_PHONE,
+			B.TAXPAYER_BANK,
+			B.TAXPAYER_ACCOUNT,
+			B.TAXPAYER_TYPE,
+			B.INVOICE_LIMIT_AMOUNT,
+			B.IS_EFAPIAO,
+			B.PLATFORM_CODE,
+			B.REGISTRATION_CODE,
+			B.AUTHORIZATION_CODE,
+			B.PLATFORM_TYPE,
+			B.IS_USED,
+			B.IS_MERGE
+		FROM
+			T_STORE_INFO A
+		LEFT JOIN T_TAXPAYER_INFO B ON A.TAXPAYER_ID = B.TAXPAYER_ID
+	</select>
+	<insert id="insertStoreInfo" parameterType="java.util.List">
+		INSERT INTO T_STORE_INFO(
+			STORE_ID,
+			STORE_NO,
+			CORPORATION_ID,
+			TAXPAYER_ID,
+			PROVINCE,
+			CITY,
+			STORE_NAME_CN,
+			STORE_TYPE,
+			ADD_USER,
+			ADD_TIME,
+			UPDATE_USER,
+			UPDATE_TIME,
+			IS_DELETE
+		)VALUES
+		<foreach collection="list" item="item" index="index"  separator=",">
+			(
+				'${item.STORE_ID}',
+				'${item.STORE_NO}',
+				'${item.CORPORATION_CODE}',
+				'${item.TAXPAYER_NO}',
+				'${item.PROVINCE}',
+				'${item.CITY}',
+				'${item.STORE_NAME_CN}',
+				'${item.STORE_TYPE}',
+				'${item.USER}',
+				'${item.NOW_TIME}',
+				'${item.USER}',
+				'${item.NOW_TIME}',
+				'0'
+			)
+		</foreach>
+	</insert>
+	<update id="updateStoreInfo" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index"  separator=";">
+			UPDATE T_STORE_INFO 
+			SET CORPORATION_ID  = (SELECT CORPORATION_ID FROM T_CORPORATION_INFO WHERE CORPORATION_CODE='${item.CORPORATION_CODE}'),
+			 TAXPAYER_ID  = (SELECT TAXPAYER_ID FROM T_TAXPAYER_INFO WHERE TAXPAYER_IDENTIFY_NO='${item.TAXPAYER_NO}')
+			WHERE STORE_ID = '${item.STORE_ID}'
+		</foreach>
+	</update>
+	<!-- 查询分类信息 -->
+	<select id="getGroupInfo" resultType="map">
+		SELECT
+		    A.GROUP_ID,
+		    A.PARENT_GROUP_ID,
+			A.GROUP_CODE,
+			B.GROUP_CODE AS PARENT_GROUP_CODE,
+			A.GROUP_NAME_CN,
+			A.GROUP_NAME_EN,
+			A.CONTENT_ID
+		FROM
+			T_GOODS_GROUP_INFO A
+		LEFT JOIN T_GOODS_GROUP_INFO B ON A.PARENT_GROUP_ID = B.GROUP_ID
+	</select>
+	<!-- 新增分类信息 -->
+	<insert id="insertGroupInfo" parameterType="java.util.List">
+		INSERT INTO T_GOODS_GROUP_INFO(
+			GROUP_ID,
+			GROUP_CODE,
+			GROUP_NAME_CN,
+			GROUP_NAME_EN,
+			IS_USED,
+			ADD_USER,
+			ADD_TIME,
+			UPDATE_USER,
+			UPDATE_TIME,
+			IS_DELETE
+		)VALUES
+		 <foreach collection="list" item="item" index="index"  separator=",">
+			(
+				'${item.GROUP_ID}',
+				'${item.code}',
+				'${item.nameCN}',
+				'${item.name_EN}',
+				'${item.IS_USED}',
+				'${item.USER}',
+				'${item.NOWTIME}',
+				'${item.USER}',
+				'${item.NOWTIME}',
+				'0'
+			)
+		</foreach> 
+	</insert>
+	<!-- 更新父级CODE -->
+	<update id="updateGroupInfo" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index"  separator=";">
+			UPDATE T_GOODS_GROUP_INFO 
+			SET PARENT_GROUP_ID = (SELECT GROUP_ID 
+								   FROM (SELECT GROUP_ID 
+								   		 FROM T_GOODS_GROUP_INFO 
+								   		 WHERE GROUP_CODE = '${item.parentCode}'
+								   		 ) U
+								   ),
+				UPDATE_USER='${item.USER}',
+				UPDATE_TIME='${item.NOWTIME}'
+			WHERE GROUP_CODE = '${item.code}'
+		</foreach>
+	</update>
+	<!-- 查询商品信息 -->
+	<select id="getGoodsInfo" resultType="map">
+		SELECT
+			A.GOODS_ID,
+			A.GOODS_CODE,
+			A.GOODS_NAME_CN,
+			A.GOODS_NAME_EN,
+			A.GROUP_ID,
+			A.CONTENT_ID
+		FROM
+			T_GOODS_INFO A
+		INNER JOIN
+			T_GOODS_GROUP_INFO B
+		ON
+			A.GROUP_ID = B.GROUP_ID
+		WHERE
+			A.IS_DELETE = 0
+		AND
+			B.IS_DELETE = 0
+	</select>
+	<!-- 新增商品信息 -->
+	<insert id="insertGoodsInfo" parameterType="map">
+		INSERT INTO T_GOODS_INFO(
+			GOODS_ID,
+			GOODS_CODE,
+			GOODS_NAME_CN,
+			GOODS_NAME_EN,
+			TAX_RATE,
+			IS_USED,
+			ADD_USER,
+			ADD_TIME,
+			UPDATE_USER,
+			UPDATE_TIME,
+			IS_DELETE
+		)VALUES
+	 <foreach collection="list" item="item" index="index"  separator=","> 
+			(
+				'${item.GOODS_ID}',
+				'${item.code}',
+				'${item.nameCN}',
+				'${item.name_EN}',
+				'${item.taxRate}',
+				'${item.IS_USED}',
+				'${item.USER}',
+				'${item.NOWTIME}',
+				'${item.USER}',
+				'${item.NOWTIME}',
+				'0'
+			)
+		</foreach> 
+	</insert>
+	<!-- 更新商品信息 -->
+	<update id="updateGoodsInfo" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index"  separator=";">
+			UPDATE T_GOODS_INFO
+			SET GROUP_ID = (SELECT GROUP_ID 
+							FROM T_GOODS_GROUP_INFO 
+							WHERE GROUP_CODE = #{item.parentCode})
+			WHERE GOODS_CODE = #{item.code} 
+		</foreach>
+	</update>
+	<!-- 查询支付信息 -->
+	<select id="getPaymentInfo" resultType="map">
+		SELECT
+			PAYMENT_ID,
+			PAYMENT_CODE,
+			PAYMENT_NAME_CN,
+			CAN_INVOICE
+		FROM T_PAYMENT_INFO
+	</select>
+	<!-- 新增支付方式 -->
+	<insert id="insertPaymentsInfo" parameterType="java.util.List">
+		INSERT INTO T_PAYMENT_INFO(
+			PAYMENT_ID,
+			PAYMENT_CODE,
+			PAYMENT_NAME_CN,
+			PAYMENT_NAME_EN,
+			ADD_USER,
+			ADD_TIME,
+			UPDATE_USER,
+			UPDATE_TIME,
+			IS_DELETE,
+			IS_USED,
+			CAN_INVOICE
+		)VALUES
+		<foreach collection="list" item="item" index="index"  separator=",">
+			(
+				'${item.PAYMENT_ID}',
+				'${item.code}',
+				'${item.name}',
+				'${item.nameEn}',
+				'${item.USER}',
+				'${item.NOWTIME}',
+				'${item.USER}',
+				'${item.NOWTIME}',
+				'0',
+				'${item.IS_USED}',
+				'${item.invoiceFlag}'
+			)
+		</foreach>
+	</insert>
+	<!-- 更新支付方式 -->
+	<update id="updatePaymentsInfo" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index"  separator=";">
+			UPDATE T_PAYMENT_INFO
+			SET PAYMENT_NAME_CN = '${item.name}',
+			    PAYMENT_NAME_EN = '${item.nameEn}',
+			    CAN_INVOICE = '${item.invoiceFlag}'
+			WHERE PAYMENT_CODE = '${item.code}' 
+		</foreach>
+	</update>
+	<!-- 查询优惠信息 -->
+	<select id="getDiscountInfo" resultType="map">
+		SELECT
+			DISCOUNT_ID,
+			DISCOUNT_CODE,
+			DISCOUNT_NAME_CN,
+			DISCOUNT_NAME_EN
+		FROM T_DISCOUNT_INFO
+	</select>
+	<!-- 新增优惠方式 -->
+	<insert id="insertDiscountInfo" parameterType="java.util.List">
+		INSERT INTO T_DISCOUNT_INFO(
+			DISCOUNT_ID,
+			DISCOUNT_CODE,
+			DISCOUNT_NAME_CN,
+			DISCOUNT_NAME_EN,
+			DISCOUNT_TYPE,
+			ADD_USER,
+			ADD_TIME,
+			UPDATE_USER,
+			UPDATE_TIME,
+			IS_DELETE,
+			IS_USED
+		)VALUES
+		<foreach collection="list" item="item" index="index"  separator=",">
+			(
+				'${item.DISCOUNT_ID}',
+				'${item.code}',
+				'${item.name}',
+				'${item.name_EN}',
+				'${item.type}',
+				'${item.USER}',
+				'${item.NOWTIME}',
+				'${item.USER}',
+				'${item.NOWTIME}',
+				'0',
+				'${item.IS_USED}'
+			)
+		</foreach>
+	</insert>
+	<!-- 更新优惠方式 -->
+	<update id="updateDiscountInfo" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index"  separator=";">
+			UPDATE T_DISCOUNT_INFO
+			SET DISCOUNT_NAME_CN = #{item.name},DISCOUNT_NAME_EN = #{item.name_EN}
+			WHERE DISCOUNT_CODE = #{item.code} 
+		</foreach>
+	</update>
+</mapper>

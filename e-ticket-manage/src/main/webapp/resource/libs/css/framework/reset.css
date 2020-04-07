@@ -1,0 +1,56 @@
+body {
+	font-size: 12px;
+	margin: 0;
+	padding: 0;
+	line-height: 200%;
+	height: 100%;
+	border: 0;
+	text-align: left;
+}
+
+ul {
+	margin: 0;
+	padding: 0;
+}
+
+li {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+dl {
+	margin: 0;
+	padding: 0;
+}
+
+dt {
+	margin: 0;
+	padding: 0;
+}
+
+dd {
+	margin: 0;
+	padding: 0;
+}
+
+ol {
+	margin: 0;
+	padding: 0;
+}
+
+img {
+	border: 0;
+}
+
+form {
+	margin: 0;
+}
+
+a {
+	cursor: pointer;
+	cursor: hand;
+}
+.main-layout-left{
+	display:none;
+}

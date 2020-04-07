@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+
+	<page id="cardTemplate" title="卡劵模板管理"  js="/webresources/script/validate.js" >
+		<report id="report1"  extends="baseListPage.baseReport" pagesize="20"  rowselect="multiple-checkbox"
+		dataexport="plainexcel" type="editablelist">
+			<header>
+				<![CDATA[
+				  <script>
+				     function newCardTemplate(){
+				 	        wx_winpage('invoiceContent/showCardTemplateEdit.htm',{title:'新增',width:750,height:350});
+				     }
+				  </script>
+                ]]>
+			</header>
+			<dataexports filename="卡劵模板管理"/>
+			<display>
+				<col column="APPID" label="开票平台识别码" align="center"/>
+				<col column="CARD_ID" label="卡劵模板ID" align="center"/>
+				<col column="TITLE" label="收款方" align="center"/>
+				<col column="INVOICE_TYPE" label="发票类型" align="center"/>
+				<col column="LOG_URL"  label="卡劵LOGO" align="center"/>
+				<col property="operator" column="{non-fromdb}" label="操作" align="center"/>
+			</display>
+			<sql preparedstatement="false">
+				<select>
+					<value>
+						<![CDATA[
+							SELECT
+							   APPID,CARD_ID,TITLE,LOGO_URL,INVOICE_TYPE
+							FROM T_CARD_TEMPLATE
+							WHERE IS_DELETE = '0'
+						 ]]>
+					</value>
+				</select>
+				<delete confirmessage="是否确认删除">
+					<![CDATA[
+					    update T_CARD_TEMPLATE set is_delete = '1' where CARD_ID = @{CARD_ID}
+                    ]]>
+				</delete>
+			</sql>
+			<buttons>
+				<button name="btn_add" extends="${wabacus.button.default}" label="新增" position="title">
+					newCardTemplate()
+				</button>
+			</buttons>
+			<format>
+				<value>
+					<![CDATA[
+						operator = "<a href=\"javascript:void(0);\" onclick=\"wx_winpage('invoiceContent/showCardTemplateEdit.htm?card_id="+CARD_ID+"',{title:'卡劵编辑',width:750,height:350})\">卡劵编辑</a>";
+				    ]]>
+				</value>
+			</format>
+		</report>
+	</page>
+</applications>

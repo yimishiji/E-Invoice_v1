@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<!--开票统计-->
+	<page id="invoiceCount" title="开票统计" js="/webresources/script/validate.js">
+		<header>
+		</header>
+		<report id="report1"  pagesize="10"  dataexport="plainexcel" type="editablelist">
+			<dataexports filename="开票统计"/>
+			<display>
+				<col column="TAXPAYER_ID" label="公司代码" align="center"/>
+				<col column="TAXPAYER_NAME_CN"  label="公司名称" align="center" />
+				<col column="TAXPAYER_IDENTIFY_NO" label="公司税号" align="center"/>
+				<col column="INVOICE_TIME_SCOPE"  label="统计周期" align="center"/>
+				<col column="BLUE_TICKET_COUNT" label="蓝票数量" align="right" clickorderby="true"/>
+				<col column="BLUE_TICKET_MONEY" label="蓝票含税总金额" align="right" clickorderby="true"/>
+				       <col column="BLUE_TICKET_MONEY_NOTAX" label="蓝票不含税总金额" align="right" displaytype="hidden"/>
+				<col column="RED_TICKET_COUNT" label="红票数量" align="right" clickorderby="true"/>
+				<col column="RED_TICKET_MONEY" label="红票总金额" align="right" clickorderby="true"/>
+				<col property="operator" label="操作" column="{non-fromdb}" align="center"/>
+
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[
+						SELECT
+						  TAXPAYER.TAXPAYER_ID,
+						  TAXPAYER.TAXPAYER_NAME_CN,
+						  TAXPAYER.TAXPAYER_IDENTIFY_NO,
+						  CONCAT(#INVOICE_START_TIME#,'～','#INVOICE_END_TIME#')  INVOICE_TIME_SCOPE,
+						  SUM(CASE WHEN INVOICE_ORDER.INVOICE_TYPE='E00601' THEN 1 ELSE NULL END)  BLUE_TICKET_COUNT,
+						  SUM(CASE WHEN INVOICE_ORDER.INVOICE_TYPE='E00601' THEN CAST(INVOICE_INFO.TOTAL_AMOUNT as DECIMAL(11,2)) ELSE NULL END) BLUE_TICKET_MONEY,
+						  SUM(CASE WHEN INVOICE_ORDER.INVOICE_TYPE='E00601' THEN CAST(INVOICE_INFO.TOTAL_AMOUNT_WITHOUT_TAX as DECIMAL(11,2)) ELSE NULL END) BLUE_TICKET_MONEY_NOTAX,
+						  SUM(CASE WHEN INVOICE_ORDER.INVOICE_TYPE='E00602' THEN 1 ELSE NULL END)  RED_TICKET_COUNT,
+						  SUM(CASE WHEN INVOICE_ORDER.INVOICE_TYPE='E00602' THEN CAST(INVOICE_INFO.TOTAL_AMOUNT_WITHOUT_TAX as DECIMAL(11,2))
+																				+CAST(INVOICE_INFO.TOTAL_TAX_AMOUNT as DECIMAL(11,2)) ELSE NULL END
+						 ) RED_TICKET_MONEY
+						  FROM T_INVOICE_ORDER INVOICE_ORDER,
+						       T_INVOICE_INFO INVOICE_INFO,
+						       T_TAXPAYER_INFO TAXPAYER
+						WHERE
+						INVOICE_ORDER.ORDER_ID = INVOICE_INFO.ORDER_ID
+						AND INVOICE_ORDER.TAXPAYER_ID = TAXPAYER.TAXPAYER_IDENTIFY_NO
+						AND INVOICE_ORDER.INVOICE_STATUS = 'E00505'
+						AND {#condition#}
+						GROUP BY TAXPAYER.TAXPAYER_ID,TAXPAYER.TAXPAYER_NAME_CN,TAXPAYER.TAXPAYER_IDENTIFY_NO
+						 ]]>
+					</value>
+
+					<condition name="TAXPAYER_ID" label="公司代码">
+						<value><![CDATA[(TAXPAYER.TAXPAYER_ID like '%#data#%')]]></value>
+					</condition>
+					<condition name="TAXPAYER_IDENTIFY_NO" label="公司税号">
+						<value><![CDATA[(TAXPAYER.TAXPAYER_IDENTIFY_NO like '%#data#%')]]></value>
+					</condition>
+					<!--<condition name="INVOICE_STATUS" label="发票状态">
+						<value><![CDATA[(INVOICE_ORDER.INVOICE_STATUS = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E005"></option>
+						</inputbox>
+					</condition>-->
+					<!-- <condition name="INVOICE_TYPE" label="发票类型">
+						<value><![CDATA[(INVOICE_ORDER.INVOICE_TYPE = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E006"></option>
+						</inputbox>
+					</condition> -->
+					
+					<!--<condition name="INVOICE_TRADE_TYPE" label="门店类型">
+						<value><![CDATA[(INVOICE_ORDER.INVOICE_TRADE_TYPE = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E007"></option>
+						</inputbox>
+					</condition>-->
+					<condition name="INVOICE_START_TIME" label="开票起始时间">
+						<value><![CDATA[(STR_TO_DATE(INVOICE_INFO.BILLING_DATE,'%Y-%c-%d')>=STR_TO_DATE('#data#','%Y-%c-%d'))]]></value>
+						<inputbox type="datepicker"  dateformat="yyyy-MM-dd"  jsvalidate="isNotEmpty(${invalid.isnotempty})"></inputbox>
+					</condition>
+					<condition name="INVOICE_END_TIME" label="开票截止时间">
+						<value><![CDATA[(STR_TO_DATE(INVOICE_INFO.BILLING_DATE,'%Y-%c-%d')<=STR_TO_DATE('#data#','%Y-%c-%d'))]]></value>
+						<inputbox type="datepicker"  dateformat="yyyy-MM-dd" jsvalidate="isNotEmpty(${invalid.isnotempty})"></inputbox>
+					</condition>
+					<condition name="IS_MANUAL" label="手工开票标志">
+						<value><![CDATA[(INVOICE_ORDER.IS_MANUAL = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E001"></option>
+						</inputbox>
+					</condition>
+				</select>
+			</sql>
+            <format>
+                <value>
+                    <![CDATA[
+                        String INVOICE_STATUS = rrequest.getStringAttribute("INVOICE_STATUS","");
+                        String INVOICE_TYPE = rrequest.getStringAttribute("INVOICE_TYPE","");
+                        String IS_MANUAL = rrequest.getStringAttribute("IS_MANUAL","");
+                        String INVOICE_TRADE_TYPE = rrequest.getStringAttribute("INVOICE_TRADE_TYPE","");
+                        String INVOICE_START_TIME = rrequest.getStringAttribute("INVOICE_START_TIME","");
+                        String INVOICE_END_TIME = rrequest.getStringAttribute("INVOICE_END_TIME","");
+					    String invoiceHref = "<a href=\"javascript:void(0);\" onclick=\"wx_winpage('ShowReport.wx?PAGEID=invoiceDetail2&TAXPAYER_IDENTIFY_NO="+TAXPAYER_IDENTIFY_NO
+					    +"&INVOICE_STATUS="+INVOICE_STATUS
+					    +"&INVOICE_TYPE="+INVOICE_TYPE
+					    +"&IS_MANUAL="+IS_MANUAL
+					    +"&INVOICE_START_TIME="+INVOICE_START_TIME
+					    +"&INVOICE_END_TIME="+INVOICE_END_TIME
+					    +"',{title:'开票明细清单',width:800,height:500,initsize:'max'})\">开票明细清单</a>";
+				   		operator = invoiceHref;
+				    ]]>
+                </value>
+            </format>
+		</report>
+	</page>
+
+
+	<!--开票清单明细 -->
+	<page id="invoiceDetail2" title="开票清单明细" js="/webresources/script/validate.js">
+		<report id="report1"  pagesize="5"  dataexport="plainexcel" type="editablelist">
+			<dataexports filename="开票清单明细"/>
+			<display>
+				<col property="EXTRACTED_CODE"  column="{non-fromdb}" label="提取码" align="center"/>
+				<col column="TAXPAYER_IDENTIFY_NO"  label="公司代码" align="center" />
+				<col column="TAXPAYER_NAME_CN" label="公司名称" align="center"/>
+				<col column="STORE_NUMBER" label="门店号" align="center" />
+				<col column="TRANSACTION_DATETIME" label="交易时间" align="center"/>
+				<col column="TRANSACTION_NUMBER" label="交易小票号" align="center"/>
+				<col column="TOTAL_AMOUNT_WITHOUT_TAX" label="支付金额" align="center"/>
+				<col column="INVOICE_CODE" label="发票代码" align="center"/>
+				<col column="INVOICE_NUMBER" label="发票号码" align="center"/>
+				<col column="INVOICE_TIME"  label="开票日期" align="center" />
+				<col column="ISSUER" label="开票人" displaytype="hidden"/>
+				<col column="PAYEE" label="收款人" displaytype="hidden"/>
+				<col column="REVIEW_CLERK" label="复核人" displaytype="hidden"/>
+				<col column="PURCHASER_NAME" label="购方名称" align="center"/>
+				<col column="PURCHASER_EMAIL" label="购方邮箱" align="center" />
+				<col column="TOTAL_AMOUNT" label="含税总金额" align="right"/>
+				
+				<col column="TOTAL_TAX_AMOUNT" label="总税额" align="right" />
+				<col column="INVOICE_STATUS" label="红冲审核状态" align="center" />
+				<col column="INVOICE_TYPE" label="发票类型" align="center"/>
+				<col column="IS_MANUAL" label="是否手工开票" align="center"/>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[
+							SELECT
+							(SELECT ITEM_NAME FROM R_BASE_DICT_ITEM WHERE ITEM_CODE = B.IS_MANUAL) IS_MANUAL,
+							B.TAXPAYER_ID TAXPAYER_IDENTIFY_NO,
+							(SELECT TAXPAYER_NAME_CN FROM T_TAXPAYER_INFO WHERE TAXPAYER_IDENTIFY_NO = B.TAXPAYER_ID) TAXPAYER_NAME_CN,
+							D.STORE_NUMBER,
+							DATE_FORMAT(D.TRANSACTION_DATETIME,'%Y-%m-%d %T') TRANSACTION_DATETIME,
+							D.TRANSACTION_NUMBER,
+							A.INVOICE_CODE,
+							A.INVOICE_NUMBER,
+							A.ISSUER,
+							A.PAYEE,
+							A.REVIEW_CLERK,
+							DATE_FORMAT(A.INVOICE_TIME,'%Y-%m-%d %T') INVOICE_TIME,
+							B.PURCHASER_NAME,
+							B.PURCHASER_EMAIL,
+							CAST(A.TOTAL_AMOUNT AS DECIMAL(11,2)) TOTAL_AMOUNT,
+							CAST(A.TOTAL_AMOUNT_WITHOUT_TAX AS DECIMAL(11,2)) TOTAL_AMOUNT_WITHOUT_TAX,
+							CAST(A.TOTAL_TAX_AMOUNT AS DECIMAL(11,2)) TOTAL_TAX_AMOUNT,
+							(SELECT ITEM_NAME FROM R_BASE_DICT_ITEM WHERE ITEM_CODE = B.INVOICE_STATUS) INVOICE_STATUS,
+							(SELECT ITEM_NAME FROM R_BASE_DICT_ITEM WHERE ITEM_CODE = B.INVOICE_TYPE) INVOICE_TYPE
+							FROM T_INVOICE_ORDER B
+							LEFT JOIN T_INVOICE_INFO A ON A.ORDER_ID = B.ORDER_ID
+							LEFT JOIN (
+								SELECT
+									GROUP_CONCAT(RELATION.TRANSACTION_NUMBER) TRANSACTION_NUMBER,
+								    GROUP_CONCAT(STORE_NUMBER) STORE_NUMBER,
+									ORDER_ID,TRANSACTION_DATETIME
+								FROM
+									T_INVOICE_TRANACTION_RELATION RELATION,T_TRANSACTION_INFO INFO
+							    WHERE RELATION.TRANSACTION_NUMBER = INFO.TRANSACTION_NUMBER
+								GROUP BY
+								ORDER_ID
+							) AS D ON B.ORDER_ID = D.ORDER_ID
+							LEFT JOIN T_TAXPAYER_INFO E ON B.TAXPAYER_ID = E.TAXPAYER_IDENTIFY_NO
+							WHERE {#condition#}
+						 ]]>
+					</value>
+					<condition name="TRANSACTION_NUMBER" label="提取码" >
+						<value><![CDATA[(D.TRANSACTION_NUMBER = '#data#')]]></value>
+					</condition>
+					<condition name="TAXPAYER_IDENTIFY_NO" label="公司代码" >
+						<value><![CDATA[(E.TAXPAYER_IDENTIFY_NO = '#data#')]]></value>
+					</condition>
+					<condition name="STORE_NUMBER" label="门店号" >
+						<value><![CDATA[(D.STORE_NUMBER = '#data#')]]></value>
+					</condition>
+					<condition name="INVOICE_CODE" label="发票代码" >
+						<value><![CDATA[(A.INVOICE_CODE = '#data#')]]></value>
+					</condition>
+					<condition name="INVOICE_NUMBER" label="发票号码" >
+						<value><![CDATA[(A.INVOICE_NUMBER = '#data#')]]></value>
+					</condition>
+					<condition name="TAXPAYER_IDENTIFY_NO" label="销方税号" >
+						<value><![CDATA[(E.TAXPAYER_IDENTIFY_NO = '#data#')]]></value>
+					</condition>
+					<condition name="TAXPAYER_NAME_CN" label="销方名称" >
+						<value><![CDATA[(E.TAXPAYER_NAME_CN = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E005"></option>
+						</inputbox>
+					</condition>
+					<condition name="TOTAL_AMOUNT_START" label="含税总金额区间" >
+						<value><![CDATA[(A.TOTAL_AMOUNT>='#data#')]]></value>
+					</condition>
+					<condition name="TOTAL_AMOUNT_END" label="含税总金额区间" >
+						<value><![CDATA[(A.TOTAL_AMOUNT<='#data#')]]></value>
+					</condition>  
+					<condition name="INVOICE_TYPE" label="发票类型" >
+						<value><![CDATA[(B.INVOICE_TYPE = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E006"></option>
+						</inputbox>
+					</condition>
+					<condition name="IS_MANUAL" label="手工开票标志" >
+						<value><![CDATA[(B.IS_MANUAL = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E001"></option>
+						</inputbox>
+					</condition>
+					<!--<condition name="INVOICE_TRADE_TYPE" label="门店类型" hidden="true">
+						<value><![CDATA[(B.INVOICE_TRADE_TYPE = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E007"></option>
+						</inputbox>
+					</condition>-->
+					<condition name="INVOICE_START_TIME" label="开票起始时间" >
+						<value><![CDATA[(STR_TO_DATE(A.INVOICE_TIME,'%Y-%c-%d')>=STR_TO_DATE('#data#','%Y-%c-%d'))]]></value>
+						<inputbox type="datepicker"  dateformat="yyyy-MM-dd"  jsvalidate="isNotEmpty(${invalid.isnotempty})"></inputbox>
+					</condition>
+					<condition name="INVOICE_END_TIME" label="开票截止时间" >
+						<value><![CDATA[(STR_TO_DATE(A.INVOICE_TIME,'%Y-%c-%d')<=STR_TO_DATE('#data#','%Y-%c-%d'))]]></value>
+						<inputbox type="datepicker"  dateformat="yyyy-MM-dd" jsvalidate="isNotEmpty(${invalid.isnotempty})"></inputbox>
+					</condition>
+				</select>
+			</sql>
+			<format>
+				<imports>
+					<import>com.rongzer.efapiao.util.ShinHoDataUtil</import>
+				</imports>
+				<value>
+					<![CDATA[
+					if(TRANSACTION_NUMBER != null && !"".equals(TRANSACTION_NUMBER)){
+						EXTRACTED_CODE = ShinHoDataUtil.deCode(TRANSACTION_NUMBER);
+					}
+				]]>
+				</value>
+			</format>
+		</report>
+	</page>
+</applications>

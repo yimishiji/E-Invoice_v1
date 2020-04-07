@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaL0ocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+    <!--货品列表 -->
+    <page id="paymentInfo" title="支付方式" js="/webresources/script/validate.js">
+        <header>
+        </header>
+        <report id="report1" extends="baseEditPage.baseReport" pagesize="20" rowselect="multiple-checkbox" dataexport="plainexcel" type="editablelist2">
+            <dataexports filename="支付方式"/>
+            <display>
+                <col column="PAYMENT_ID" label="主键" displaytype="hidden"/>
+                <col column="PAYMENT_CODE" label="编码" align="center">
+                	<inputbox
+						servervalidate="isUnique(支付方式编码#data#已经存在,T_PAYMENT_INFO,PAYMENT_CODE,IS_DELETE='0' and PAYMENT_ID!='{PAYMENT_ID}')"
+						servervalidatetype="both"
+			            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength32(${invalid.isStrLen32})" 
+			            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="PAYMENT_NAME_CN" label="名称" align="center">
+                	<inputbox
+						servervalidate="isUnique(支付名称#data#已经存在,T_PAYMENT_INFO,PAYMENT_NAME_CN,IS_DELETE='0' and PAYMENT_ID!='{PAYMENT_ID}')"
+						servervalidatetype="both"
+			            jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength256(${invalid.isStrLen256})" 
+			            jsvalidatetype="both"></inputbox>
+                </col>
+                <col column="CAN_INVOICE" label="是否开票" align="center" valuestyleproperty="DICT">
+                	<inputbox type="selectbox">
+                         <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E001"></option>
+                    </inputbox>
+                </col>
+                <col column="IS_USED" label="是否使用" align="center" valuestyleproperty="DICT">
+                	<inputbox type="selectbox" defaultvalue="D00002">
+                         <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="D000_hasempty"></option>
+                    </inputbox>
+                </col>
+            </display>
+            <sql preparedstatement="false">
+                <select>
+                    <value>
+                        <![CDATA[
+							SELECT
+								TP.PAYMENT_ID,
+								TP.PAYMENT_CODE,
+								TP.PAYMENT_NAME_CN,
+								TP.CAN_INVOICE,
+								TP.ADD_USER,
+								TP.ADD_TIME,
+								TP.UPDATE_USER,
+								TP.UPDATE_TIME,
+								TP.IS_DELETE,
+								TP.IS_USED
+							FROM T_PAYMENT_INFO TP
+							WHERE TP.IS_DELETE = 0
+							AND {#condition#} 
+						 ]]>
+                    </value>
+                    <condition name="PAYMENT_ID" hidden="true">
+						<value><![CDATA[TP.PAYMENT_ID = '#data#']]></value>
+					</condition>
+					<condition name="PAYMENT_CODE" label="支付方式代码">
+                        <value><![CDATA[(TP.PAYMENT_CODE like '%#data#%')]]></value>
+                    </condition>
+                    <condition name="PAYMENT_NAME_CN" label="支付方式名称">
+                        <value><![CDATA[(TP.PAYMENT_NAME_CN like '%#data#%')]]></value>
+                    </condition>
+                    <condition name="CAN_INVOICE" label="是否允许开票">
+                        <value><![CDATA[(TP.CAN_INVOICE = '#data#')]]></value>
+                        <inputbox type="selectbox">
+                        	<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E001"></option>
+                    	</inputbox>
+                    </condition>
+                    <condition name="IS_USED" label="是否启用">
+                        <value><![CDATA[(TP.IS_USED = '#data#')]]></value>
+                        <inputbox type="selectbox">
+                        	<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="D000"></option>
+                    	</inputbox>
+                    </condition>
+                </select>
+                <insert>
+                	<params>
+						<param name="PAYMENT_ID" value="uuid{}" />
+        				<param name="userId" value="session{LoginUser.loginUserId}" />
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+        			</params>
+        			<value>
+        				INSERT INTO T_PAYMENT_INFO 
+        				(
+							PAYMENT_ID,
+							PAYMENT_CODE,
+							PAYMENT_NAME_CN,
+							CAN_INVOICE,
+							IS_USED,
+							ADD_USER,
+							ADD_TIME,
+							UPDATE_USER,
+							UPDATE_TIME,
+							IS_DELETE
+						)values(
+							#{PAYMENT_ID},
+							@{PAYMENT_CODE},
+							@{PAYMENT_NAME_CN},
+							@{CAN_INVOICE},
+							@{IS_USED},
+							#{userId},
+							#{NOWTIME},
+							#{userId},
+							#{NOWTIME},
+							'0'
+						)
+					</value>
+				</insert>
+				<update>
+        			<params>
+        				<param name="userId" value="session{LoginUser.loginUserId}" />
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+        			</params>
+        			<value>
+        				UPDATE T_PAYMENT_INFO
+        				SET PAYMENT_CODE = @{PAYMENT_CODE},
+        					PAYMENT_NAME_CN = @{PAYMENT_NAME_CN},
+        					CAN_INVOICE = @{CAN_INVOICE},
+        					IS_USED = @{IS_USED},
+        					UPDATE_USER = #{userId},
+							UPDATE_TIME = #{NOWTIME}
+						WHERE PAYMENT_ID = @{PAYMENT_ID__old}
+        			</value>
+				</update>
+				<delete>
+					<params>
+        				<param name="userId" value="session{LoginUser.loginUserId}" />
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+        			</params>
+        			<value>
+        				UPDATE T_PAYMENT_INFO
+        				SET IS_DELETE = '1',
+        					UPDATE_USER = #{userId},
+							UPDATE_TIME = #{NOWTIME}
+						WHERE PAYMENT_ID = @{PAYMENT_ID__old}
+        			</value>
+				</delete>
+            </sql>
+			<buttons>
+				<button name="btn_add" position="" label="新增" extends="${add.button.default}"/>
+			</buttons>
+        </report>
+    </page>
+</applications>

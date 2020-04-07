@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+
+	<page id="extractedForbidden" title="提取码禁止开票"  js="/webresources/script/validate.js" >
+		<report id="report1"  extends="baseListPage.baseReport" pagesize="20"  rowselect="multiple-checkbox"
+		dataexport="plainexcel" type="editablelist">
+			<header>
+				<![CDATA[
+				  <script>
+				     function forbiddenNewExtracted(){
+				 	        wx_winpage('manualInvoice/showExtractedForbiddenEdit.htm',{title:'新增',width:750,height:350});
+				     }
+				  </script>
+                ]]>
+			</header>
+			<dataexports filename="提取码禁止开票"/>
+			<display>
+				<col column="EXTRACTED_CODE" label="提取码" align="center"/>
+				<col column="UPDATE_USER" label="操作人" align="center"/>
+				<col column="UPDATE_TIME" label="操作日期" align="center"/>
+				<col property="operator" column="{non-fromdb}" label="操作" align="center"/>
+			</display>
+			<sql preparedstatement="false">
+				<select>
+					<value>
+						<![CDATA[
+							SELECT
+							    EXTRACTED_CODE,
+							    (SELECT NAME_CN FROM R_SYS_USER_INFO WHERE USER_ID = UPDATE_USER) UPDATE_USER,
+							    UPDATE_TIME
+							FROM T_EXTRACTED_FORBIDDEN
+							WHERE IS_DELETE = '0'
+							AND {#condition#}
+						 ]]>
+					</value>
+					<condition name="EXTRACTED_CODE" label="提取码">
+						<inputbox styleproperty="style='width:200px'"/>
+						<value><![CDATA[(EXTRACTED_CODE = '#data#')]]></value>
+					</condition>
+				</select>
+				<delete confirmessage="是否确认删除">
+					<![CDATA[
+					    update T_EXTRACTED_FORBIDDEN set is_delete = '1' where EXTRACTED_CODE = @{EXTRACTED_CODE}
+                    ]]>
+				</delete>
+			</sql>
+			<buttons>
+				<button name="btn_add" extends="${wabacus.button.default}" label="新增" position="title">
+					forbiddenNewExtracted()
+				</button>
+			</buttons>
+			<format>
+				<value>
+					<![CDATA[
+						operator = "<a href=\"javascript:void(0);\" onclick=\"wx_winpage('manualInvoice/showExtractedForbiddenEdit.htm?EXTRACTED_CODE="+EXTRACTED_CODE+"',{title:'提取码明细信息',width:750,height:350})\">提取码明细信息</a>";
+				    ]]>
+				</value>
+			</format>
+		</report>
+	</page>
+</applications>

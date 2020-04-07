@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rongzer.efapiao.dao.FapiaoFileMapper">
+	<update id="updateInvoiceStatus" parameterType="map">
+		UPDATE T_INVOICE_INFO
+		SET IS_BACKUP = 'D00002',
+			UPDATE_TIME = #{UPDATE_TIME}
+		WHERE INVOICE_ID = #{BIZ_ID}
+	</update>
+	<insert id="addFileInfo" parameterType="map">
+		INSERT INTO R_COM_FILE_INFO(
+			FILE_ID,
+			RELATIVE_PATH,
+			REAL_FILE_NAME,
+			FILE_NAME,
+			FILE_TYPE,
+			DESCRIPTION,
+			UPLOAD_TIME,
+			OPER_ID,
+			BIZ_ID
+		)VALUES(
+			#{FILE_ID},
+			#{RELATIVE_PATH},
+			#{REAL_FILE_NAME},
+			#{FILE_NAME},
+			#{FILE_TYPE},
+			#{DESCRIPTION},
+			#{UPLOAD_TIME},
+			#{OPER_ID},
+			#{BIZ_ID}
+		)
+	</insert>
+	<select id="queryFileInfoById" parameterType="string" resultType="map">
+		SELECT
+			A.RELATIVE_PATH,
+			A.REAL_FILE_NAME,
+			A.FILE_NAME,
+			B.TOTAL_AMOUNT,
+			B.TOTAL_AMOUNT_WITHOUT_TAX,
+			B.TOTAL_TAX_AMOUNT,
+			B.INVOICE_TIME,
+			B.INVOICE_CODE,
+			B.INVOICE_NUMBER,
+			C.PURCHASER_NAME,
+			D.TAXPAYER_NAME_CN
+		FROM
+			R_COM_FILE_INFO A
+		INNER JOIN T_INVOICE_INFO B ON A.BIZ_ID = B.INVOICE_ID
+		INNER JOIN T_INVOICE_ORDER C ON B.ORDER_ID = C.ORDER_ID
+		INNER JOIN T_TAXPAYER_INFO D ON C.TAXPAYER_ID = D.TAXPAYER_IDENTIFY_NO
+		WHERE
+			A.BIZ_ID = #{BIZ_ID}
+	</select>
+	<insert id="saveRequestContent" parameterType="map">
+		<![CDATA[
+			INSERT INTO T_FAPIAO_RECORD(
+				REQUESTT_PK,
+				REQUEST_OBJECT,
+				KEY_CODE,
+				REQUEST_TIME,
+				REQUEST_CONTENT,
+				RESPONSE_TIME,
+				RESPONSE_CONTENT,
+				REMARK
+			)VALUES(
+				'${REQUESTT_PK}',
+				'${REQUEST_OBJECT}',
+				'${KEY_CODE}',
+				'${NOWTIME}',
+				'${CONTENT}',
+				'${UPDATETIME}',
+				'${RESPONSE}',
+				'${REMARK}'
+			)
+		]]>
+	</insert>
+</mapper>

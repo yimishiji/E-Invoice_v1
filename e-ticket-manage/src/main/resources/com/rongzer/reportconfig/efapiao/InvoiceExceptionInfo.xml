@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<!--发票异常查询 -->
+	<page id="invoiceExceptionInfo" title="发票异常查询" js="/webresources/script/validate.js">
+		<jsp id="jsp1">/jsp/rdp/parent.jsp</jsp>
+		<header>
+			<![CDATA[
+			<script>
+						function cancelInvoice(orderId){
+			     			wx_confirm("确定取消开票？","系统提示",200,100
+						      ,function okHandler(){
+						       var jsonStr = {};
+							   var jsonParam = '{"method":"cancelInvoice","orderId":"'+orderId+'"}';
+							   jsonStr.serviceNo = "manualInvoiceInfoService";
+							   jsonStr.inputParam = jsonParam;
+						         $.ajax({
+									type: "POST",
+									url :ctx+"/rdp/business/testService.htm?NOSESSION_PASS=1",
+									async: false,
+									data:jsonStr,
+									dataType: "json",
+									success: function(data){
+										wx_success(data.result);
+										aoRefresh();
+									}
+								});
+						     }
+						    ,null
+						  );
+						}
+
+						function aoRefresh(){
+							setTimeout(
+								function(){
+									//刷新报表
+									artDialog.open.origin.refreshParentEditableListReport("invoiceExceptionInfo","report1",false);
+									art.dialog.close();
+								},1*1000);
+						}
+			</script>
+            ]]>
+		</header>
+		<report id="report1"  pagesize="10"  dataexport="plainexcel" type="editablelist">
+			<dataexports filename="发票异常查询"/>
+			<display>
+				<col column="ORDER_ID" label="订单编码" displaytype="hidden"/>
+				<col property="EXTRACTED_CODE"  column="{non-fromdb}" label="提取码" align="center"/>
+				<col column="TAXPAYER_IDENTIFY_NO" label="公司代码" align="center"/>
+				<col column="TAXPAYER_NAME_CN" label="公司名称" align="center"/>
+				<col column="STORE_NUMBER" label="门店号" align="center"/>
+				<col column="TRANSACTION_DATETIME" label="交易时间" align="center"/>
+				<col column="TRANSACTION_NUMBER" label="交易流水号" align="center"/>
+				<col column="TRANSACTION_AMOUNT" label="支付金额" align="center"/>
+				<col column="PURCHASER_NAME" label="购方名称" align="center"/>
+				<col column="PURCHASER_EMAIL" label="购方邮箱" align="center"/>
+				<col column="INVOICE_STATUS" label="开票状态" align="center"/>
+				<col column="INVOICE_TYPE" label="发票类型" align="center"/>
+				<col column="IS_MANUAL" label="手工开票标志" align="center"/>
+				<col column="ISSUER" label="开票人"/>
+				<col column="PAYEE" label="收款人"/>
+				<col column="REVIEW_CLERK" label="复核人"/>
+				<col column="REASON" label="异常原因"/>
+				<col property="operator" label="操作" width="160px" column="{non-fromdb}" align="center"/>
+			</display>
+			<sql>
+				<select>
+					<value provider="class{com.rongzer.efapiao.service.InvoiceExceptionInfoDataSet}"></value>
+					<condition name="COR_QX" keepkeywords="true" hidden="true"></condition>
+					<condition name="TRANSACTION_NUMBER" label="提取码">
+					</condition>
+					<condition name="TAXPAYER_IDENTIFY_NO" label="公司代码">
+					</condition>
+					<condition name="TAXPAYER_NAME_CN" label="公司名称">
+					</condition>
+					<condition name="STORE_NO" label="门店号">
+					</condition>
+					<condition name="INVOICE_TYPE" label="发票类型">
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E006"></option>
+						</inputbox>
+					</condition>
+					<condition name="INVOICE_STATUS" label="发票状态">
+						<inputbox type="selectbox">
+							<option value="" label="--请选择发票状态--"/>
+							<option dataset="@{select item_code,item_name from r_base_dict_item where item_code like 'E005%' and item_code!='E00505'}" value="item_code" label="item_name"></option>
+						</inputbox>
+					</condition>
+					<condition name="IS_MANUAL" label="手工开票标志">
+						<inputbox type="selectbox">
+							<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="E001"></option>
+						</inputbox>
+					</condition>
+					<condition name="UPDATE_TIME_START" label="开票请求日期起">
+						<inputbox type="datepicker"  dateformat="yyyy-MM-dd"></inputbox>
+					</condition>
+					<condition name="UPDATE_TIME_END" label="开票请求日期止">
+						<inputbox type="datepicker"  dateformat="yyyy-MM-dd"></inputbox>
+					</condition>
+				</select>
+			</sql>
+			<format>
+				<imports>
+					<import>com.rongzer.efapiao.util.ShinHoDataUtil</import>
+					<import>org.apache.commons.codec.binary.Base64</import>
+				</imports>
+				<value>
+					<![CDATA[
+						EXTRACTED_CODE = "";
+					    String orderHref = "<a href=\"javascript:void(0);\" onclick=\"wx_winpage('ShowReport.wx?PAGEID=orderInfo&ORDER_ID="+ORDER_ID+"',{title:'订单信息',width:800,height:500})\">订单信息</a>";
+					    String cancelHref = "<a href=\"javascript:void(0);\" onclick=\"cancelInvoice('"+ORDER_ID+"')\">取消开票</a>";
+				   		operator = orderHref+ "|"+cancelHref;
+				   		if(TRANSACTION_NUMBER != null && !"".equals(TRANSACTION_NUMBER)){
+				   		    String[] EXTRACTED_CODE_ARR = TRANSACTION_NUMBER.split(",");
+				   		    for(int i = 0;i<EXTRACTED_CODE_ARR.length;i++){
+				   		        String EXTRACTED_CODE_TEMP = EXTRACTED_CODE_ARR[i];
+				   		        if(i == EXTRACTED_CODE_ARR.length-1){
+				   		        	EXTRACTED_CODE += ShinHoDataUtil.deCode(EXTRACTED_CODE_TEMP);
+				   		        }else{
+					    			EXTRACTED_CODE += ShinHoDataUtil.deCode(EXTRACTED_CODE_TEMP)+",";
+					    		}
+					    	}
+					    }
+
+					    if(REASON != null && !"".equals(REASON)){
+                            byte[] decode64Str = Base64.decodeBase64(REASON.substring(4));
+		                    REASON = new String(decode64Str, "UTF-8");
+					    }
+				    ]]>
+				</value>
+			</format>
+		</report>
+	</page>
+</applications>

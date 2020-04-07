@@ -1,0 +1,242 @@
+@charset "utf-8";
+
+/*! by:lmq | update:20160108 16:15 */
+article, aside, details, figcaption, figure, footer, header, menu, nav, pre, section {
+	display: block
+}
+.clear, .clearfix:after {
+	clear: both
+}
+.clearfix:after{
+	content: "";
+	display: block;
+	visibility: hidden;
+	height: 0;
+	clear: both;
+}
+
+.alignL, caption, th {
+	text-align: left
+}
+.relative, sub, sup {
+	position: relative
+}
+a, a:active, a:hover, a:link, a:visited, ins {
+	text-decoration: none
+}
+html {
+	color: grey;
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+	text-rendering: optimizelegibility
+}
+article, aside, blockquote, body, button, code, dd, details, dl, dt, fieldset, figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6, header, hr, input, legend, li, menu, nav, ol, p, pre, section, td, textarea, th, ul {
+	margin: 0;
+	padding: 0
+}
+audio, canvas, video {
+	display: inline-block
+}
+audio:not([controls]) {
+	display: none;
+	height: 0
+}
+button::-moz-focus-inner, input::-moz-focus-inner {
+	padding: 0;
+	border: 0
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	color:#955319;
+	font-weight:bold;
+    margin-left: 5%;
+    border:2px solid #955319;
+}
+.twoTabal,.threeTabal{ border-top:none;}
+.fourTabal{border:none;}
+fieldset, img {
+	border: 0
+}
+abbr, acronym {
+	border-bottom: 1px dotted;
+	font-variant: normal
+}
+abbr {
+	cursor: help
+}
+del {
+	text-decoration: line-through
+}
+address, caption, cite, code, dfn, em, th, var {
+	font-style: normal;
+	font-weight: 400
+}
+li, ol, ul {
+	overflow:hidden;
+	list-style: none
+}
+q:after, q:before {
+	content: ''
+}
+sub, sup {
+	font-size: 75%;
+	line-height: 0
+}
+:root sub, :root sup {
+	vertical-align: baseline
+}
+sup {
+	top: -.5em
+}
+sub {
+	bottom: -.25em
+}
+u {
+	text-decoration: underline
+}
+mark {
+	background: #fffdd1;
+	border-bottom: 1px solid #ffedce;
+	padding: 2px;
+	margin: 0 5px
+}
+code, pre, pre tt {
+	font-family: Courier, 'Courier New', monospace
+}
+pre {
+	background: #f8f8f8;
+	border: 1px solid #ddd;
+	padding: 1em 1.5em;
+	-webkit-overflow-scrolling: touch
+}
+hr {
+	border: none;
+	border-bottom: 1px solid #cfcfcf;
+	margin-bottom: .8em;
+	height: 10px
+}
+figcaption, small {
+	font-size: .9em
+}
+b, strong {
+	font-weight: 700
+}
+[draggable] {
+	cursor: move
+}
+input::-webkit-input-placeholder {
+	color: #c9c9c9
+}
+input::-moz-input-placeholder {
+	color: #c9c9c9
+}
+input::-ms-input-placeholder {
+	color: #c9c9c9
+}
+.textwrap, .textwrap td, .textwrap th {
+	word-wrap: break-word;
+	word-break: break-all
+}
+.textwrap-table {
+	table-layout: fixed
+}
+.serif {
+	font-family: Palatino, Optima, Georgia, serif
+}
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "\5FAE\8F6F\96C5\9ED1", SimSun, sans-serif;
+	font-weight: 100;
+	line-height: 1.35
+}
+body, button, input, select, textarea {
+	outline: none;
+	font: 300 12px/1.5 "Microsoft YaHeiHelvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", "\5FAE\8F6F\96C5\9ED1", SimSun, sans-serif
+}
+div,h1,h2, h3, h4, h5, h6,ul,ol,li,span,a{ box-sizing: border-box;}
+.dn{display: none;}
+.back_fff{ background-color: #fff;}
+.color_fff{ color: #fff;}
+.clearfix:after {
+    content: "";
+    display: block;
+    visibility: hidden;
+    height: 0;
+    clear: both;
+}
+.clearfix {
+    zoom: 1;
+}
+.fl{float: left;}
+.fr{float: right;}
+.list30{ width:30%!important;}
+.list70{ width:70%!important;}
+
+input{ height: 25px; line-height: 25px; padding-left:5px; box-sizing: border-box;}
+.oneTabal{}
+.oneTabal ul li,.threeTabal ul li{ padding:5px 0; height: 35px;}
+.oneTabal ul li div.fl,.threeTabal ul li div.fl{ width:30%; text-align:left; height: 25px; line-height: 25px; padding-left: 5px;}
+.oneTabal ul li div.fl font,.threeTabal ul li div.fl font{ width:7%; display:inline-block; vertical-align: top;}
+.oneTabal ul li div.fl p,.threeTabal ul li div.fl p{ width:80%;display:inline-block;text-align:justify;}
+.oneTabal ul li div.fl p:after,.threeTabal ul li div.fl p:after{  content:'';  display: inline-block; width: 100%; box-sizing: border-box;}
+.oneTabal ul li input.fr,.threeTabal ul li input.fr{ width:68%; margin-right:2%; border:1px solid #999;}
+
+.twoTabal{}
+.twoTabal tr.twoTabalfirstTr{ border-bottom: 1px solid #955319; }
+.twoTabal td ul{ width: 100%; }
+.twoTabal td ul li{ width: 100%; height: 27px; line-height: 27px; margin: 5px 0;}
+.twoTabal td ul li input{ width: 96%; border:1px solid #999; }
+.twoTabal .fbtnAdd{ position: relative; }
+.btnAdd,.btnMin{ position: absolute;  background-color: #91CFA8; border: 1px solid #91cfa8; color: #FFFFFF; height: 27px;line-height: 24px; 
+	bottom: -45px;;
+	left: 50%;  margin-left: -15px; 
+}
+.twoTabal tr.allP td{ padding-top:20px; }
+.btnMin{ bottom: -90px;}
+.twoTabal .twoTabalTtr{ padding:0; margin:0; }
+/*小写区域 */
+.smallA{}
+.smallN{ width:30%; display:inline-block; line-height:25px;}
+.smallNw{ width:70%; display:inline-block;}
+
+
+.threeTabal{}
+.threeTabal textarea,.extractionCode textarea{ width: 100%; height: 100%; border: none; resize: none; padding:5px; box-sizing: border-box; }
+.fourTabal{ height: 45px; } 
+/* 提取码 */
+.extractionCode{ }
+.extractionCode textarea{}
+/*  提交开票按钮样式*/
+.invoice
+{
+	float:right;
+	margin:10px;
+	/*background: url("images/btn_bg.jpg") repeat scroll 0 0 rgba(0, 0, 0, 0);*/
+	background-color:#91CFA8;	
+	border: 1px solid #91cfa8;
+	color: #FFFFFF;
+    /*border: 1px solid #767676;
+    border-radius: 3px;
+    box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.1);*/    
+    height: 27px;
+    line-height: 24px;
+    min-width: 60px;
+	text-align:center;
+	border-radius: 3px;
+	box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.1);
+}
+button
+{
+	background-color:#91CFA8;	
+	/* border: 1px solid #91cfa8; */
+	color: #FFFFFF;
+    height: 27px;
+    line-height: 24px;
+    min-width: 30px;
+	text-align:center;
+	border-radius: 3px;
+	box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.1);
+}
+/* input{margin-top:3px;} */
+ul.tqm{ width:60%; margin-left:5%;}
+.oneTabal ul.tqm li,.oneTabal ul.tqm li input{ width:100%; margin-right:0;}

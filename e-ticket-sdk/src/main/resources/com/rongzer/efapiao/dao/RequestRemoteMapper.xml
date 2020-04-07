@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rongzer.efapiao.dao.RequestRemoteMapper">
+	<resultMap type="com.rongzer.efapiao.model.Transaction" id="Transaction">
+		<result property="TRANSACTION_ID" column="TRANSACTION_ID"/>
+		<result property="TRANSACTION_NUMBER" column="TRANSACTION_NUMBER"/>
+		<result property="TRANSACTION_DATETIME" column="TRANSACTION_DATETIME"/>
+		<result property="STORE_NUMBER" column="STORE_NUMBER"/>
+		<result property="STORE_NAME_CN" column="STORE_NAME_CN"/>
+		<result property="STORE_NAME_EN" column="STORE_NAME_EN"/>
+		<result property="POS_NAME" column="POS_NAME"/>
+		<result property="TRANSACTION_AMOUNT" column="TRANSACTION_AMOUNT"/>
+		<result property="EMPLOYEE_ID" column="EMPLOYEE_ID"/>
+		<result property="EMPLOYEE_NAME" column="EMPLOYEE_NAME"/>
+		<result property="SERVICE_TYPE" column="SERVICE_TYPE"/>
+		<result property="ADD_USER" column="ADD_USER"/>
+		<result property="ADD_TIME" column="ADD_TIME"/>
+		<result property="UPDATE_USER" column="UPDATE_USER"/>
+		<result property="UPDATE_TIME" column="UPDATE_TIME"/>
+		<result property="IS_DELETE" column="IS_DELETE"/>
+		<result property="DEAL_AMOUNT" column="DEAL_AMOUNT"/>
+		<result property="OPEN_ID" column="OPEN_ID"/>
+		<result property="INVOICE_STATUS" column="INVOICE_STATUS"/>
+		<result property="ORDER_ID" column="ORDER_ID"/>
+		<result property="TAXPAYER_ID" column="TAXPAYER_ID"/>
+		<result property="IS_MERGE" column="IS_MERGE"/>
+		<result property="INVOICE_LIMIT_AMOUNT" column="INVOICE_LIMIT_AMOUNT"/>
+		<result property="ALLOWED_INVOICE" column="ALLOWED_INVOICE"/>
+	</resultMap>
+	<resultMap type="com.rongzer.efapiao.model.TransactionItem" id="TransactionItem">
+		<result property="TRANSACTION_ID" column="TRANSACTION_ID"/>
+		<result property="ITEM_ID" column="ITEM_ID"/>
+		<result property="ITEM_CODE" column="ITEM_CODE"/>
+		<result property="ITEM_QUANTITY" column="ITEM_QUANTITY"/>
+		<result property="ITEM_PRICE" column="ITEM_PRICE"/>
+		<result property="ITEM_AMOUNT" column="ITEM_AMOUNT"/>
+		<result property="ITEM_AMOUNT_AFTER_DISCOUNT" column="ITEM_AMOUNT_AFTER_DISCOUNT"/>
+		<result property="DISCOUNT_CODE" column="DISCOUNT_CODE"/>
+		<result property="PRISE_CODE" column="PRISE_CODE"/>
+		<result property="DISCOUNT_MONEY" column="DISCOUNT_MONEY"/>
+		<result property="ORDER_WEIGHT" column="ORDER_WEIGHT"/>
+		<result property="UNIT_CN" column="UNIT_CN"/>
+		<result property="UNIT_EN" column="UNIT_EN"/>
+	</resultMap>
+	<resultMap type="com.rongzer.efapiao.model.TransactionPayment" id="TransactionPayment">
+		<result property="TRANSACTION_ID" column="TRANSACTION_ID"/>
+		<result property="PAYMENT_ID" column="PAYMENT_ID"/>
+		<result property="PAYMENT_CODE" column="PAYMENT_CODE"/>
+		<result property="PAYMENT_QUANTITY" column="PAYMENT_QUANTITY"/>
+		<result property="PAYMENT_AMOUNT" column="PAYMENT_AMOUNT"/>
+	</resultMap>
+	<!-- 查询订单主信息 -->
+	<select id="getTransData" parameterType="map" resultMap="Transaction">
+		SELECT
+			A.TRANSACTION_ID,
+			A.TRANSACTION_NUMBER,
+			A.TRANSACTION_DATETIME,
+			A.STORE_NUMBER,
+			A.STORE_NAME_CN,
+			A.STORE_NAME_EN,
+			A.POS_NAME,
+			A.TRANSACTION_AMOUNT,
+			A.DEAL_AMOUNT,
+			A.OPEN_ID,
+			C.INVOICE_STATUS,
+			C.ORDER_ID,
+			E.TAXPAYER_ID,
+			E.ALLOWED_INVOICE,
+			F.IS_MERGE,
+			F.INVOICE_LIMIT_AMOUNT
+		FROM
+			T_TRANSACTION_INFO A
+		LEFT JOIN T_INVOICE_TRANACTION_RELATION B ON A.TRANSACTION_NUMBER = B.TRANSACTION_NUMBER
+		AND NOT EXISTS (
+			SELECT
+				D.ORDER_ID
+			FROM
+				T_INVOICE_ORDER D
+			WHERE
+				D.PARENT_ORDER_ID = B.ORDER_ID
+		)
+		LEFT JOIN T_INVOICE_ORDER C ON B.ORDER_ID = C.ORDER_ID AND C.INVOICE_TYPE = 'E00601'
+		AND NOT EXISTS (
+			SELECT
+				D.ORDER_ID
+			FROM
+				T_INVOICE_ORDER D
+			WHERE
+				D.PARENT_ORDER_ID = C.ORDER_ID
+		)
+		INNER JOIN T_STORE_INFO E ON A.STORE_NUMBER = E.STORE_NO
+		LEFT JOIN T_TAXPAYER_INFO F ON E.TAXPAYER_ID = F.TAXPAYER_ID
+		WHERE A.TRANSACTION_NUMBER = #{TRANSACTIONEQUE} limit 1
+	</select>
+	<!-- 查询交易明细 -->
+	<select id="getSalesItems" parameterType="map" resultMap="TransactionItem">
+		SELECT
+			TRANSACTION_ID,
+			ITEM_ID,
+			ITEM_CODE,
+			ITEM_QUANTITY,
+			ITEM_PRICE,
+			ITEM_AMOUNT,
+			ITEM_AMOUNT_AFTER_DISCOUNT,
+			DISCOUNT_CODE,
+			PRISE_CODE,
+			DISCOUNT_MONEY,
+			ORDER_WEIGHT,
+			SPECIFICATION,
+			UNIT_CN,
+			UNIT_EN		
+		FROM T_TRANSACTION_ITEM
+		WHERE TRANSACTION_ID=#{TRANSACTION_ID}				
+	</select>
+	<!-- 获取订单支付信息 -->
+	<select id="getPayments" parameterType="map" resultMap="TransactionPayment">
+		SELECT
+			TRANSACTION_ID,
+			PAYMENT_ID,
+			PAYMENT_CODE,
+			PAYMENT_QUANTITY,
+			PAYMENT_AMOUNT
+		FROM T_TRANSACTION_PAYMENT
+		WHERE TRANSACTION_ID=#{TRANSACTION_ID}
+	</select>
+	<!-- 查询发票主要信息 -->
+	<select id="getInvoiceInfo" parameterType="map" resultType="map">
+		SELECT
+			C.INVOICE_STATUS,
+			C.ORDER_ID,
+			C.INVOICE_TYPE,
+			C.PURCHASER_NAME,
+			C.PURCHASER_EMAIL,
+			C.PURCHASER_ID,
+			C.PURCHASER_MOBILE,
+			C.PURCHASER_ADDRESS,
+			C.PURCHASER_TEL,
+			C.PURCHASER_BANK_ACCOUNT,
+			F.TAXPAYER_ID,
+			F.TAXPAYER_IDENTIFY_NO,
+			F.TAXPAYER_NAME_CN,
+			F.TAXPAYER_ADDRESS,
+			F.TAXPAYER_PHONE,
+			F.TAXPAYER_BANK,
+			F.TAXPAYER_ACCOUNT,
+			E.INVOICE_CODE,
+			E.INVOICE_NUMBER,
+			E.TOTAL_AMOUNT,
+			E.TOTAL_AMOUNT_WITHOUT_TAX,
+			E.TOTAL_TAX_AMOUNT,
+			E.INVOICE_URL
+		FROM
+			T_TRANSACTION_INFO A
+		INNER JOIN T_INVOICE_TRANACTION_RELATION B ON A.TRANSACTION_NUMBER = B.TRANSACTION_NUMBER
+		INNER JOIN T_INVOICE_ORDER C ON B.ORDER_ID = C.ORDER_ID
+		AND C.INVOICE_TYPE = 'E00601'
+		INNER JOIN T_TAXPAYER_INFO F ON C.TAXPAYER_ID = F.TAXPAYER_IDENTIFY_NO
+		INNER JOIN T_INVOICE_INFO E ON C.ORDER_ID = E.ORDER_ID
+		LEFT JOIN T_INVOICE_ORDER D ON D.PARENT_ORDER_ID = C.ORDER_ID
+		WHERE A.TRANSACTION_NUMBER = #{TRANSACTIONEQUE}
+		AND D.ORDER_ID IS NULL
+	</select>
+	<!-- 查询发票主要信息 -->
+	<select id="getInvoiceInfosByOpenId" parameterType="map" resultType="map">
+     SELECT
+			A.ORDER_ID,
+			A.BILLING_DATE,
+			A.TOTAL_AMOUNT,
+			A.INVOICE_URL,
+			CASE WHEN e.recordNum = 1 THEN e.TRANSACTION_NUMBER ELSE '' END TRANSACTION_NUMBER,
+			CASE WHEN e.recordNum = 1 THEN 0 ELSE 1 END recordFlag
+		FROM
+			t_invoice_info A
+		INNER JOIN t_invoice_order B ON a.ORDER_ID = b.ORDER_ID
+		INNER JOIN (
+			SELECT
+				count(1) recordNum,
+				c.TRANSACTION_ID,
+				c.TRANSACTION_NUMBER,
+				d.ORDER_ID
+			FROM
+				t_transaction_info c,
+				t_invoice_tranaction_relation d
+			WHERE
+				c.OPEN_ID = #{openId}
+			AND c.transaction_NUMber = d.TRANSACTION_NUMBER
+			GROUP BY d.ORDER_ID
+		) e ON e.ORDER_ID = b.ORDER_ID
+		WHERE
+			B.INVOICE_STATUS = 'E00505'
+		AND IFNULL(B.RED_STATUS, 'DV0101') != 'DV0102'
+		ORDER BY
+			BILLING_DATE DESC;
+	</select>
+	<!-- 保存订单信息 -->
+	<insert id="saveTransactionData" parameterType="map">
+		INSERT INTO T_TRANSACTION_INFO(
+			TRANSACTION_ID,
+			TRANSACTION_NUMBER,
+			TRANSACTION_DATETIME,
+			STORE_NUMBER,
+			STORE_NAME_CN,
+			STORE_NAME_EN,
+			POS_NAME,
+			TRANSACTION_AMOUNT,
+			ADD_USER,
+			ADD_TIME,
+			UPDATE_USER,
+			UPDATE_TIME,
+			IS_DELETE,
+			DEAL_AMOUNT,
+			OPEN_ID
+		)VALUES
+		(
+			'${TRANSACTION_ID}',
+			'${serialNo}',
+			'${buyTime}',
+			'${storeId}',
+			'${storeName}',
+			'${storeNameEn}',
+			'${posCode}',
+			'${amount}',
+			'SYSADD',
+			'${NOWTIME}',
+			'SYSADD',
+			'${NOWTIME}',
+			'0',
+			'${DEAL_AMOUNT}',
+			'${openId}'
+		)
+	</insert>
+	<!-- 保存交易明细 -->
+	<insert id="saveSalesItem" parameterType="java.util.List">
+			INSERT INTO T_TRANSACTION_ITEM(
+				TRANSACTION_ID,
+				ITEM_ID,
+				ITEM_CODE,
+				ITEM_QUANTITY,
+				ITEM_AMOUNT,
+				ITEM_AMOUNT_AFTER_DISCOUNT,
+				DISCOUNT_CODE,
+				PRISE_CODE,
+				ORDER_WEIGHT,
+				DISCOUNT_MONEY,
+				UNIT_CN,
+				UNIT_EN
+			)VALUES
+		<foreach collection="list" item="item" index="index"  separator=",">
+			(
+				'${item.TRANSACTION_ID}',
+				'${item.ITEM_ID}',
+				'${item.priseCode}',
+				'${item.foodNum}',
+				'${item.foodPrice}',
+				'${item.foodDiscountsPrice}',
+				'${item.discountCode}',
+				'${item.foodCode}',
+				'${item.orderWeight}',
+				'${item.discountMoney}',
+				'${item.unitCn}',
+				'${item.unitEn}'
+			)
+		</foreach>
+	</insert>
+	<!-- 保存支付信息 -->
+	<insert id="savePaymentItem" parameterType="java.util.List">
+			INSERT INTO T_TRANSACTION_PAYMENT(
+				TRANSACTION_ID,
+				PAYMENT_ID,
+				PAYMENT_CODE,
+				PAYMENT_QUANTITY,
+				PAYMENT_AMOUNT
+			)VALUES
+		<foreach collection="list" item="item" index="index"  separator=",">
+			(
+				'${item.TRANSACTION_ID}',
+				'${item.PAYMENT_ID}',
+				'${item.payCode}',
+				'${item.payNum}',
+				'${item.payAmount}'
+			)
+		</foreach>
+	</insert>
+	<!-- 保存禁止开票信息 -->
+	<insert id="saveCodeForbiddens" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index"  separator=";">
+			INSERT INTO T_EXTRACTED_FORBIDDEN (
+				EXTRACTED_CODE,
+				ADD_USER,
+				ADD_TIME,
+				UPDATE_USER,
+				UPDATE_TIME,
+				IS_DELETE
+			) SELECT
+				EXTRACTED_CODE,
+				ADD_USER,
+				ADD_TIME,
+				UPDATE_USER,
+				UPDATE_TIME,
+				IS_DELETE
+			FROM
+				(
+					SELECT
+						'${item.EXTRACTED_CODE}' AS EXTRACTED_CODE,
+						'${item.USER}' AS ADD_USER,
+						'${item.NOWTIME}' AS ADD_TIME,
+						'${item.USER}' AS UPDATE_USER,
+						'${item.NOWTIME}' AS UPDATE_TIME,
+						'${item.IS_DELETE}' AS IS_DELETE
+				) U
+			WHERE
+				NOT EXISTS (
+					SELECT
+						EXTRACTED_CODE
+					FROM
+						T_EXTRACTED_FORBIDDEN
+					WHERE
+						EXTRACTED_CODE = '${item.EXTRACTED_CODE}'
+				)
+		</foreach>
+	</insert>
+	
+	<update id="updateTransOpenId" parameterType="map">
+		UPDATE T_TRANSACTION_INFO
+		SET OPEN_ID=#{OPEN_ID}
+		WHERE TRANSACTION_ID=#{TRANSACTION_ID}
+	</update>
+</mapper>

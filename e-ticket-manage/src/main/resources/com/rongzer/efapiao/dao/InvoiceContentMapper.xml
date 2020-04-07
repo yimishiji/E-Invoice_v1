@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.rongzer.efapiao.dao.InvoiceContentMapper">
+
+	<select id="listContentCode" resultType="string">
+		SELECT CONTENT_CODE FROM T_INVOICE_CONTENT
+	</select>
+
+	<select id="getContentByCode" parameterType="string" resultType="map">
+		SELECT CONTENT_CODE FROM T_INVOICE_CONTENT where CONTENT_CODE = #{contentCode}
+	</select>
+
+	<insert id="insertInvoiceContent" parameterType="list">
+		INSERT INTO T_INVOICE_CONTENT(CONTENT_ID,CONTENT_CODE,CONTENT_NAME_CN,
+		TAXRATE,SMALL_TAXRATE,IS_USED,
+		ADD_USER,ADD_TIME,IS_DELETE
+		) VALUES
+	   <foreach collection="list" item="invoiceContent" separator=",">
+		   (#{invoiceContent.CONTENT_ID,jdbcType=VARCHAR},#{invoiceContent.CONTENT_CODE,jdbcType=VARCHAR},
+		    #{invoiceContent.CONTENT_NAME_CN,jdbcType=VARCHAR},
+		   #{invoiceContent.TAXRATE,jdbcType=VARCHAR},#{invoiceContent.SMALL_TAXRATE,jdbcType=VARCHAR},
+		   #{invoiceContent.IS_USED,jdbcType=VARCHAR},
+		   #{invoiceContent.ADD_USER,jdbcType=VARCHAR},#{invoiceContent.ADD_TIME,jdbcType=VARCHAR},
+		   #{invoiceContent.IS_DELETE,jdbcType=VARCHAR})
+	   </foreach>
+	</insert>
+
+	<update id="updateInvoiceContent" parameterType="list">
+		update T_INVOICE_CONTENT
+		<trim prefix="set" suffixOverrides=",">
+			<trim prefix="CONTENT_NAME_CN =case" suffix="end,">
+				<foreach collection="list" item="contentCode" index="index">
+					<if test="contentCode.CONTENT_NAME_CN!=null">
+						when CONTENT_CODE=#{contentCode.CONTENT_CODE} then #{contentCode.CONTENT_NAME_CN}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="TAXRATE =case" suffix="end,">
+				<foreach collection="list" item="contentCode" index="index">
+					<if test="contentCode.TAXRATE!=null">
+						when CONTENT_CODE=#{contentCode.CONTENT_CODE} then #{contentCode.TAXRATE}
+					</if>
+				</foreach>
+			</trim>
+
+			<trim prefix="SMALL_TAXRATE =case" suffix="end,">
+				<foreach collection="list" item="contentCode" index="index">
+					<if test="contentCode.SMALL_TAXRATE!=null">
+						when CONTENT_CODE=#{contentCode.CONTENT_CODE} then #{contentCode.SMALL_TAXRATE}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="UPDATE_USER =case" suffix="end,">
+				<foreach collection="list" item="contentCode" index="index">
+					<if test="contentCode.UPDATE_USER!=null">
+						when CONTENT_CODE=#{contentCode.CONTENT_CODE} then #{contentCode.UPDATE_USER}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="UPDATE_TIME =case" suffix="end,">
+				<foreach collection="list" item="contentCode" index="index">
+					<if test="contentCode.UPDATE_TIME!=null">
+						when CONTENT_CODE=#{contentCode.CONTENT_CODE} then #{contentCode.UPDATE_TIME}
+					</if>
+				</foreach>
+			</trim>
+		</trim>
+		where
+		<foreach collection="list" separator="or" item="contentCode" index="index" >
+			CONTENT_CODE=#{contentCode.CONTENT_CODE}
+		</foreach>
+	</update>
+</mapper>

@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.rongzer.efapiao.dao.InvoiceCheckMapper">
+
+	<select id="getInvoiceRegister" resultType="map" parameterType="map">
+        select INVOICE_CODE,INVOICE_NUMBER from t_invoice_register
+        where INVOICE_CODE=#{INVOICE_CODE} and INVOICE_NUMBER=#{INVOICE_NUMBER}
+	</select>
+
+	<select id="getInvoice" parameterType="map" resultType="map">
+        select a.INVOICE_CODE,a.INVOICE_NUMBER,
+        b.INVOICE_TYPE,A.TOTAL_AMOUNT,A.INVOICE_TIME,b.PURCHASER_NAME,
+        b.INVOICE_STATUS,
+        (SELECT ITEM_NAME FROM R_BASE_DICT_ITEM WHERE ITEM_CODE = b.INVOICE_STATUS) INVOICE_STATUS_CN
+        from t_invoice_info a,t_invoice_order b
+        where a.order_id = b.order_id and INVOICE_CODE=#{INVOICE_CODE} and INVOICE_NUMBER=#{INVOICE_NUMBER}
+	</select>
+
+	<insert id="saveInvoiceRegister" parameterType="map" >
+        insert into t_invoice_register
+			 (ID,INVOICE_TYPE,INVOICE_CODE,INVOICE_NUMBER,
+			 INVOICE_AMOUNT,INVOICE_DATE,INVOICE_CHECK_CODE,ADD_USER,ADD_TIME,UPDATE_USER,UPDATE_TIME,IS_DELETE)
+			 values(
+			 #{ID,jdbcType=VARCHAR},
+			 #{INVOICE_TYPE,jdbcType=VARCHAR},
+			 #{INVOICE_CODE,jdbcType=VARCHAR},
+			 #{INVOICE_NUMBER,jdbcType=VARCHAR},
+			 #{INVOICE_AMOUNT,jdbcType=VARCHAR},
+			 #{INVOICE_DATE,jdbcType=VARCHAR},
+			 #{INVOICE_CHECK_CODE,jdbcType=VARCHAR},
+			 #{ADD_USER,jdbcType=VARCHAR},
+			 #{ADD_TIME,jdbcType=VARCHAR},
+			 #{UPDATE_USER,jdbcType=VARCHAR},
+			 #{UPDATE_TIME,jdbcType=VARCHAR},
+			 #{IS_DELETE,jdbcType=VARCHAR}
+			 )
+	</insert>
+	<!-- 查询已开发票的条数 -->
+	<select id="getInvoiceInfoCount" parameterType="map" resultType="int">
+		SELECT
+		COUNT(DISTINCT A.ORDER_ID)
+		FROM
+		T_INVOICE_ORDER A
+		LEFT JOIN R_BASE_DICT_ITEM F ON A.INVOICE_TYPE = F.ITEM_CODE
+		LEFT JOIN R_BASE_DICT_ITEM G ON A.IS_MANUAL = G.ITEM_CODE
+		LEFT JOIN R_BASE_DICT_ITEM H ON A.RED_STATUS = H.ITEM_CODE
+		INNER JOIN T_INVOICE_INFO B ON A.ORDER_ID = B.ORDER_ID
+		<if test="(STORE_NO !='' and STORE_NO != null) or (TRANSACTION_NUMBER !='' and TRANSACTION_NUMBER != null) or (TRANSACTION_CODE !='' and TRANSACTION_CODE != null)">
+			INNER JOIN T_INVOICE_TRANACTION_RELATION C ON  (A.ORDER_ID = C.ORDER_ID OR A.PARENT_ORDER_ID = C.ORDER_ID)
+			INNER JOIN T_TRANSACTION_INFO D ON C.TRANSACTION_NUMBER = D.TRANSACTION_NUMBER
+		</if>
+		INNER JOIN T_TAXPAYER_INFO E ON A.TAXPAYER_ID = E.TAXPAYER_IDENTIFY_NO
+		WHERE A.IS_DELETE = '0'
+		AND A.INVOICE_STATUS = 'E00505'
+		AND A.INVOICE_TYPE in ('E00601','E00602')
+		AND A.TAXPAYER_ID in (${TAXPAYER_QX})
+		<if test="INVOICE_CODE !='' and INVOICE_CODE != null">
+			<![CDATA[AND B.INVOICE_CODE like '%${INVOICE_CODE}%']]>
+		</if>
+		<if test="INVOICE_NUMBER !='' and INVOICE_NUMBER != null">
+			<![CDATA[AND B.INVOICE_NUMBER like '%${INVOICE_NUMBER}%']]>
+		</if>
+		<if test="INVOICE_START_TIME !='' and INVOICE_START_TIME != null">
+			<![CDATA[AND B.INVOICE_TIME >= CONCAT(#{INVOICE_START_TIME},' 00')]]>
+		</if>
+		<if test="INVOICE_END_TIME !='' and INVOICE_END_TIME != null">
+			<![CDATA[AND B.INVOICE_TIME <= CONCAT(#{INVOICE_END_TIME},' 23')]]>
+		</if>
+		<if test="TOTAL_AMOUNT_START !='' and TOTAL_AMOUNT_START != null">
+			<![CDATA[AND B.TOTAL_AMOUNT >= ${TOTAL_AMOUNT_START}]]>
+		</if>
+		<if test="TOTAL_AMOUNT_END !='' and TOTAL_AMOUNT_END != null">
+			<![CDATA[AND B.TOTAL_AMOUNT <= ${TOTAL_AMOUNT_END}]]>
+		</if>
+		<if test="TRANSACTION_NUMBER !='' and TRANSACTION_NUMBER != null">
+			<![CDATA[AND C.TRANSACTION_NUMBER = #{TRANSACTION_NUMBER}]]>
+		</if>
+		<if test="TRANSACTION_CODE !='' and TRANSACTION_CODE != null">
+			<![CDATA[AND C.TRANSACTION_NUMBER = #{TRANSACTION_CODE}]]>
+		</if>
+		<if test="STORE_NO !='' and STORE_NO != null">
+			<![CDATA[
+				AND D.STORE_NUMBER like #{STORE_NO}
+			]]>
+		</if>
+		<if test="TAXPAYER_NAME_CN !='' and TAXPAYER_NAME_CN != null">
+			<![CDATA[
+				AND E.TAXPAYER_NAME_CN like '%${TAXPAYER_NAME_CN}%'
+			]]>
+		</if>
+		<if test="TAXPAYER_IDENTIFY_NO !='' and TAXPAYER_IDENTIFY_NO != null">
+			<![CDATA[AND A.TAXPAYER_ID like '%${TAXPAYER_IDENTIFY_NO}%']]>
+		</if>
+		<if test="INVOICE_TYPE !='' and INVOICE_TYPE != null">
+			<![CDATA[AND A.INVOICE_TYPE =#{INVOICE_TYPE}]]>
+		</if>
+		<if test="IS_MANUAL !='' and IS_MANUAL != null">
+			<![CDATA[AND A.IS_MANUAL = #{IS_MANUAL}]]>
+		</if>
+	</select>
+	<!-- 查询已开发票 -->
+	<select id="getInvoiceInfo" parameterType="map" resultType="map">
+		SELECT
+		<if test="(STORE_NO !='' and STORE_NO != null) or (TRANSACTION_NUMBER !='' and TRANSACTION_NUMBER != null) or (TRANSACTION_CODE !='' and TRANSACTION_CODE != null)">
+			distinct
+		</if>
+			A.ORDER_ID,
+			A.PURCHASER_NAME,
+			A.PURCHASER_EMAIL,
+			A.RED_STATUS,
+			B.INVOICE_CODE,
+			B.INVOICE_NUMBER,
+			B.INVOICE_TIME,
+			B.ISSUER,
+			B.PAYEE,
+			B.REVIEW_CLERK,
+			B.TOTAL_AMOUNT,
+			B.TOTAL_TAX_AMOUNT,
+			B.TOTAL_AMOUNT_WITHOUT_TAX,
+			B.INVOICE_URL,
+			E.TAXPAYER_IDENTIFY_NO,
+			E.TAXPAYER_NAME_CN,
+			A.INVOICE_TYPE,
+			F.ITEM_NAME AS INVOICE_TYPE_NAME,
+			G.ITEM_NAME AS IS_MANUAL,
+			H.ITEM_NAME AS RED_STATUS_NAME,
+			A.UPDATE_TIME
+		FROM
+			T_INVOICE_ORDER A
+		LEFT JOIN R_BASE_DICT_ITEM F ON A.INVOICE_TYPE = F.ITEM_CODE
+		LEFT JOIN R_BASE_DICT_ITEM G ON A.IS_MANUAL = G.ITEM_CODE
+		LEFT JOIN R_BASE_DICT_ITEM H ON A.RED_STATUS = H.ITEM_CODE
+		INNER JOIN T_INVOICE_INFO B ON A.ORDER_ID = B.ORDER_ID
+		<if test="(STORE_NO !='' and STORE_NO != null) or (TRANSACTION_NUMBER !='' and TRANSACTION_NUMBER != null) or (TRANSACTION_CODE !='' and TRANSACTION_CODE != null)">
+			INNER JOIN T_INVOICE_TRANACTION_RELATION C ON  (A.ORDER_ID = C.ORDER_ID OR A.PARENT_ORDER_ID = C.ORDER_ID)
+			INNER JOIN T_TRANSACTION_INFO D ON C.TRANSACTION_NUMBER = D.TRANSACTION_NUMBER
+		</if>
+		INNER JOIN T_TAXPAYER_INFO E ON A.TAXPAYER_ID = E.TAXPAYER_IDENTIFY_NO
+		WHERE A.IS_DELETE = '0'
+		AND A.INVOICE_STATUS = 'E00505'
+		AND A.INVOICE_TYPE in ('E00601','E00602')
+		AND A.TAXPAYER_ID in (${TAXPAYER_QX})
+		<if test="INVOICE_CODE !='' and INVOICE_CODE != null">
+			<![CDATA[AND B.INVOICE_CODE like '%${INVOICE_CODE}%']]>
+		</if>
+		<if test="INVOICE_NUMBER !='' and INVOICE_NUMBER != null">
+			<![CDATA[AND B.INVOICE_NUMBER like '%${INVOICE_NUMBER}%']]>
+		</if>
+		<if test="INVOICE_START_TIME !='' and INVOICE_START_TIME != null">
+			<![CDATA[AND B.INVOICE_TIME >= CONCAT(#{INVOICE_START_TIME},' 00')]]>
+		</if>
+		<if test="INVOICE_END_TIME !='' and INVOICE_END_TIME != null">
+			<![CDATA[AND B.INVOICE_TIME <= CONCAT(#{INVOICE_END_TIME},' 23')]]>
+		</if>
+		<if test="TOTAL_AMOUNT_START !='' and TOTAL_AMOUNT_START != null">
+			<![CDATA[AND B.TOTAL_AMOUNT >= ${TOTAL_AMOUNT_START}]]>
+		</if>
+		<if test="TOTAL_AMOUNT_END !='' and TOTAL_AMOUNT_END != null">
+			<![CDATA[AND B.TOTAL_AMOUNT <= ${TOTAL_AMOUNT_END}]]>
+		</if>
+		<if test="TRANSACTION_NUMBER !='' and TRANSACTION_NUMBER != null">
+			<![CDATA[AND C.TRANSACTION_NUMBER = #{TRANSACTION_NUMBER}]]>
+		</if>
+		<if test="TRANSACTION_CODE !='' and TRANSACTION_CODE != null">
+			<![CDATA[AND C.TRANSACTION_NUMBER = #{TRANSACTION_CODE}]]>
+		</if>
+		<if test="STORE_NO !='' and STORE_NO != null">
+			<![CDATA[
+				AND D.STORE_NUMBER like #{STORE_NO}
+			]]>
+		</if>
+		<if test="TAXPAYER_NAME_CN !='' and TAXPAYER_NAME_CN != null">
+			<![CDATA[
+				AND E.TAXPAYER_NAME_CN like '%${TAXPAYER_NAME_CN}%'
+			]]>
+		</if>
+		<if test="TAXPAYER_IDENTIFY_NO !='' and TAXPAYER_IDENTIFY_NO != null">
+			<![CDATA[AND A.TAXPAYER_ID like '%${TAXPAYER_IDENTIFY_NO}%']]>
+		</if>
+		<if test="INVOICE_TYPE !='' and INVOICE_TYPE != null">
+			<![CDATA[AND A.INVOICE_TYPE =#{INVOICE_TYPE}]]>
+		</if>
+		<if test="IS_MANUAL !='' and IS_MANUAL != null">
+			<![CDATA[AND A.IS_MANUAL = #{IS_MANUAL}]]>
+		</if>
+		ORDER BY A.UPDATE_TIME DESC LIMIT #{startRowNum}, #{endRowNum}
+	</select>
+	<!-- 查询相关的交易信息 -->
+	<select id="getTransactionInfo" parameterType="map" resultType="map">
+		SELECT
+			D.TRANSACTION_NUMBER,
+			D.STORE_NUMBER
+		FROM
+			T_INVOICE_ORDER A
+		INNER JOIN T_INVOICE_TRANACTION_RELATION C ON (
+			A.ORDER_ID = C.ORDER_ID
+			OR A.PARENT_ORDER_ID = C.ORDER_ID
+		)
+		INNER JOIN T_TRANSACTION_INFO D ON C.TRANSACTION_NUMBER = D.TRANSACTION_NUMBER
+		WHERE
+			A.ORDER_ID = #{ORDER_ID}
+	</select>
+
+	<select id="getInvoiceExceptionInfo" parameterType="map" resultType="map">
+		SELECT
+		O.ORDER_ID,
+		F.ITEM_NAME AS INVOICE_TYPE,
+		H.ITEM_NAME AS INVOICE_STATUS,
+		G.ITEM_NAME AS IS_MANUAL,
+		O.PURCHASER_NAME,
+		O.PURCHASER_EMAIL,
+		O.RESPONSE_CONTENT AS REASON,
+		E.TAXPAYER_IDENTIFY_NO,
+		E.TAXPAYER_NAME_CN,
+		O.UPDATE_TIME AS TRANSACTION_DATETIME,
+		B.TOTAL_AMOUNT AS TRANSACTION_AMOUNT,
+		B.ISSUER,
+		B.PAYEE,
+		B.REVIEW_CLERK,
+		R.TRANSACTION_NUMBER,
+		R.STORE_NUMBER
+		FROM
+		T_INVOICE_ORDER O
+		LEFT JOIN T_INVOICE_INFO B ON O.ORDER_ID = B.ORDER_ID
+		LEFT JOIN (
+		SELECT
+		GROUP_CONCAT(RELATION.TRANSACTION_NUMBER) TRANSACTION_NUMBER,
+		GROUP_CONCAT(INFO.STORE_NUMBER) STORE_NUMBER,
+		RELATION.ORDER_ID
+		FROM
+		T_INVOICE_TRANACTION_RELATION RELATION,
+		T_TRANSACTION_INFO INFO
+		WHERE RELATION.TRANSACTION_NUMBER = INFO.TRANSACTION_NUMBER
+		GROUP BY RELATION.order_id
+		) R ON (O.PARENT_ORDER_ID = R.ORDER_ID OR O.ORDER_ID = R.ORDER_ID)
+		LEFT JOIN R_BASE_DICT_ITEM F ON O.INVOICE_TYPE = F.ITEM_CODE
+		LEFT JOIN R_BASE_DICT_ITEM G ON O.IS_MANUAL = G.ITEM_CODE
+		LEFT JOIN R_BASE_DICT_ITEM H ON O.INVOICE_STATUS = H.ITEM_CODE
+		LEFT JOIN T_TAXPAYER_INFO E ON O.TAXPAYER_ID = E.TAXPAYER_IDENTIFY_NO
+		WHERE
+		O.IS_DELETE = '0'
+		<![CDATA[AND O.INVOICE_STATUS <> 'E00505']]>
+		<if test="TRANSACTION_NUMBER !='' and TRANSACTION_NUMBER != null">
+			<![CDATA[AND R.EXTRACTED_CODE like CONCAT('%', #{TRANSACTION_NUMBER}, '%')]]>
+		</if>
+		<if test="TRANSACTION_CODE !='' and TRANSACTION_CODE != null">
+			<![CDATA[AND R.TRANSACTION_NUMBER like CONCAT('%', #{TRANSACTION_CODE}, '%')]]>
+		</if>
+		<if test="STORE_NO !='' and STORE_NO != null">
+			<![CDATA[AND R.STORE_NUMBER like CONCAT('%', #{STORE_NO}, '%')]]>
+		</if>
+		<if test="TAXPAYER_IDENTIFY_NO !='' and TAXPAYER_IDENTIFY_NO != null">
+			<![CDATA[AND E.TAXPAYER_IDENTIFY_NO like  CONCAT('%', #{TAXPAYER_IDENTIFY_NO}, '%')]]>
+		</if>
+		<if test="TAXPAYER_NAME_CN !='' and TAXPAYER_NAME_CN != null">
+			<![CDATA[AND E.TAXPAYER_NAME_CN like CONCAT('%', #{TAXPAYER_NAME_CN}, '%')]]>
+		</if>
+		<if test="INVOICE_TYPE !='' and INVOICE_TYPE != null">
+			<![CDATA[AND O.INVOICE_TYPE = #{INVOICE_TYPE}]]>
+		</if>
+		<if test="INVOICE_STATUS !='' and INVOICE_STATUS != null">
+			<![CDATA[AND O.INVOICE_STATUS = #{INVOICE_STATUS}]]>
+		</if>
+		<if test="IS_MANUAL !='' and IS_MANUAL != null">
+			<![CDATA[AND O.IS_MANUAL = #{IS_MANUAL}]]>
+		</if>
+		<if test="UPDATE_TIME_START !='' and UPDATE_TIME_START != null">
+			<![CDATA[AND STR_TO_DATE(O.UPDATE_TIME,'%Y-%c-%d')>=STR_TO_DATE(#{UPDATE_TIME_START},'%Y-%c-%d')]]>
+		</if>
+		<if test="UPDATE_TIME_END !='' and UPDATE_TIME_END != null">
+			<![CDATA[AND STR_TO_DATE(O.UPDATE_TIME,'%Y-%c-%d')<=STR_TO_DATE(#{UPDATE_TIME_END},'%Y-%c-%d')]]>
+		</if>
+		order by o.update_time desc
+		limit #{startRowNum},#{endRowNum}
+	</select>
+
+	<select id="getInvoiceExceptionInfoCount" parameterType="map" resultType="int">
+		SELECT
+		count(1)
+		FROM
+		T_INVOICE_ORDER O
+		LEFT JOIN T_INVOICE_INFO B ON O.ORDER_ID = B.ORDER_ID
+		LEFT JOIN (
+		SELECT
+		GROUP_CONCAT(RELATION.TRANSACTION_NUMBER) TRANSACTION_NUMBER,
+		GROUP_CONCAT(INFO.STORE_NUMBER) STORE_NUMBER,
+		RELATION.ORDER_ID
+		FROM
+		T_INVOICE_TRANACTION_RELATION RELATION,
+		T_TRANSACTION_INFO INFO
+		WHERE RELATION.TRANSACTION_NUMBER = INFO.TRANSACTION_NUMBER
+		GROUP BY RELATION.order_id
+		) R ON (O.PARENT_ORDER_ID = R.ORDER_ID OR O.ORDER_ID = R.ORDER_ID)
+		LEFT JOIN R_BASE_DICT_ITEM F ON O.INVOICE_TYPE = F.ITEM_CODE
+		LEFT JOIN R_BASE_DICT_ITEM G ON O.IS_MANUAL = G.ITEM_CODE
+		LEFT JOIN R_BASE_DICT_ITEM H ON O.INVOICE_STATUS = H.ITEM_CODE
+		LEFT JOIN T_TAXPAYER_INFO E ON O.TAXPAYER_ID = E.TAXPAYER_IDENTIFY_NO
+		WHERE
+		O.IS_DELETE = '0'
+		<![CDATA[AND O.INVOICE_STATUS <> 'E00505']]>
+		<if test="TRANSACTION_NUMBER !='' and TRANSACTION_NUMBER != null">
+			<![CDATA[AND R.EXTRACTED_CODE like CONCAT('%', #{TRANSACTION_NUMBER}, '%')]]>
+		</if>
+		<if test="TRANSACTION_CODE !='' and TRANSACTION_CODE != null">
+			<![CDATA[AND R.TRANSACTION_NUMBER like CONCAT('%', #{TRANSACTION_CODE}, '%')]]>
+		</if>
+		<if test="STORE_NO !='' and STORE_NO != null">
+			<![CDATA[AND R.STORE_NUMBER like CONCAT('%', #{STORE_NO}, '%')]]>
+		</if>
+		<if test="TAXPAYER_IDENTIFY_NO !='' and TAXPAYER_IDENTIFY_NO != null">
+			<![CDATA[AND E.TAXPAYER_IDENTIFY_NO like  CONCAT('%', #{TAXPAYER_IDENTIFY_NO}, '%')]]>
+		</if>
+		<if test="TAXPAYER_NAME_CN !='' and TAXPAYER_NAME_CN != null">
+			<![CDATA[AND E.TAXPAYER_NAME_CN like CONCAT('%', #{TAXPAYER_NAME_CN}, '%')]]>
+		</if>
+		<if test="INVOICE_TYPE !='' and INVOICE_TYPE != null">
+			<![CDATA[AND O.INVOICE_TYPE = #{INVOICE_TYPE}]]>
+		</if>
+		<if test="INVOICE_STATUS !='' and INVOICE_STATUS != null">
+			<![CDATA[AND O.INVOICE_STATUS = #{INVOICE_STATUS}]]>
+		</if>
+		<if test="IS_MANUAL !='' and IS_MANUAL != null">
+			<![CDATA[AND O.IS_MANUAL = #{IS_MANUAL}]]>
+		</if>
+		<if test="UPDATE_TIME_START !='' and UPDATE_TIME_START != null">
+			<![CDATA[AND STR_TO_DATE(O.UPDATE_TIME,'%Y-%c-%d')>=STR_TO_DATE(#{UPDATE_TIME_START},'%Y-%c-%d')]]>
+		</if>
+		<if test="UPDATE_TIME_END !='' and UPDATE_TIME_END != null">
+			<![CDATA[AND STR_TO_DATE(O.UPDATE_TIME,'%Y-%c-%d')<=STR_TO_DATE(#{UPDATE_TIME_END},'%Y-%c-%d')]]>
+		</if>
+	</select>
+</mapper>

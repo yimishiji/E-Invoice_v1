@@ -1,0 +1,1142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>e-ticket</artifactId>
+        <groupId>e-ticket</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>e-ticket-sdk</artifactId>
+    <packaging>jar</packaging>
+
+
+    <!-- 仓库地址 -->
+    <repositories>
+        <repository>
+            <id>nexus</id>
+            <name>Team Nexus Repository</name>
+            <url>http://10.32.1.103:8081/repository/maven-public/</url>
+        </repository>
+    </repositories>
+
+    <!-- 插件地址 -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>nexus</id>
+            <name>Team Nexus Repository</name>
+            <url>http://10.32.1.103:8081/repository/maven-public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <!-- 设定持续集成发布包服务器 -->
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>Team Nexus Release Repository</name>
+            <url>http://10.32.1.103:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Team Nexus Snapshot Repository</name>
+            <url>http://10.32.1.103:8081/repository/maven-snapshots</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <properties>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.test.skip>true</maven.test.skip>
+
+        <java.version>1.7</java.version>
+        <junit.version>4.10</junit.version>
+        <log4j.version>2.0</log4j.version>
+        <mysql.jdbc.version>5.1.30</mysql.jdbc.version>
+        <mybatis.version>3.2.6</mybatis.version>
+        <commons.fileupload.version>1.2.1</commons.fileupload.version>
+        <commons.httpclient.version>3.1</commons.httpclient.version>
+        <javassist.version>3.12.1.GA</javassist.version>
+        <spring.version>3.1.1.RELEASE</spring.version>
+        <jackson.version>2.5.3</jackson.version>
+        <pagehelper.version>4.1.1</pagehelper.version>
+        <commons.pool.version>2.3</commons.pool.version>
+        <zxing.version>3.2.1</zxing.version>
+        <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+        <commons-configuration.version>1.10</commons-configuration.version>
+        <commons-dbcp2>2.1.1</commons-dbcp2>
+    </properties>
+
+    <dependencies>
+        <!-- spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-asm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+            <version>4.1.4.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-amqp</artifactId>
+            <version>1.3.6.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-rabbit</artifactId>
+            <version>1.3.6.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-hibernate3</artifactId>
+            <version>2.0.7</version>
+        </dependency>
+
+        <!-- mybatis -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>${mybatis.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>11.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <!-- apache -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml-schemas</artifactId>
+            <version>3.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis</groupId>
+            <artifactId>axis</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        <!--<dependency>-->
+        <!--<groupId>org.apache.axis2</groupId>-->
+        <!--<artifactId>axis2</artifactId>-->
+        <!--<version>1.4</version>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.9</version>
+        </dependency>
+        <!-- log4j -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.16</version>
+        </dependency>
+
+        <!-- rdp -->
+        <dependency>
+            <groupId>rdp.b.common</groupId>
+            <artifactId>rdpbcommon</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>rdp.d.common</groupId>
+            <artifactId>rdpdcommon</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>rdp.b.util</groupId>
+            <artifactId>rdpbutil</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>rdp.d.auth</groupId>
+            <artifactId>rdpdauth</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>rdp.c.dict</groupId>
+            <artifactId>rdpcdict</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>rdp.b.cache</groupId>
+            <artifactId>rdpbcache</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rdp.c.formext</groupId>
+            <artifactId>rdpcformext</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rdpcbusiness</groupId>
+            <artifactId>rdpcbusiness</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rdp.d.resources</groupId>
+            <artifactId>rdp.d.resources</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rdp.c.automodel</groupId>
+            <artifactId>rdp.c.automodel</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rdp.c.dbsync</groupId>
+            <artifactId>rdp.c.dbsync</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>rdp.c.map</groupId>
+            <artifactId>rdp.c.map</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rdp.c.map</groupId>
+            <artifactId>rdp.c.map</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>rdp.c.job</groupId>
+            <artifactId>rdp.c.job</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rdp.c.task</groupId>
+            <artifactId>rdp.c.task</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>ec.b.common</groupId>
+            <artifactId>ecbcommon</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ec.c.site</groupId>
+            <artifactId>eccsite</artifactId>
+            <version>0.0.3.2.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>ec.c.cms</groupId>
+            <artifactId>ecccms</artifactId>
+            <version>0.0.3.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rdp.b.wabacus</groupId>
+            <artifactId>rdpbwabacus</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rdp.c.notification</groupId>
+            <artifactId>rdpcnotification</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rdp.c.config</groupId>
+            <artifactId>rdpcconfig</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rdp.c.upload</groupId>
+            <artifactId>rdpcupload</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rdp.c.rule</groupId>
+            <artifactId>rdp.c.rule</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>axis2-adb</groupId>
+            <artifactId>axis2-adb</artifactId>
+            <version>1.7.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>axis2-transport-http</groupId>
+            <artifactId>axis2-transport-http</artifactId>
+            <version>1.7.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-transport-local</artifactId>
+            <version>1.7.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>axis2-kernel</groupId>
+            <artifactId>axis2-kernel</artifactId>
+            <version>1.7.3</version>
+        </dependency>
+
+
+
+        <!-- commons閰嶇疆 -->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>${commons.fileupload.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils-core</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>${commons.pool.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>${commons.httpclient.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient-cache</artifactId>
+            <version>4.2.2</version>
+        </dependency>
+
+
+
+
+
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+
+        <!--json-lib -->
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>2.4</version>
+            <classifier>jdk15</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>jstl</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>1.11.237</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>3.4.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.101tec</groupId>
+            <artifactId>zkclient</artifactId>
+            <version>0.2</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>bonecp-0.8.0-rc3</groupId>
+            <artifactId>bonecp-0.8.0-rc3</artifactId>
+            <version>0.8.0-rc3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>bonecp-spring</groupId>
+            <artifactId>bonecp-spring</artifactId>
+            <version>0.8.0-rc3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>kaptcha</groupId>
+            <artifactId>kaptcha</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>xmemcached</groupId>
+            <artifactId>xmemcached</artifactId>
+            <version>1.3.8</version>
+        </dependency>
+
+        <!--<dependency>-->
+        <!--<groupId>org.freemarker</groupId>-->
+        <!--<artifactId>freemarker</artifactId>-->
+        <!--<version>2.3.25-incubating</version>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <artifactId>jaxen</artifactId>
+            <groupId>jaxen</groupId>
+            <version>1.1.6</version>
+        </dependency>
+
+
+
+        <dependency>
+            <artifactId>javassist</artifactId>
+            <groupId>javassist</groupId>
+            <version>3.12.1.GA</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.jdbc.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.5.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>2.1_3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.8.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-cbor</artifactId>
+            <version>2.6.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>1.8.4</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>netty-all</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.netty</groupId>
+            <artifactId>netty</artifactId>
+            <version>3.2.2.Final</version>
+        </dependency>
+
+
+        <!-- solr-->
+        <dependency>
+            <groupId>rdp.b.solr</groupId>
+            <artifactId>rdpbsolr</artifactId>
+            <version>0.7.2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mmseg4j-solr</groupId>
+            <artifactId>mmseg4j-solr</artifactId>
+            <version>1.9.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-core</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-solr</artifactId>
+            <version>1.3.1.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mmseg4j-analysis</groupId>
+            <artifactId>mmseg4j-analysis</artifactId>
+            <version>1.9.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.chenlb.mmseg4j</groupId>
+            <artifactId>mmseg4j-core</artifactId>
+            <version>1.10.0</version>
+        </dependency>
+
+        <!--lucene -->
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-kuromoji</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-phonetic</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-codecs</artifactId>
+            <version>4.7.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-join</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-misc</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queries</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-spatial</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-suggest</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-expressions</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-grouping</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-highlighter</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-memory</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>1.0.b2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.ws.xmlschema</groupId>
+            <artifactId>xmlschema-core</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+
+        <!--jetty -->
+        <dependency>
+            <groupId>com.jfinal</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>8.1.8</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-continuation</artifactId>
+            <version>8.1.10.v20130312</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-deploy</artifactId>
+            <version>8.1.10.v20130312</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-http</artifactId>
+            <version>8.1.10.v20130312</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-jmx</artifactId>
+            <version>8.1.10.v20130312</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>dubbo</artifactId>
+            <version>2.5.3</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.javassist</groupId>
+                    <artifactId>javassist</artifactId>
+                </exclusion>
+
+            </exclusions>
+        </dependency>
+
+
+        <dependency>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+            <version>1.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itext-xtra</artifactId>
+            <version>5.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itext-asian</artifactId>
+            <version>5.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>5.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+            <version>1.1.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.jtds</groupId>
+            <artifactId>jtds</artifactId>
+            <version>1.2.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>c3p0</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ojdbc14-ojdbc14</groupId>
+            <artifactId>ojdbc14-ojdbc14</artifactId>
+            <version>14.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.cloudhopper.proxool</groupId>
+            <artifactId>proxool</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>db2java</groupId>
+            <artifactId>db2java</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-spring</artifactId>
+            <version>5.5.0.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+            <version>5.5.0.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.15.0-GA</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.12.1.GA</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.19</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jdt.core.compiler</groupId>
+            <artifactId>ecj</artifactId>
+            <version>3.5.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>1.8.5</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>1.8.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.9</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.9</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/commons-discovery/commons-discovery -->
+        <dependency>
+            <groupId>commons-discovery</groupId>
+            <artifactId>commons-discovery</artifactId>
+            <version>0.2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.ow2.asm/asm-commons -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>4.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-commons -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+            <version>1.9.1.RELEASE</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.woden</groupId>
+            <artifactId>woden-api</artifactId>
+            <version>1.0M9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+            <version>1.5.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId> axiom-api</groupId>
+            <artifactId>axiom-api</artifactId>
+            <version>1.2.19</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-dom</artifactId>
+            <version>1.2.19</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-impl</artifactId>
+            <version>1.2.19</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.neethi</groupId>
+            <artifactId>neethi</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-javamail_1.4_spec</artifactId>
+            <version>1.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+
+
+
+        <!--<dependency>-->
+        <!--<groupId>javax.mail</groupId>-->
+        <!--<artifactId>mail</artifactId>-->
+        <!--<version>1.4.7</version>-->
+        <!--</dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/jaf/activation -->
+        <!--<dependency>-->
+        <!--<groupId>jaf</groupId>-->
+        <!--<artifactId>activation</artifactId>-->
+        <!--<version>1.0.2</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+        <!--<groupId>javax.activation</groupId>-->
+        <!--<artifactId>activation</artifactId>-->
+        <!--<version>1.1</version>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.apache.geronimo.specs/geronimo-activation_1.1_spec &ndash;&gt;-->
+        <!--<dependency>-->
+        <!--<groupId>org.apache.geronimo.specs</groupId>-->
+        <!--<artifactId>geronimo-activation_1.1_spec</artifactId>-->
+        <!--<version>1.0.1</version>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.apache.geronimo.specs/geronimo-stax-api_1.0_spec &ndash;&gt;-->
+        <!--<dependency>-->
+        <!--<groupId>org.apache.geronimo.specs</groupId>-->
+        <!--<artifactId>geronimo-stax-api_1.0_spec</artifactId>-->
+        <!--<version>1.0.1</version>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.apache.geronimo.specs/geronimo-ws-metadata_2.0_spec &ndash;&gt;-->
+        <!--<dependency>-->
+        <!--<groupId>org.apache.geronimo.specs</groupId>-->
+        <!--<artifactId>geronimo-ws-metadata_2.0_spec</artifactId>-->
+        <!--<version>1.1.2</version>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.apache.geronimo.specs/geronimo-jta_1.1_spec &ndash;&gt;-->
+        <!--<dependency>-->
+        <!--<groupId>org.apache.geronimo.specs</groupId>-->
+        <!--<artifactId>geronimo-jta_1.1_spec</artifactId>-->
+        <!--<version>1.1</version>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.apache.geronimo.specs/geronimo-javamail_1.4_spec &ndash;&gt;-->
+
+
+    </dependencies>
+
+</project>

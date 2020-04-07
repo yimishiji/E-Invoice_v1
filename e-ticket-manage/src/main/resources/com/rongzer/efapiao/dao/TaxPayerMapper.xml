@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.rongzer.efapiao.dao.TaxPayerMapper">
+
+	<select id="listNsrsbh" resultType="string">
+		SELECT TAXPAYER_IDENTIFY_NO FROM T_TAXPAYER_INFO
+	</select>
+
+	<insert id="insertTaxPayer" parameterType="list">
+		INSERT INTO T_TAXPAYER_INFO(TAXPAYER_ID,TAXPAYER_PROVINCE,TAXPAYER_CITY,
+		TAXPAYER_IDENTIFY_NO,TAXPAYER_NAME_CN,TAXPAYER_ADDRESS,
+		TAXPAYER_PHONE,TAXPAYER_BANK,TAXPAYER_ACCOUNT,
+		TAXPAYER_TYPE,INVOICE_LIMIT_AMOUNT,IS_EFAPIAO,
+		PLATFORM_TYPE,PLATFORM_CODE,REGISTRATION_CODE,
+		AUTHORIZATION_CODE,IS_DELETE,ADD_USER,ADD_TIME,IS_USED) VALUES
+	   <foreach collection="list" item="taxpayer" separator=",">
+		   (#{taxpayer.TAXPAYER_ID,jdbcType=VARCHAR},#{taxpayer.TAXPAYER_PROVINCE,jdbcType=VARCHAR},#{taxpayer.TAXPAYER_CITY,jdbcType=VARCHAR},
+		   #{taxpayer.TAXPAYER_IDENTIFY_NO,jdbcType=VARCHAR},#{taxpayer.TAXPAYER_NAME_CN,jdbcType=VARCHAR},#{taxpayer.TAXPAYER_ADDRESS,jdbcType=VARCHAR},
+		   #{taxpayer.TAXPAYER_PHONE,jdbcType=VARCHAR},#{taxpayer.TAXPAYER_BANK,jdbcType=VARCHAR},#{taxpayer.TAXPAYER_ACCOUNT,jdbcType=VARCHAR},
+		   #{taxpayer.TAXPAYER_TYPE,jdbcType=VARCHAR},#{taxpayer.INVOICE_LIMIT_AMOUNT,jdbcType=VARCHAR},#{taxpayer.IS_EFAPIAO,jdbcType=VARCHAR},
+		   #{taxpayer.PLATFORM_TYPE,jdbcType=VARCHAR},#{taxpayer.PLATFORM_CODE,jdbcType=VARCHAR},#{taxpayer.REGISTRATION_CODE,jdbcType=VARCHAR},
+		   #{taxpayer.AUTHORIZATION_CODE,jdbcType=VARCHAR},'0',#{taxpayer.ADD_USER,jdbcType=VARCHAR},#{taxpayer.ADD_TIME,jdbcType=VARCHAR},#{taxpayer.IS_USED,jdbcType=VARCHAR})
+	   </foreach>
+	</insert>
+
+	<update id="updateTaxPayer" parameterType="list">
+		update T_TAXPAYER_INFO
+		<trim prefix="set" suffixOverrides=",">
+			<trim prefix="TAXPAYER_PROVINCE =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.TAXPAYER_PROVINCE!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.TAXPAYER_PROVINCE}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="TAXPAYER_CITY =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.TAXPAYER_CITY!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.TAXPAYER_CITY}
+					</if>
+				</foreach>
+			</trim>
+
+			<trim prefix="TAXPAYER_PROVINCE =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.TAXPAYER_PROVINCE!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.TAXPAYER_PROVINCE}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="TAXPAYER_NAME_CN =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.TAXPAYER_NAME_CN!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.TAXPAYER_NAME_CN}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="TAXPAYER_ADDRESS =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.TAXPAYER_ADDRESS!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.TAXPAYER_ADDRESS}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="TAXPAYER_PHONE =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.TAXPAYER_PHONE!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.TAXPAYER_PHONE}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="TAXPAYER_BANK =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.TAXPAYER_BANK!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.TAXPAYER_BANK}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="TAXPAYER_ACCOUNT =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.TAXPAYER_ACCOUNT!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.TAXPAYER_ACCOUNT}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="TAXPAYER_TYPE =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.TAXPAYER_TYPE!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.TAXPAYER_TYPE}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="INVOICE_LIMIT_AMOUNT =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.INVOICE_LIMIT_AMOUNT!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.INVOICE_LIMIT_AMOUNT}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="IS_EFAPIAO =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.IS_EFAPIAO!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.IS_EFAPIAO}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="PLATFORM_TYPE =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.PLATFORM_TYPE!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.PLATFORM_TYPE}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="UPDATE_USER =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.UPDATE_USER!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.UPDATE_USER}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="UPDATE_TIME =case" suffix="end,">
+				<foreach collection="list" item="taxpayer" index="index">
+					<if test="taxpayer.UPDATE_TIME!=null">
+						when TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO} then #{taxpayer.UPDATE_TIME}
+					</if>
+				</foreach>
+			</trim>
+		</trim>
+		where
+		<foreach collection="list" separator="or" item="taxpayer" index="index" >
+			TAXPAYER_IDENTIFY_NO=#{taxpayer.TAXPAYER_IDENTIFY_NO}
+		</foreach>
+	</update>
+
+	<select id="getTaxpayerById" parameterType="map" resultType="map">
+		select TAXPAYER_IDENTIFY_NO,TAXPAYER_NAME_CN,TAXPAYER_ADDRESS,TAXPAYER_PHONE,TAXPAYER_BANK,TAXPAYER_ACCOUNT,ISSUE,SKY,FHR
+		from  T_TAXPAYER_INFO where  TAXPAYER_ID=#{TAXPAYER_ID}
+	</select>
+
+	<select id="getTaxpayerByNsrsbh" parameterType="map" resultType="map">
+		select PLATFORM_CODE,REGISTRATION_CODE,AUTHORIZATION_CODE
+		from  T_TAXPAYER_INFO where  TAXPAYER_IDENTIFY_NO=#{taxpayerId}
+	</select>
+
+	<select id="getTaxPayerList" resultType="map">
+		select TAXPAYER_NAME_CN,INVENTORY_THRESHOLD,EMAIL,TAXPAYER_IDENTIFY_NO,PLATFORM_CODE,REGISTRATION_CODE,AUTHORIZATION_CODE
+		from  T_TAXPAYER_INFO where IS_DELETE = '0'
+	</select>
+
+	<update id="updateTaxPayerInvoiceInventory" parameterType="map">
+		update T_TAXPAYER_INFO set INVOICE_INVENTORY = #{kyfpsl} where TAXPAYER_IDENTIFY_NO = #{taxpayerIdentifyNo}
+	</update>
+</mapper>
