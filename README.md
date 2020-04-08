@@ -1,5 +1,5 @@
 # E-Invoice_v1
-[![shinmigo/E-Invoice_v1](https://gitee.com/shinmigo/E-Invoice/widgets/widget_card.svg?colors=4183c4,ffffff,ffffff,e3e9ed,666666,9b9b9b)](https://gitee.com/shinmigo/E-Invoice)
+[![Fork me on Gitee](https://gitee.com/shinmigo/E-Invoice/widgets/widget_6.svg)](https://gitee.com/shinmigo/E-Invoice)
 #### 介绍
 基于SASS化的一套多商户线上电子发票系统，支持所有行业的普通增值税发票开具。
 
