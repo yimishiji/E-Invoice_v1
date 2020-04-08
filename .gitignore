@@ -1,0 +1,10 @@
+e-ticket-manage/target/*
+e-ticket-sdk/target/*
+target/*
+out/
+.idea/
+.project
+.settings
+.factorypath
+.classpath
+e-ticket-manage/bin/
