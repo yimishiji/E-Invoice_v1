@@ -13,8 +13,7 @@ V2版本前后端分离，采用springBoot+vue.js 支持容器化集群部署与
 暂未开放demo环境敬请期待
 
 #### 效果展示
-
-
+<table>
     <tr>
         <td><img src="https://github.com/shinmigo/E-Invoice/raw/master/resource/20200408164856.png"/></td>
         <td><img src="https://github.com/shinmigo/E-Invoice/raw/master/resource/20200408165057.png"/></td>
