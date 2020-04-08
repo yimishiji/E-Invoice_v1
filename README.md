@@ -36,8 +36,8 @@ V2版本前后端分离，采用springBoot+vue.js 支持容器化集群部署与
         <td><img src="https://gitee.com/shinmigo/E-Invoice/raw/master/resource/20200408171904.png"/></td>
     </tr>
 </table>
-#### 技术支持
 
+#### 技术支持
 在使用过程中遇到什么问题，欢迎再提出问题，我们很乐意为您解答。
                                                                         一米市集IT团队
 
